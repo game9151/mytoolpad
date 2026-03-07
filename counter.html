@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Word Counter & Readability — MyToolPad</title>
+<meta name="description" content="Free word counter with readability score. Paste text and get instant word count, character count, Flesch-Kincaid grade, and reading time. No sign-up."/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;--surface:#181818;--surface2:#212121;
+  --border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);
+  --text:#f0ede6;--muted:#5a5a5a;--mid:#888;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(15,15,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:24px;z-index:100}
+.nav-brand{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);text-decoration:none;flex-shrink:0;letter-spacing:-.3px}
+.nav-brand em{color:var(--accent);font-style:normal}
+.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:all .15s;white-space:nowrap}
+.nav-links a:hover{color:var(--text);background:var(--surface)}
+.nav-links a.active{color:var(--accent);background:var(--accent-dim)}
+
+.page{max-width:1060px;margin:0 auto;padding:40px 24px 80px;display:flex;gap:28px;position:relative;z-index:1}
+
+/* Textarea side */
+.text-side{flex:1;min-width:0;display:flex;flex-direction:column}
+.text-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.page-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:600;letter-spacing:-.5px}
+.page-title span{color:var(--accent)}
+.clear-btn{background:none;border:1px solid var(--border);color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;padding:6px 14px;border-radius:8px;cursor:pointer;transition:all .15s}
+.clear-btn:hover{color:var(--text);border-color:#444}
+.main-textarea{width:100%;height:calc(100vh - 240px);min-height:400px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:300;line-height:1.7;outline:none;resize:none;transition:border-color .2s}
+.main-textarea::placeholder{color:var(--muted)}
+.main-textarea:focus{border-color:var(--accent)}
+.char-hint{font-size:11px;color:var(--muted);margin-top:8px;text-align:right;letter-spacing:.04em}
+
+/* Stats side */
+.stats-side{width:280px;flex-shrink:0;display:flex;flex-direction:column;gap:10px}
+
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px;transition:border-color .2s}
+.stat-card:hover{border-color:#383838}
+.stat-card-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:8px}
+.stat-card-value{font-size:32px;font-weight:300;letter-spacing:-1.5px;line-height:1;color:var(--text);transition:color .3s}
+.stat-card-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.stat-card.highlight .stat-card-value{color:var(--accent)}
+
+/* Readability meter */
+.read-card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 20px}
+.read-label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:12px}
+.read-score{font-size:38px;font-weight:300;letter-spacing:-2px;margin-bottom:6px;transition:color .3s}
+.read-desc{font-size:12px;color:var(--mid);margin-bottom:12px}
+.read-bar-wrap{height:4px;background:var(--border);border-radius:99px;overflow:hidden}
+.read-bar{height:100%;border-radius:99px;transition:width .5s ease,background .4s}
+.grade-row{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.grade-label{font-size:11px;color:var(--muted)}
+.grade-val{font-size:14px;font-weight:500;color:var(--text)}
+
+/* Divider cards row */
+.mini-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mini-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.mini-label{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:6px}
+.mini-val{font-size:22px;font-weight:300;letter-spacing:-1px}
+
+@media(max-width:800px){
+  .page{flex-direction:column}
+  .stats-side{width:100%}
+  .main-textarea{height:300px;min-height:300px}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="./index.html" class="nav-brand">My<em>Tool</em>Pad</a>
+  <div class="nav-links">
+    <a href="./todo.html">To-Do</a>
+    <a href="./pomodoro.html">Focus</a>
+    <a href="./notes.html">Notes</a>
+    <a href="./counter.html" class="active">Counter</a>
+    <a href="./budget.html">Budget</a>
+    <a href="./spinner.html">Spinner</a>
+    <a href="./countdown.html">Countdown</a>
+    <a href="./password.html">Password</a>
+    <a href="./converter.html">Converter</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="text-side">
+    <div class="text-header">
+      <div class="page-title">Word<span>.</span>Counter</div>
+      <button class="clear-btn" id="clearBtn">Clear text</button>
+    </div>
+    <textarea class="main-textarea" id="mainText" placeholder="Paste or type your text here… Stats update as you type."></textarea>
+    <div class="char-hint" id="charHint">0 / ∞</div>
+  </div>
+
+  <div class="stats-side">
+    <div class="stat-card highlight">
+      <div class="stat-card-label">Words</div>
+      <div class="stat-card-value" id="statWords">0</div>
+    </div>
+
+    <div class="mini-row">
+      <div class="mini-card">
+        <div class="mini-label">Characters</div>
+        <div class="mini-val" id="statChars">0</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-label">No spaces</div>
+        <div class="mini-val" id="statCharsNoSpace">0</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-label">Sentences</div>
+        <div class="mini-val" id="statSentences">0</div>
+      </div>
+      <div class="mini-card">
+        <div class="mini-label">Paragraphs</div>
+        <div class="mini-val" id="statParas">0</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card-label">Reading time</div>
+      <div class="stat-card-value" id="statRead">0s</div>
+      <div class="stat-card-sub">at 200 words / min</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-card-label">Speaking time</div>
+      <div class="stat-card-value" id="statSpeak">0s</div>
+      <div class="stat-card-sub">at 130 words / min</div>
+    </div>
+
+    <div class="read-card">
+      <div class="read-label">Flesch Reading Ease</div>
+      <div class="read-score" id="readScore">—</div>
+      <div class="read-desc" id="readDesc">Paste text to analyze</div>
+      <div class="read-bar-wrap">
+        <div class="read-bar" id="readBar" style="width:0%;background:var(--accent)"></div>
+      </div>
+      <div class="grade-row">
+        <span class="grade-label">Grade level (Kincaid)</span>
+        <span class="grade-val" id="gradeVal">—</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function countSyllables(word){
+  word=word.toLowerCase().replace(/[^a-z]/g,'');
+  if(!word.length)return 0;
+  const vowels=word.match(/[aeiouy]+/g);
+  let count=vowels?vowels.length:1;
+  if(word.endsWith('e')&&count>1)count--;
+  return Math.max(1,count);
+}
+
+function fmtTime(words,wpm){
+  const secs=Math.round(words/wpm*60);
+  if(secs<60)return secs+'s';
+  const m=Math.floor(secs/60),s=secs%60;
+  return s?`${m}m ${s}s`:`${m}m`;
+}
+
+function getReadDesc(score){
+  if(score>=90)return'Very easy — 5th grade level';
+  if(score>=80)return'Easy — 6th grade level';
+  if(score>=70)return'Fairly easy — 7th grade';
+  if(score>=60)return'Standard — 8th–9th grade';
+  if(score>=50)return'Fairly difficult — 10th–12th grade';
+  if(score>=30)return'Difficult — college level';
+  return'Very difficult — professional';
+}
+
+function getReadColor(score){
+  if(score>=70)return'#c8f135';
+  if(score>=50)return'#f5a623';
+  return'#e85c5c';
+}
+
+function analyze(){
+  const text=document.getElementById('mainText').value;
+  const words=text.trim()?text.trim().split(/\s+/).filter(w=>w.length>0):[];
+  const wordCount=words.length;
+  const charCount=text.length;
+  const charNoSpace=text.replace(/\s/g,'').length;
+  const sentences=text.trim()?text.split(/[.!?]+/).filter(s=>s.trim().length>2).length:0;
+  const paras=text.trim()?text.split(/\n\n+/).filter(p=>p.trim().length>0).length:0;
+
+  document.getElementById('statWords').textContent=wordCount.toLocaleString();
+  document.getElementById('statChars').textContent=charCount.toLocaleString();
+  document.getElementById('statCharsNoSpace').textContent=charNoSpace.toLocaleString();
+  document.getElementById('statSentences').textContent=sentences.toLocaleString();
+  document.getElementById('statParas').textContent=Math.max(1,paras).toLocaleString();
+  document.getElementById('statRead').textContent=wordCount>0?fmtTime(wordCount,200):'0s';
+  document.getElementById('statSpeak').textContent=wordCount>0?fmtTime(wordCount,130):'0s';
+  document.getElementById('charHint').textContent=charCount.toLocaleString()+' characters';
+
+  if(wordCount>10&&sentences>0){
+    const totalSyllables=words.reduce((a,w)=>a+countSyllables(w),0);
+    const avgSentLen=wordCount/sentences;
+    const avgSyllPerWord=totalSyllables/wordCount;
+    const flesch=Math.round(206.835 - 1.015*avgSentLen - 84.6*avgSyllPerWord);
+    const clampedFlesch=Math.max(0,Math.min(100,flesch));
+    const kincaid=Math.max(0,+(1.015*avgSentLen + 0.846*avgSyllPerWord - 3.0).toFixed(1));
+    const color=getReadColor(clampedFlesch);
+    document.getElementById('readScore').textContent=clampedFlesch;
+    document.getElementById('readScore').style.color=color;
+    document.getElementById('readDesc').textContent=getReadDesc(clampedFlesch);
+    document.getElementById('readBar').style.width=clampedFlesch+'%';
+    document.getElementById('readBar').style.background=color;
+    document.getElementById('gradeVal').textContent='Grade '+kincaid;
+  } else {
+    document.getElementById('readScore').textContent='—';
+    document.getElementById('readScore').style.color='var(--mid)';
+    document.getElementById('readDesc').textContent=wordCount>0?'Add more text to analyze':'Paste text to analyze';
+    document.getElementById('readBar').style.width='0%';
+    document.getElementById('gradeVal').textContent='—';
+  }
+}
+
+document.getElementById('mainText').addEventListener('input',analyze);
+document.getElementById('clearBtn').addEventListener('click',()=>{document.getElementById('mainText').value='';analyze();document.getElementById('mainText').focus()});
+analyze();
+</script>
+
+<div style="max-width:720px;margin:0 auto;padding:8px 24px 56px;position:relative;z-index:1">
+  <div style="border-top:1px solid #1e1e1e;padding-top:32px">
+    <h2 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:600;margin-bottom:10px;color:#c8c5be">Free Word Counter with Readability Score</h2>
+    <p style="font-size:13px;color:#555;line-height:1.85">Paste any text and instantly get your word count, character count, sentence count, Flesch-Kincaid readability grade, and estimated reading and speaking times. Useful for essays, emails, and writing assignments.</p>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>To-Do List — MyToolPad</title>
+<meta name="description" content="Free online to-do list, no sign-up required. Add tasks, set priorities, drag to reorder. Everything saves automatically in your browser."/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;--surface:#181818;--surface2:#212121;
+  --border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.1);
+  --text:#f0ede6;--muted:#5a5a5a;--mid:#999;--red:#ff5f5f;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* Nav */
+.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(15,15,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:24px;z-index:100}
+.nav-brand{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);text-decoration:none;flex-shrink:0;letter-spacing:-.3px}
+.nav-brand em{color:var(--accent);font-style:normal}
+.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:all .15s;white-space:nowrap}
+.nav-links a:hover{color:var(--text);background:var(--surface)}
+.nav-links a.active{color:var(--accent);background:var(--accent-dim)}
+
+/* Page */
+.container{width:100%;max-width:620px;margin:0 auto;padding:60px 20px 120px;position:relative;z-index:1}
+.header{margin-bottom:48px}
+.header-top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:4px}
+.logo{font-family:'Playfair Display',serif;font-size:38px;font-weight:600;letter-spacing:-1px;line-height:1}
+.logo span{color:var(--accent)}
+.date-label{font-size:12px;color:var(--muted);font-weight:300;letter-spacing:.05em;padding-bottom:4px}
+.progress-bar-wrap{height:2px;background:var(--border);border-radius:99px;margin-top:20px;overflow:hidden}
+.progress-bar{height:100%;background:var(--accent);border-radius:99px;transition:width .5s cubic-bezier(.4,0,.2,1);width:0%}
+.stats-row{display:flex;justify-content:space-between;margin-top:10px}
+.stat{font-size:11px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.stat strong{color:var(--mid);font-weight:500}
+.input-extras{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.input-extras label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em}
+.priority-select{background:var(--surface);border:1px solid var(--border);border-radius:8px;color:var(--mid);font-family:'DM Sans',sans-serif;font-size:12px;padding:5px 10px;outline:none;cursor:pointer;transition:border-color .2s}
+.priority-select:focus{border-color:var(--accent)}
+.input-row{display:flex;gap:10px;margin-bottom:32px}
+.task-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:300;outline:none;transition:border-color .2s,background .2s}
+.task-input::placeholder{color:var(--muted)}
+.task-input:focus{border-color:var(--accent);background:var(--surface2)}
+.add-btn{background:var(--accent);color:#0f0f0f;border:none;border-radius:12px;width:50px;height:50px;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:transform .15s,opacity .15s;font-weight:700}
+.add-btn:hover{opacity:.85;transform:scale(1.05)}
+.add-btn:active{transform:scale(.96)}
+.filter-row{display:flex;gap:6px;margin-bottom:16px;align-items:center}
+.filter-btn{background:none;border:1px solid transparent;border-radius:8px;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;padding:6px 14px;cursor:pointer;transition:all .2s}
+.filter-btn:hover{color:var(--text);border-color:var(--border)}
+.filter-btn.active{background:var(--accent-dim);border-color:var(--accent);color:var(--accent)}
+.spacer{flex:1}
+.clear-btn{background:none;border:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;padding:6px 8px;border-radius:6px;transition:color .2s;text-decoration:underline;text-underline-offset:2px}
+.clear-btn:hover{color:var(--red)}
+.task-list{display:flex;flex-direction:column;gap:8px}
+.task-item{background:var(--surface);border:1px solid var(--border);border-radius:12px;display:flex;align-items:center;gap:14px;padding:14px 16px;transition:background .2s,border-color .2s;animation:slideIn .25s cubic-bezier(.4,0,.2,1);cursor:default;position:relative}
+@keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.task-item:hover{background:var(--surface2);border-color:#333}
+.task-item.done{opacity:.45}
+.check-wrap{flex-shrink:0;width:22px;height:22px;border-radius:50%;border:1.5px solid var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:border-color .2s,background .2s}
+.check-wrap:hover{border-color:var(--accent)}
+.task-item.done .check-wrap{background:var(--accent);border-color:var(--accent)}
+.checkmark{display:none;width:11px;height:11px}
+.task-item.done .checkmark{display:block}
+.checkmark::before{content:'';display:block;width:6px;height:10px;border:2px solid #0f0f0f;border-top:none;border-left:none;transform:rotate(42deg) translate(-1px,-1px)}
+.task-text{flex:1;font-size:15px;font-weight:300;color:var(--text);line-height:1.4;word-break:break-word;transition:color .2s}
+.task-item.done .task-text{text-decoration:line-through;text-decoration-color:var(--muted);color:var(--muted)}
+.priority-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;opacity:.6}
+.priority-dot.high{background:var(--red)}
+.priority-dot.medium{background:#f5a623}
+.priority-dot.low{background:#4db8ff}
+.priority-dot.none{display:none}
+.delete-btn{background:none;border:none;color:transparent;cursor:pointer;padding:4px;border-radius:6px;font-size:16px;line-height:1;transition:color .2s;flex-shrink:0}
+.task-item:hover .delete-btn{color:var(--muted)}
+.delete-btn:hover{color:var(--red)!important}
+.drag-handle{color:var(--muted);cursor:grab;font-size:13px;opacity:0;transition:opacity .2s;flex-shrink:0;user-select:none}
+.task-item:hover .drag-handle{opacity:.4}
+.task-item.dragging{opacity:.4}
+.empty-state{text-align:center;padding:60px 0 40px;display:none}
+.empty-state.show{display:block}
+.empty-icon{font-size:40px;margin-bottom:14px;opacity:.3}
+.empty-label{font-family:'Playfair Display',serif;font-size:18px;color:var(--muted);font-style:italic}
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="./index.html" class="nav-brand">My<em>Tool</em>Pad</a>
+  <div class="nav-links">
+    <a href="./todo.html" class="active">To-Do</a>
+    <a href="./pomodoro.html">Focus</a>
+    <a href="./notes.html">Notes</a>
+    <a href="./counter.html">Counter</a>
+    <a href="./budget.html">Budget</a>
+    <a href="./spinner.html">Spinner</a>
+    <a href="./countdown.html">Countdown</a>
+    <a href="./password.html">Password</a>
+    <a href="./converter.html">Converter</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="header">
+    <div class="header-top">
+      <div class="logo">My<span>.</span>Tasks</div>
+      <div class="date-label" id="dateLabel"></div>
+    </div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="stats-row">
+      <span class="stat"><strong id="remainingCount">0</strong> remaining</span>
+      <span class="stat"><strong id="doneCount">0</strong> completed</span>
+    </div>
+  </div>
+
+  <div class="input-extras">
+    <label for="prioritySelect">Priority</label>
+    <select class="priority-select" id="prioritySelect">
+      <option value="none">— none</option>
+      <option value="low">● low</option>
+      <option value="medium">● medium</option>
+      <option value="high">● high</option>
+    </select>
+  </div>
+  <div class="input-row">
+    <input class="task-input" id="taskInput" type="text" placeholder="Add a new task…" autocomplete="off"/>
+    <button class="add-btn" id="addBtn">+</button>
+  </div>
+
+  <div class="filter-row">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="active">Active</button>
+    <button class="filter-btn" data-filter="done">Done</button>
+    <div class="spacer"></div>
+    <button class="clear-btn" id="clearDoneBtn">Clear done</button>
+  </div>
+
+  <div class="task-list" id="taskList"></div>
+  <div class="empty-state" id="emptyState">
+    <div class="empty-icon">✦</div>
+    <div class="empty-label">Nothing here yet.</div>
+  </div>
+</div>
+
+<script>
+let tasks = JSON.parse(localStorage.getItem('mytasks_v2') || '[]');
+let filter = 'all';
+let dragSrc = null;
+
+const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const now=new Date();
+document.getElementById('dateLabel').textContent=`${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}`;
+
+function save(){localStorage.setItem('mytasks_v2',JSON.stringify(tasks))}
+
+function render(){
+  const list=document.getElementById('taskList');
+  const empty=document.getElementById('emptyState');
+  const filtered=tasks.filter(t=>filter==='all'?true:filter==='done'?t.done:!t.done);
+  list.innerHTML='';
+  if(filtered.length===0){empty.classList.add('show')}else{
+    empty.classList.remove('show');
+    filtered.forEach(t=>{
+      const li=document.createElement('div');
+      li.className='task-item'+(t.done?' done':'');
+      li.dataset.id=t.id;li.draggable=true;
+      li.innerHTML=`<span class="drag-handle" title="Drag to reorder">⠿</span>
+        <div class="check-wrap"><div class="checkmark"></div></div>
+        <span class="task-text">${esc(t.text)}</span>
+        <span class="priority-dot ${t.priority||'none'}"></span>
+        <button class="delete-btn">✕</button>`;
+      li.querySelector('.check-wrap').addEventListener('click',()=>toggle(t.id));
+      li.querySelector('.delete-btn').addEventListener('click',()=>del(t.id));
+      li.querySelector('.task-text').addEventListener('dblclick',()=>editTask(t.id,li));
+      li.addEventListener('dragstart',e=>{dragSrc=t.id;li.classList.add('dragging');e.dataTransfer.effectAllowed='move'});
+      li.addEventListener('dragend',()=>li.classList.remove('dragging'));
+      li.addEventListener('dragover',e=>e.preventDefault());
+      li.addEventListener('drop',e=>{
+        e.preventDefault();
+        if(dragSrc!==t.id){
+          const from=tasks.findIndex(x=>x.id===dragSrc);
+          const to=tasks.findIndex(x=>x.id===t.id);
+          const[moved]=tasks.splice(from,1);tasks.splice(to,0,moved);save();render();
+        }
+      });
+      list.appendChild(li);
+    });
+  }
+  updateStats();
+}
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function updateStats(){
+  const total=tasks.length,done=tasks.filter(t=>t.done).length;
+  document.getElementById('doneCount').textContent=done;
+  document.getElementById('remainingCount').textContent=total-done;
+  document.getElementById('progressBar').style.width=(total?Math.round(done/total*100):0)+'%';
+}
+
+function addTask(){
+  const input=document.getElementById('taskInput');
+  const text=input.value.trim();
+  if(!text){input.focus();return}
+  tasks.unshift({id:Date.now(),text,done:false,priority:document.getElementById('prioritySelect').value});
+  input.value='';document.getElementById('prioritySelect').value='none';
+  save();render();input.focus();
+}
+
+function toggle(id){const t=tasks.find(x=>x.id===id);if(t){t.done=!t.done;save();render()}}
+function del(id){tasks=tasks.filter(x=>x.id!==id);save();render()}
+
+function editTask(id,li){
+  const t=tasks.find(x=>x.id===id);if(!t||t.done)return;
+  const span=li.querySelector('.task-text');const old=t.text;
+  span.contentEditable='true';span.focus();
+  const r=document.createRange();r.selectNodeContents(span);r.collapse(false);
+  window.getSelection().removeAllRanges();window.getSelection().addRange(r);
+  function commit(){span.contentEditable='false';t.text=span.textContent.trim()||old;save();render()}
+  span.addEventListener('blur',commit,{once:true});
+  span.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();span.blur()}if(e.key==='Escape'){span.textContent=old;span.blur()}});
+}
+
+document.querySelectorAll('.filter-btn').forEach(btn=>btn.addEventListener('click',()=>{
+  filter=btn.dataset.filter;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');render();
+}));
+document.getElementById('clearDoneBtn').addEventListener('click',()=>{tasks=tasks.filter(t=>!t.done);save();render()});
+document.getElementById('addBtn').addEventListener('click',addTask);
+document.getElementById('taskInput').addEventListener('keydown',e=>{if(e.key==='Enter')addTask()});
+render();
+</script>
+
+<div style="max-width:720px;margin:0 auto;padding:8px 24px 56px;position:relative;z-index:1">
+  <div style="border-top:1px solid #1e1e1e;padding-top:32px">
+    <h2 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:600;margin-bottom:10px;color:#c8c5be">Free To-Do List — no sign-up needed</h2>
+    <p style="font-size:13px;color:#555;line-height:1.85">A simple, private to-do list that saves automatically in your browser. Set priorities, drag tasks to reorder, mark things done, and filter by status. No account, no email, no clutter — just your tasks.</p>
+  </div>
+</div>
+</body>
+</html>
