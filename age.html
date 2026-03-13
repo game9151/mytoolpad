@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Age Calculator — MyToolPad</title>
+<meta name="description" content="Free age calculator. Enter your date of birth to find your exact age in years, months, days, hours, and minutes. Next birthday countdown included."/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f0f;--surface:#181818;--surface2:#212121;--border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);--text:#f0ede6;--muted:#5a5a5a;--mid:#888}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(15,15,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:24px;z-index:100}
+.nav-brand{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);text-decoration:none;flex-shrink:0;letter-spacing:-.3px}
+.nav-brand em{color:var(--accent);font-style:normal}
+.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:all .15s;white-space:nowrap}
+.nav-links a:hover{color:var(--text);background:var(--surface)}
+.nav-links a.active{color:var(--accent);background:var(--accent-dim)}
+
+.page{max-width:640px;margin:0 auto;padding:50px 24px 80px;position:relative;z-index:1}
+.page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;letter-spacing:-1px;margin-bottom:6px}
+.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:14px;color:var(--muted);margin-bottom:36px;font-weight:300}
+
+.input-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px;margin-bottom:16px}
+.input-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:10px}
+.date-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.date-input{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s;flex:1;min-width:180px}
+.date-input:focus{border-color:var(--accent)}
+.today-lnk{font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;transition:color .15s}
+.today-lnk:hover{color:var(--accent)}
+
+/* Main age display */
+.age-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px 28px;margin-bottom:14px;text-align:center;border-color:rgba(200,241,53,.15)}
+.age-big{font-size:80px;font-weight:300;letter-spacing:-6px;color:var(--accent);line-height:1;margin-bottom:8px;font-variant-numeric:tabular-nums}
+.age-word{font-family:'Playfair Display',serif;font-size:22px;color:var(--mid);letter-spacing:-.3px;font-style:italic}
+.age-detail{font-size:14px;color:var(--muted);margin-top:12px;line-height:1.8}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat-c{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center}
+.stat-c-num{font-size:26px;font-weight:300;letter-spacing:-1.5px;color:var(--text)}
+.stat-c-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:4px}
+
+/* Birthday countdown */
+.bday-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px 28px;display:flex;align-items:center;gap:20px}
+.bday-icon{font-size:32px}
+.bday-info{flex:1}
+.bday-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:5px}
+.bday-text{font-size:17px;font-weight:400;line-height:1.4}
+.bday-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.bday-days{font-size:36px;font-weight:300;letter-spacing:-2px;color:var(--accent)}
+
+.empty-state{text-align:center;padding:60px 0;color:var(--muted)}
+.empty-icon{font-size:44px;margin-bottom:14px;opacity:.25}
+.empty-text{font-family:'Playfair Display',serif;font-size:18px;font-style:italic}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="./index.html" class="nav-brand">My<em>Tool</em>Pad</a>
+  <div class="nav-links">
+    <a href="./todo.html">To-Do</a>
+    <a href="./pomodoro.html">Focus</a>
+    <a href="./notes.html">Notes</a>
+    <a href="./counter.html">Counter</a>
+    <a href="./budget.html">Budget</a>
+    <a href="./spinner.html">Spinner</a>
+    <a href="./countdown.html">Countdown</a>
+    <a href="./password.html">Password</a>
+    <a href="./converter.html">Converter</a>
+    <a href="./percentage.html">Percentage</a>
+    <a href="./age.html" class="active">Age</a>
+    <a href="./tip.html">Tip</a>
+    <a href="./color.html">Color</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-title">Age<em>.</em>Calc</div>
+  <div class="page-sub">Find your exact age — years, months, days, even hours. Plus next birthday countdown.</div>
+
+  <div class="input-card">
+    <div class="input-label">Date of birth</div>
+    <div class="date-row">
+      <input class="date-input" type="date" id="dobInput"/>
+      <span class="today-lnk" id="todayAsOf">Calculate as of today</span>
+    </div>
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+      <div class="input-label" style="margin-bottom:8px">Calculate age as of a different date <span style="color:var(--muted);font-weight:300;text-transform:none;letter-spacing:0">(optional)</span></div>
+      <input class="date-input" type="date" id="asOfInput" style="max-width:220px"/>
+    </div>
+  </div>
+
+  <div id="results">
+    <div class="empty-state">
+      <div class="empty-icon">🎂</div>
+      <div class="empty-text">Enter your date of birth above</div>
+    </div>
+  </div>
+
+  <div style="border-top:1px solid #1e1e1e;padding-top:32px;margin-top:32px">
+    <h2 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:600;margin-bottom:10px;color:#c8c5be">Free age calculator — exact years, months and days</h2>
+    <p style="font-size:13px;color:#555;line-height:1.85">Enter any date of birth to find out exactly how old someone is — down to the day. Also shows total days, weeks, months, and hours lived, plus a countdown to the next birthday. No sign-up required.</p>
+  </div>
+</div>
+
+<script>
+const MONTHS_LONG=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const today=new Date();
+
+// Set default "as of" to today
+document.getElementById('asOfInput').value=today.toISOString().split('T')[0];
+
+// Set max dob to today
+document.getElementById('dobInput').max=today.toISOString().split('T')[0];
+
+document.getElementById('todayAsOf').addEventListener('click',()=>{
+  document.getElementById('asOfInput').value=today.toISOString().split('T')[0];
+  calculate();
+});
+
+function calculate(){
+  const dobVal=document.getElementById('dobInput').value;
+  const asOfVal=document.getElementById('asOfInput').value;
+  if(!dobVal){showEmpty();return;}
+  const dob=new Date(dobVal+'T00:00:00');
+  const asOf=asOfVal?new Date(asOfVal+'T00:00:00'):today;
+  if(dob>asOf){showError('Date of birth is in the future!');return;}
+
+  let years=asOf.getFullYear()-dob.getFullYear();
+  let months=asOf.getMonth()-dob.getMonth();
+  let days=asOf.getDate()-dob.getDate();
+
+  if(days<0){
+    months--;
+    const prevMonth=new Date(asOf.getFullYear(),asOf.getMonth(),0);
+    days+=prevMonth.getDate();
+  }
+  if(months<0){years--;months+=12;}
+
+  const totalDays=Math.floor((asOf-dob)/86400000);
+  const totalWeeks=Math.floor(totalDays/7);
+  const totalMonths=years*12+months;
+  const totalHours=totalDays*24;
+
+  // Next birthday
+  let nextBday=new Date(asOf.getFullYear(),dob.getMonth(),dob.getDate());
+  if(nextBday<=asOf) nextBday=new Date(asOf.getFullYear()+1,dob.getMonth(),dob.getDate());
+  const daysToNext=Math.ceil((nextBday-asOf)/86400000);
+  const nextAge=years+(months>0||days>0?1:0);
+  // If today is birthday
+  const isBirthday=dob.getMonth()===asOf.getMonth()&&dob.getDate()===asOf.getDate();
+
+  const results=document.getElementById('results');
+  results.innerHTML=`
+    <div class="age-card">
+      <div class="age-big">${years}</div>
+      <div class="age-word">${years===1?'year':'years'} old</div>
+      <div class="age-detail">${years} years, ${months} month${months!==1?'s':''}, ${days} day${days!==1?'s':''}</div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-c">
+        <div class="stat-c-num">${totalMonths.toLocaleString()}</div>
+        <div class="stat-c-lbl">Total months</div>
+      </div>
+      <div class="stat-c">
+        <div class="stat-c-num">${totalWeeks.toLocaleString()}</div>
+        <div class="stat-c-lbl">Total weeks</div>
+      </div>
+      <div class="stat-c">
+        <div class="stat-c-num">${totalDays.toLocaleString()}</div>
+        <div class="stat-c-lbl">Total days</div>
+      </div>
+      <div class="stat-c">
+        <div class="stat-c-num">${(totalHours).toLocaleString()}</div>
+        <div class="stat-c-lbl">Hours lived</div>
+      </div>
+      <div class="stat-c">
+        <div class="stat-c-num">${(totalDays*1440).toLocaleString()}</div>
+        <div class="stat-c-lbl">Minutes lived</div>
+      </div>
+      <div class="stat-c">
+        <div class="stat-c-num">${dob.getFullYear()}</div>
+        <div class="stat-c-lbl">Birth year</div>
+      </div>
+    </div>
+
+    <div class="bday-card">
+      <div class="bday-icon">${isBirthday?'🎉':'🎂'}</div>
+      <div class="bday-info">
+        <div class="bday-label">Next birthday</div>
+        <div class="bday-text">${MONTHS_LONG[dob.getMonth()]} ${dob.getDate()} · Turning <strong>${nextAge}</strong></div>
+        <div class="bday-sub">${isBirthday?'🎉 Happy Birthday today!':daysToNext===1?'Tomorrow!':daysToNext+' days away'}</div>
+      </div>
+      <div class="bday-days">${isBirthday?'🎁':daysToNext}</div>
+    </div>
+  `;
+}
+
+function showEmpty(){
+  document.getElementById('results').innerHTML=`<div class="empty-state"><div class="empty-icon">🎂</div><div class="empty-text">Enter your date of birth above</div></div>`;
+}
+function showError(msg){
+  document.getElementById('results').innerHTML=`<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">${msg}</div></div>`;
+}
+
+document.getElementById('dobInput').addEventListener('change',calculate);
+document.getElementById('asOfInput').addEventListener('change',calculate);
+</script>
+</body>
+</html>

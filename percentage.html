@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Percentage Calculator — MyToolPad</title>
+<meta name="description" content="Free percentage calculator. What is X% of Y? What percent of X is Y? Percentage change, increase and decrease. Instant answers, no sign-up."/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f0f;--surface:#181818;--surface2:#212121;--border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);--text:#f0ede6;--muted:#5a5a5a;--mid:#888;--green:#5cdb9a;--red:#e85c5c}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(15,15,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:24px;z-index:100}
+.nav-brand{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);text-decoration:none;flex-shrink:0;letter-spacing:-.3px}
+.nav-brand em{color:var(--accent);font-style:normal}
+.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:all .15s;white-space:nowrap}
+.nav-links a:hover{color:var(--text);background:var(--surface)}
+.nav-links a.active{color:var(--accent);background:var(--accent-dim)}
+
+.page{max-width:720px;margin:0 auto;padding:50px 24px 80px;position:relative;z-index:1}
+.page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;letter-spacing:-1px;margin-bottom:6px}
+.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:14px;color:var(--muted);margin-bottom:36px;font-weight:300}
+
+/* Calc cards */
+.calc-grid{display:flex;flex-direction:column;gap:14px}
+.calc-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:26px 28px;transition:border-color .2s}
+.calc-card:focus-within{border-color:#383838}
+.calc-type{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:16px;font-weight:500}
+.calc-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.eq-text{font-size:15px;color:var(--mid);white-space:nowrap;font-weight:300}
+.n-input{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;color:var(--accent);font-family:'DM Sans',sans-serif;font-size:18px;font-weight:400;outline:none;width:110px;text-align:center;transition:border-color .2s;letter-spacing:-.3px}
+.n-input:focus{border-color:var(--accent)}
+.n-input::placeholder{color:var(--muted);font-size:14px}
+.result-box{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 16px;min-width:140px;display:flex;align-items:center;gap:8px}
+.result-num{font-size:22px;font-weight:300;letter-spacing:-1px;color:var(--accent);font-variant-numeric:tabular-nums}
+.result-unit{font-size:13px;color:var(--muted)}
+.copy-res{background:none;border:none;color:var(--muted);cursor:pointer;font-size:12px;margin-left:auto;padding:3px 8px;border-radius:6px;transition:all .15s;font-family:'DM Sans',sans-serif}
+.copy-res:hover{color:var(--accent);background:var(--accent-dim)}
+
+/* Change card extra */
+.change-badge{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:5px 12px;font-size:13px;font-weight:500;margin-top:12px}
+.change-badge.up{background:rgba(92,219,154,.12);color:var(--green);border:1px solid rgba(92,219,154,.2)}
+.change-badge.down{background:rgba(232,92,92,.12);color:var(--red);border:1px solid rgba(232,92,92,.2)}
+
+/* Quick reference */
+.qref-wrap{margin-top:32px;background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px 28px}
+.qref-title{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:16px}
+.qref-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:8px}
+.qref-item{background:var(--surface2);border-radius:10px;padding:12px 14px;cursor:pointer;transition:background .15s}
+.qref-item:hover{background:#252525}
+.qref-pct{font-size:24px;font-weight:300;color:var(--accent);letter-spacing:-1px}
+.qref-of{font-size:12px;color:var(--muted);margin-top:2px}
+.qref-result{font-size:16px;font-weight:400;margin-top:4px}
+
+@media(max-width:520px){.calc-row{gap:7px}.n-input{width:90px;font-size:16px}}
+</style>
+</head>
+<body>
+<nav class="topnav">
+  <a href="./index.html" class="nav-brand">My<em>Tool</em>Pad</a>
+  <div class="nav-links">
+    <a href="./todo.html">To-Do</a>
+    <a href="./pomodoro.html">Focus</a>
+    <a href="./notes.html">Notes</a>
+    <a href="./counter.html">Counter</a>
+    <a href="./budget.html">Budget</a>
+    <a href="./spinner.html">Spinner</a>
+    <a href="./countdown.html">Countdown</a>
+    <a href="./password.html">Password</a>
+    <a href="./converter.html">Converter</a>
+    <a href="./percentage.html" class="active">Percentage</a>
+    <a href="./age.html">Age</a>
+    <a href="./tip.html">Tip</a>
+    <a href="./color.html">Color</a>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="page-title">%<em> </em>Calculator</div>
+  <div class="page-sub">Four ways to calculate percentages — results update instantly as you type.</div>
+
+  <div class="calc-grid">
+
+    <!-- 1: What is X% of Y -->
+    <div class="calc-card">
+      <div class="calc-type">What is X% of Y?</div>
+      <div class="calc-row">
+        <span class="eq-text">What is</span>
+        <input class="n-input" id="c1a" type="number" placeholder="%" autocomplete="off"/>
+        <span class="eq-text">% of</span>
+        <input class="n-input" id="c1b" type="number" placeholder="num" autocomplete="off"/>
+        <span class="eq-text">?</span>
+        <div class="result-box">
+          <span class="result-num" id="r1">—</span>
+          <button class="copy-res" data-target="r1">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2: X is what % of Y -->
+    <div class="calc-card">
+      <div class="calc-type">X is what percent of Y?</div>
+      <div class="calc-row">
+        <input class="n-input" id="c2a" type="number" placeholder="X" autocomplete="off"/>
+        <span class="eq-text">is what % of</span>
+        <input class="n-input" id="c2b" type="number" placeholder="Y" autocomplete="off"/>
+        <span class="eq-text">?</span>
+        <div class="result-box">
+          <span class="result-num" id="r2">—</span>
+          <span class="result-unit">%</span>
+          <button class="copy-res" data-target="r2">Copy</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3: Percentage change -->
+    <div class="calc-card" id="changeCard">
+      <div class="calc-type">Percentage change (increase / decrease)</div>
+      <div class="calc-row">
+        <span class="eq-text">From</span>
+        <input class="n-input" id="c3a" type="number" placeholder="old" autocomplete="off"/>
+        <span class="eq-text">to</span>
+        <input class="n-input" id="c3b" type="number" placeholder="new" autocomplete="off"/>
+        <div class="result-box">
+          <span class="result-num" id="r3">—</span>
+          <span class="result-unit" id="r3unit">%</span>
+          <button class="copy-res" data-target="r3">Copy</button>
+        </div>
+      </div>
+      <div id="changeBadge"></div>
+    </div>
+
+    <!-- 4: Add/subtract % -->
+    <div class="calc-card">
+      <div class="calc-type">Add or subtract a percentage</div>
+      <div class="calc-row">
+        <input class="n-input" id="c4a" type="number" placeholder="num" autocomplete="off"/>
+        <select style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;cursor:pointer" id="c4op">
+          <option value="add">＋ add</option>
+          <option value="sub">－ subtract</option>
+        </select>
+        <input class="n-input" id="c4b" type="number" placeholder="%" autocomplete="off"/>
+        <span class="eq-text">%</span>
+        <div class="result-box">
+          <span class="result-num" id="r4">—</span>
+          <button class="copy-res" data-target="r4">Copy</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Quick reference -->
+  <div class="qref-wrap">
+    <div class="qref-title">Quick reference — common percentages of 100</div>
+    <div class="qref-grid" id="qrefGrid"></div>
+  </div>
+
+  <div style="border-top:1px solid #1e1e1e;padding-top:32px;margin-top:40px">
+    <h2 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:600;margin-bottom:10px;color:#c8c5be">Free percentage calculator — instant results</h2>
+    <p style="font-size:13px;color:#555;line-height:1.85">Calculate percentages four ways: find X% of a number, find what percent one number is of another, calculate percentage increase or decrease, and add or subtract a percentage. No sign-up, no pop-ups, works offline. Perfect for shopping discounts, grades, tax calculations, and more.</p>
+  </div>
+</div>
+
+<script>
+function fmtN(n){
+  if(!isFinite(n)||isNaN(n)) return '—';
+  if(Math.abs(n)<0.001&&n!==0) return n.toExponential(3);
+  return parseFloat(n.toPrecision(8)).toLocaleString('en-US',{maximumFractionDigits:6});
+}
+function calc1(){
+  const a=parseFloat(document.getElementById('c1a').value);
+  const b=parseFloat(document.getElementById('c1b').value);
+  document.getElementById('r1').textContent = (!isNaN(a)&&!isNaN(b)) ? fmtN(a/100*b) : '—';
+}
+function calc2(){
+  const a=parseFloat(document.getElementById('c2a').value);
+  const b=parseFloat(document.getElementById('c2b').value);
+  document.getElementById('r2').textContent = (!isNaN(a)&&!isNaN(b)&&b!==0) ? fmtN(a/b*100) : '—';
+}
+function calc3(){
+  const a=parseFloat(document.getElementById('c3a').value);
+  const b=parseFloat(document.getElementById('c3b').value);
+  const badge=document.getElementById('changeBadge');
+  if(!isNaN(a)&&!isNaN(b)&&a!==0){
+    const pct=(b-a)/Math.abs(a)*100;
+    const up=pct>=0;
+    document.getElementById('r3').textContent=fmtN(Math.abs(pct));
+    document.getElementById('r3unit').textContent='%';
+    badge.innerHTML=`<div class="change-badge ${up?'up':'down'}">${up?'↑ Increase':'↓ Decrease'} of ${fmtN(Math.abs(pct))}%</div>`;
+  } else {document.getElementById('r3').textContent='—';badge.innerHTML='';}
+}
+function calc4(){
+  const a=parseFloat(document.getElementById('c4a').value);
+  const b=parseFloat(document.getElementById('c4b').value);
+  const op=document.getElementById('c4op').value;
+  if(!isNaN(a)&&!isNaN(b)){
+    const r=op==='add'?a*(1+b/100):a*(1-b/100);
+    document.getElementById('r4').textContent=fmtN(r);
+  } else document.getElementById('r4').textContent='—';
+}
+
+['c1a','c1b'].forEach(id=>document.getElementById(id).addEventListener('input',calc1));
+['c2a','c2b'].forEach(id=>document.getElementById(id).addEventListener('input',calc2));
+['c3a','c3b'].forEach(id=>document.getElementById(id).addEventListener('input',calc3));
+['c4a','c4b'].forEach(id=>document.getElementById(id).addEventListener('input',calc4));
+document.getElementById('c4op').addEventListener('change',calc4);
+
+// Copy buttons
+document.querySelectorAll('.copy-res').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const val=document.getElementById(btn.dataset.target).textContent;
+    if(val==='—')return;
+    navigator.clipboard.writeText(val).then(()=>{btn.textContent='✓';setTimeout(()=>btn.textContent='Copy',1500)});
+  });
+});
+
+// Quick ref
+const PCTS=[1,5,10,15,20,25,30,40,50,60,70,75,80,90,100];
+const grid=document.getElementById('qrefGrid');
+PCTS.forEach(p=>{
+  const div=document.createElement('div');
+  div.className='qref-item';
+  div.innerHTML=`<div class="qref-pct">${p}%</div><div class="qref-of">of 100</div><div class="qref-result">= ${p}</div>`;
+  div.addEventListener('click',()=>{
+    document.getElementById('c1a').value=p;
+    document.getElementById('c1b').value=100;
+    calc1();
+    document.getElementById('c1a').scrollIntoView({behavior:'smooth',block:'center'});
+  });
+  grid.appendChild(div);
+});
+</script>
+</body>
+</html>

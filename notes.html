@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Notes — MyToolPad</title>
+<meta name="description" content="Free online notes app, no sign-up. Multiple notes, instant search, auto-saves in your browser. Private and offline."/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;--surface:#181818;--surface2:#212121;
+  --border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);
+  --text:#f0ede6;--muted:#5a5a5a;--mid:#888;--red:#ff5f5f;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;height:100vh;overflow:hidden;padding-top:52px;display:flex;flex-direction:column}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(15,15,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:24px;z-index:100}
+.nav-brand{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);text-decoration:none;flex-shrink:0;letter-spacing:-.3px}
+.nav-brand em{color:var(--accent);font-style:normal}
+.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:all .15s;white-space:nowrap}
+.nav-links a:hover{color:var(--text);background:var(--surface)}
+.nav-links a.active{color:var(--accent);background:var(--accent-dim)}
+
+.app{display:flex;flex:1;overflow:hidden;position:relative;z-index:1}
+
+/* Sidebar */
+.sidebar{width:260px;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--surface)}
+.sidebar-top{padding:16px;border-bottom:1px solid var(--border)}
+.new-btn{width:100%;background:var(--accent);color:#0f0f0f;border:none;border-radius:10px;padding:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;cursor:pointer;transition:opacity .15s;margin-bottom:10px}
+.new-btn:hover{opacity:.85}
+.search-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s}
+.search-input::placeholder{color:var(--muted)}
+.search-input:focus{border-color:var(--accent)}
+.notes-list{flex:1;overflow-y:auto;padding:8px}
+.notes-list::-webkit-scrollbar{width:3px}
+.notes-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+.note-item{border-radius:10px;padding:12px 14px;cursor:pointer;transition:background .15s;margin-bottom:4px;position:relative}
+.note-item:hover{background:var(--surface2)}
+.note-item.active{background:var(--accent-dim);border:1px solid rgba(200,241,53,.2)}
+.note-item-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note-item.active .note-item-title{color:var(--accent)}
+.note-item-preview{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.4}
+.note-item-date{font-size:10px;color:var(--muted);margin-top:4px;letter-spacing:.03em}
+.note-del{position:absolute;top:10px;right:10px;background:none;border:none;color:transparent;cursor:pointer;font-size:13px;padding:2px 4px;border-radius:4px;transition:color .15s}
+.note-item:hover .note-del{color:var(--muted)}
+.note-del:hover{color:var(--red)!important;background:rgba(255,95,95,.1)}
+.notes-empty{text-align:center;padding:40px 16px;font-size:13px;color:var(--muted);font-style:italic}
+
+/* Editor */
+.editor{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.editor-top{padding:20px 28px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.note-title-input{flex:1;background:none;border:none;color:var(--text);font-family:'Playfair Display',serif;font-size:26px;font-weight:600;outline:none;letter-spacing:-.5px}
+.note-title-input::placeholder{color:var(--muted)}
+.save-indicator{font-size:11px;color:var(--muted);white-space:nowrap;letter-spacing:.05em;transition:opacity .3s}
+.save-indicator.saving{color:var(--accent)}
+.note-meta{padding:8px 28px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);letter-spacing:.04em;display:flex;gap:20px}
+.note-body{flex:1;overflow:hidden}
+.note-textarea{width:100%;height:100%;background:none;border:none;color:var(--text);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:300;line-height:1.75;outline:none;resize:none;padding:24px 28px;letter-spacing:.01em}
+.note-textarea::placeholder{color:var(--muted)}
+
+/* No note selected */
+.no-note{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);gap:12px}
+.no-note-icon{font-size:48px;opacity:.2}
+.no-note-text{font-family:'Playfair Display',serif;font-size:18px;font-style:italic}
+.no-note-sub{font-size:13px}
+
+/* Word count bar */
+.wc-bar{padding:8px 28px;font-size:11px;color:var(--muted);border-top:1px solid var(--border);display:flex;gap:20px}
+
+@media(max-width:640px){
+  .sidebar{width:220px}
+  .note-textarea{padding:16px}
+  .editor-top{padding:16px 16px 10px}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="./index.html" class="nav-brand">My<em>Tool</em>Pad</a>
+  <div class="nav-links">
+    <a href="./todo.html">To-Do</a>
+    <a href="./pomodoro.html">Focus</a>
+    <a href="./notes.html" class="active">Notes</a>
+    <a href="./counter.html">Counter</a>
+    <a href="./budget.html">Budget</a>
+    <a href="./spinner.html">Spinner</a>
+    <a href="./countdown.html">Countdown</a>
+    <a href="./password.html">Password</a>
+    <a href="./converter.html">Converter</a>
+    <a href="./percentage.html">Percentage</a>
+    <a href="./age.html">Age</a>
+    <a href="./tip.html">Tip</a>
+    <a href="./color.html">Color</a>
+  </div>
+</nav>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-top">
+      <button class="new-btn" id="newBtn">+ New Note</button>
+      <input class="search-input" id="searchInput" type="text" placeholder="Search notes…" autocomplete="off"/>
+    </div>
+    <div class="notes-list" id="notesList"></div>
+  </div>
+
+  <div class="editor" id="editor" style="display:none">
+    <div class="editor-top">
+      <input class="note-title-input" id="noteTitleInput" type="text" placeholder="Untitled note"/>
+      <span class="save-indicator" id="saveIndicator">Saved</span>
+    </div>
+    <div class="note-meta" id="noteMeta"></div>
+    <div class="note-body">
+      <textarea class="note-textarea" id="noteTextarea" placeholder="Start writing…" spellcheck="true"></textarea>
+    </div>
+    <div class="wc-bar" id="wcBar">0 words · 0 characters</div>
+  </div>
+
+  <div class="no-note" id="noNote">
+    <div class="no-note-icon">✦</div>
+    <div class="no-note-text">Select or create a note</div>
+    <div class="no-note-sub">Your notes stay private in your browser</div>
+  </div>
+</div>
+
+<script>
+let notes = JSON.parse(localStorage.getItem('plaintools_notes') || '[]');
+let activeId = null;
+let saveTimer = null;
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function save(){localStorage.setItem('plaintools_notes', JSON.stringify(notes))}
+
+function fmt(ts){
+  const d=new Date(ts);
+  const today=new Date();
+  if(d.toDateString()===today.toDateString()) return `Today ${d.getHours()}:${String(d.getMinutes()).padStart(2,'0')}`;
+  return `${MONTHS[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+function renderList(){
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const list = document.getElementById('notesList');
+  const filtered = notes.filter(n =>
+    !query || n.title.toLowerCase().includes(query) || n.content.toLowerCase().includes(query)
+  );
+  if(filtered.length === 0){
+    list.innerHTML=`<div class="notes-empty">${query?'No notes match':'No notes yet'}</div>`;return;
+  }
+  list.innerHTML = '';
+  filtered.forEach(n=>{
+    const div=document.createElement('div');
+    div.className='note-item'+(n.id===activeId?' active':'');
+    div.innerHTML=`<div class="note-item-title">${esc(n.title)||'Untitled'}</div>
+      <div class="note-item-preview">${esc(n.content.slice(0,80))||'Empty note'}</div>
+      <div class="note-item-date">${fmt(n.updatedAt)}</div>
+      <button class="note-del" title="Delete note">✕</button>`;
+    div.addEventListener('click',e=>{
+      if(!e.target.closest('.note-del'))openNote(n.id);
+    });
+    div.querySelector('.note-del').addEventListener('click',e=>{
+      e.stopPropagation();e.preventDefault();deleteNote(n.id);
+    });
+    list.appendChild(div);
+  });
+}
+
+function openNote(id){
+  activeId=id;
+  const note=notes.find(n=>n.id===id);
+  if(!note)return;
+  document.getElementById('editor').style.display='flex';
+  document.getElementById('noNote').style.display='none';
+  document.getElementById('noteTitleInput').value=note.title;
+  document.getElementById('noteTextarea').value=note.content;
+  updateMeta(note);updateWC();renderList();
+}
+
+function updateMeta(note){
+  document.getElementById('noteMeta').textContent=`Created ${fmt(note.createdAt)} · Last edited ${fmt(note.updatedAt)}`;
+}
+
+function updateWC(){
+  const text=document.getElementById('noteTextarea').value;
+  const words=text.trim()?text.trim().split(/\s+/).length:0;
+  document.getElementById('wcBar').textContent=`${words} word${words!==1?'s':''} · ${text.length} character${text.length!==1?'s':''}`;
+}
+
+function createNote(){
+  const note={id:Date.now(),title:'',content:'',createdAt:Date.now(),updatedAt:Date.now()};
+  notes.unshift(note);save();renderList();openNote(note.id);
+  setTimeout(()=>document.getElementById('noteTitleInput').focus(),50);
+}
+
+function deleteNote(id){
+  notes=notes.filter(n=>n.id!==id);
+  if(activeId===id){
+    activeId=null;
+    document.getElementById('editor').style.display='none';
+    document.getElementById('noNote').style.display='flex';
+  }
+  save();renderList();
+}
+
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function markSaving(){
+  const si=document.getElementById('saveIndicator');
+  si.textContent='Saving…';si.className='save-indicator saving';
+}
+function markSaved(){
+  const si=document.getElementById('saveIndicator');
+  si.textContent='Saved';si.className='save-indicator';
+}
+
+function autoSave(){
+  markSaving();
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(()=>{
+    const note=notes.find(n=>n.id===activeId);
+    if(!note)return;
+    note.title=document.getElementById('noteTitleInput').value;
+    note.content=document.getElementById('noteTextarea').value;
+    note.updatedAt=Date.now();
+    notes.sort((a,b)=>b.updatedAt-a.updatedAt);
+    save();renderList();updateMeta(note);markSaved();
+  }, 600);
+}
+
+document.getElementById('newBtn').addEventListener('click',createNote);
+document.getElementById('noteTitleInput').addEventListener('input',autoSave);
+document.getElementById('noteTextarea').addEventListener('input',()=>{autoSave();updateWC()});
+document.getElementById('searchInput').addEventListener('input',renderList);
+
+// Init
+if(notes.length>0){renderList();openNote(notes[0].id)}
+else{renderList();document.getElementById('noNote').style.display='flex'}
+</script>
+
+<div style="max-width:720px;margin:0 auto;padding:8px 24px 56px;position:relative;z-index:1">
+  <div style="border-top:1px solid #1e1e1e;padding-top:32px">
+    <h2 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:600;margin-bottom:10px;color:#c8c5be">Free Online Notes — private and offline</h2>
+    <p style="font-size:13px;color:#555;line-height:1.85">A fast, private notes app that auto-saves as you type. Create multiple notes, search instantly, and never lose your work. Everything stays in your browser — no cloud, no account needed.</p>
+  </div>
+</div>
+</body>
+</html>

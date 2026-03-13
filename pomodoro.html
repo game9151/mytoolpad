@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Focus Timer — MyToolPad</title>
+<meta name="description" content="Free Pomodoro focus timer. No sign-up, no pop-ups. Auto long-breaks, session stats, integrated to-do list. Works offline."/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;--surface:#181818;--surface2:#212121;
+  --border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);
+  --text:#f0ede6;--muted:#5a5a5a;--mid:#888;--red:#ff5f5f;
+  --tomato:#e85c5c;--tomato-dim:rgba(232,92,92,.12);
+  --blue:#5db8ff;--blue-dim:rgba(93,184,255,.1);
+  --ring-color:#e85c5c;
+}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* Nav */
+.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(15,15,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:24px;z-index:100}
+.nav-brand{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);text-decoration:none;flex-shrink:0;letter-spacing:-.3px}
+.nav-brand em{color:var(--accent);font-style:normal}
+.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:all .15s;white-space:nowrap}
+.nav-links a:hover{color:var(--text);background:var(--surface)}
+.nav-links a.active{color:var(--accent);background:var(--accent-dim)}
+
+/* Layout */
+.page{max-width:1000px;margin:0 auto;padding:40px 24px 80px;position:relative;z-index:1;display:flex;gap:32px;align-items:flex-start}
+
+/* Timer column */
+.timer-col{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center}
+
+/* Mode tabs */
+.mode-tabs{display:flex;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:4px;gap:2px;margin-bottom:36px;width:100%;max-width:360px}
+.mode-tab{flex:1;padding:8px 4px;border:none;background:none;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border-radius:8px;transition:all .2s;white-space:nowrap}
+.mode-tab.active{background:var(--surface2);color:var(--text)}
+.mode-tab.work.active{color:var(--tomato)}
+.mode-tab.short.active{color:var(--accent)}
+.mode-tab.long.active{color:var(--blue)}
+
+/* Ring timer */
+.ring-wrap{position:relative;width:240px;height:240px;margin-bottom:32px;cursor:pointer}
+.ring-wrap:hover .ring-hint{opacity:1}
+.ring-hint{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);font-size:11px;color:var(--muted);opacity:0;transition:opacity .2s;white-space:nowrap}
+.ring-svg{width:240px;height:240px;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:8}
+.ring-progress{fill:none;stroke-width:8;stroke-linecap:round;stroke-dasharray:553;stroke-dashoffset:0;transition:stroke-dashoffset .6s cubic-bezier(.4,0,.2,1),stroke .4s ease}
+.ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.ring-time{font-size:46px;font-weight:300;letter-spacing:-2px;line-height:1;font-variant-numeric:tabular-nums;transition:color .4s}
+.ring-label{font-size:12px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;font-weight:400}
+
+/* Pulse animation when running */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.7}}
+.ring-wrap.running .ring-time{animation:pulse 2s ease-in-out infinite}
+
+/* Controls */
+.controls{display:flex;align-items:center;gap:12px;margin-bottom:28px}
+.btn-main{background:var(--tomato);color:#fff;border:none;border-radius:14px;padding:14px 44px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:500;cursor:pointer;transition:opacity .15s,transform .15s;letter-spacing:.02em}
+.btn-main:hover{opacity:.88;transform:scale(1.03)}
+.btn-main:active{transform:scale(.97)}
+.btn-main.break-mode{background:var(--accent);color:#0f0f0f}
+.btn-main.long-mode{background:var(--blue);color:#fff}
+.btn-icon{background:var(--surface);border:1px solid var(--border);color:var(--mid);border-radius:12px;width:44px;height:44px;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.btn-icon:hover{color:var(--text);border-color:#444;background:var(--surface2)}
+
+/* Cycle dots */
+.cycle-row{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.cycle-label{font-size:11px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.tomatoes{display:flex;gap:6px}
+.tomato-dot{font-size:18px;opacity:.2;transition:opacity .3s,transform .3s}
+.tomato-dot.filled{opacity:1;transform:scale(1.1)}
+
+/* Stats */
+.stats-bar{display:flex;gap:24px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;width:100%;max-width:360px;margin-bottom:24px}
+.stat-item{display:flex;flex-direction:column;gap:3px;flex:1;text-align:center}
+.stat-num{font-size:22px;font-weight:300;letter-spacing:-1px;line-height:1}
+.stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.stat-num.tomato-col{color:var(--tomato)}
+.stat-num.accent-col{color:var(--accent)}
+
+/* Settings toggle */
+.settings-toggle{display:flex;align-items:center;gap:16px;font-size:12px;color:var(--muted)}
+.toggle-wrap{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none}
+.toggle-wrap input[type=checkbox]{display:none}
+.toggle{width:32px;height:18px;background:var(--border);border-radius:99px;position:relative;transition:background .2s;flex-shrink:0}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:12px;height:12px;background:#fff;border-radius:50%;transition:transform .2s}
+.toggle-wrap input:checked+.toggle{background:var(--accent)}
+.toggle-wrap input:checked+.toggle::after{transform:translateX(14px)}
+.toggle-wrap input:checked+.toggle{background:var(--tomato)}
+.settings-sep{width:1px;height:14px;background:var(--border)}
+.settings-btn{background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:color .2s}
+.settings-btn:hover{color:var(--text)}
+
+/* Settings panel */
+.settings-panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:20px;width:100%;max-width:360px;margin-top:16px;display:none}
+.settings-panel.open{display:block;animation:fadeDown .2s ease}
+@keyframes fadeDown{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.settings-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.settings-row:last-child{margin-bottom:0}
+.settings-row label{font-size:13px;color:var(--mid)}
+.settings-row input[type=number]{background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;width:70px;padding:6px 10px;outline:none;text-align:center}
+.settings-row input:focus{border-color:var(--accent)}
+.apply-btn{width:100%;margin-top:16px;background:var(--surface2);border:1px solid var(--border);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;padding:10px;border-radius:10px;cursor:pointer;transition:all .15s}
+.apply-btn:hover{border-color:var(--accent);color:var(--accent)}
+
+/* Task list column */
+.tasks-col{width:300px;flex-shrink:0;position:sticky;top:80px}
+.tasks-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.tasks-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;letter-spacing:-.3px}
+.tasks-count{font-size:12px;color:var(--muted)}
+.task-input-row{display:flex;gap:8px;margin-bottom:14px}
+.t-input{flex:1;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;font-weight:300;outline:none;transition:border-color .2s}
+.t-input::placeholder{color:var(--muted)}
+.t-input:focus{border-color:var(--tomato)}
+.t-add{background:var(--tomato);color:#fff;border:none;border-radius:10px;width:38px;height:38px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity .15s}
+.t-add:hover{opacity:.85}
+.task-list{display:flex;flex-direction:column;gap:6px;max-height:calc(100vh - 280px);overflow-y:auto;padding-right:2px}
+.task-list::-webkit-scrollbar{width:3px}
+.task-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+.t-item{background:var(--surface);border:1px solid var(--border);border-radius:10px;display:flex;align-items:center;gap:10px;padding:10px 12px;animation:slideIn .2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+.t-item:hover{background:var(--surface2)}
+.t-item.done{opacity:.4}
+.t-check{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--muted);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.t-check:hover{border-color:var(--tomato)}
+.t-item.done .t-check{background:var(--tomato);border-color:var(--tomato)}
+.t-check-icon{display:none;font-size:9px;color:#fff;font-weight:700}
+.t-item.done .t-check-icon{display:block}
+.t-text{flex:1;font-size:13px;font-weight:300;line-height:1.35}
+.t-item.done .t-text{text-decoration:line-through;text-decoration-color:var(--muted)}
+.t-del{background:none;border:none;color:transparent;cursor:pointer;font-size:13px;padding:2px;transition:color .15s}
+.t-item:hover .t-del{color:var(--muted)}
+.t-del:hover{color:var(--red)!important}
+.t-empty{text-align:center;padding:30px 0;font-size:13px;color:var(--muted);font-style:italic}
+
+/* Responsive */
+@media(max-width:760px){
+  .page{flex-direction:column;align-items:stretch;padding:24px 16px 80px}
+  .tasks-col{width:100%;position:static}
+  .task-list{max-height:300px}
+}
+</style>
+</head>
+<body>
+
+<nav class="topnav">
+  <a href="./index.html" class="nav-brand">My<em>Tool</em>Pad</a>
+  <div class="nav-links">
+    <a href="./todo.html">To-Do</a>
+    <a href="./pomodoro.html" class="active">Focus</a>
+    <a href="./notes.html">Notes</a>
+    <a href="./counter.html">Counter</a>
+    <a href="./budget.html">Budget</a>
+    <a href="./spinner.html">Spinner</a>
+    <a href="./countdown.html">Countdown</a>
+    <a href="./password.html">Password</a>
+    <a href="./converter.html">Converter</a>
+    <a href="./percentage.html">Percentage</a>
+    <a href="./age.html">Age</a>
+    <a href="./tip.html">Tip</a>
+    <a href="./color.html">Color</a>
+  </div>
+</nav>
+
+<div class="page">
+  <!-- Timer Column -->
+  <div class="timer-col">
+    <div class="mode-tabs">
+      <button class="mode-tab work active" data-mode="work">Focus</button>
+      <button class="mode-tab short" data-mode="short">Short Break</button>
+      <button class="mode-tab long" data-mode="long">Long Break</button>
+    </div>
+
+    <div class="ring-wrap" id="ringWrap" title="Click to start/pause">
+      <svg class="ring-svg" viewBox="0 0 240 240">
+        <circle class="ring-bg" cx="120" cy="120" r="104"/>
+        <circle class="ring-progress" id="ringProgress" cx="120" cy="120" r="104"/>
+      </svg>
+      <div class="ring-center">
+        <div class="ring-time" id="ringTime">25:00</div>
+        <div class="ring-label" id="ringLabel">Focus</div>
+      </div>
+      <div class="ring-hint">click to start</div>
+    </div>
+
+    <div class="controls">
+      <button class="btn-icon" id="resetBtn" title="Reset timer">↺</button>
+      <button class="btn-main" id="startBtn">Start</button>
+      <button class="btn-icon" id="skipBtn" title="Skip to next session">⇥</button>
+    </div>
+
+    <div class="cycle-row">
+      <span class="cycle-label">Session</span>
+      <div class="tomatoes" id="tomatoDots">
+        <span class="tomato-dot" data-i="0">🍅</span>
+        <span class="tomato-dot" data-i="1">🍅</span>
+        <span class="tomato-dot" data-i="2">🍅</span>
+        <span class="tomato-dot" data-i="3">🍅</span>
+      </div>
+    </div>
+
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="stat-num tomato-col" id="statSessions">0</div>
+        <div class="stat-lbl">Sessions</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num accent-col" id="statFocus">0m</div>
+        <div class="stat-lbl">Focus</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="statBreak">0m</div>
+        <div class="stat-lbl">Break</div>
+      </div>
+    </div>
+
+    <div class="settings-toggle">
+      <label class="toggle-wrap">
+        <input type="checkbox" id="autoAdvanceToggle" checked/>
+        <div class="toggle"></div>
+        Auto-advance
+      </label>
+      <div class="settings-sep"></div>
+      <label class="toggle-wrap">
+        <input type="checkbox" id="soundToggle" checked/>
+        <div class="toggle"></div>
+        Sound
+      </label>
+      <div class="settings-sep"></div>
+      <button class="settings-btn" id="settingsBtn">⚙ Settings</button>
+    </div>
+
+    <div class="settings-panel" id="settingsPanel">
+      <div class="settings-row">
+        <label>Focus duration (min)</label>
+        <input type="number" id="setWork" value="25" min="1" max="120"/>
+      </div>
+      <div class="settings-row">
+        <label>Short break (min)</label>
+        <input type="number" id="setShort" value="5" min="1" max="60"/>
+      </div>
+      <div class="settings-row">
+        <label>Long break (min)</label>
+        <input type="number" id="setLong" value="15" min="1" max="60"/>
+      </div>
+      <button class="apply-btn" id="applySettings">Apply Settings</button>
+    </div>
+  </div>
+
+  <!-- Tasks Column -->
+  <div class="tasks-col">
+    <div class="tasks-header">
+      <div class="tasks-title">Today's Tasks</div>
+      <div class="tasks-count" id="tasksCount"></div>
+    </div>
+    <div class="task-input-row">
+      <input class="t-input" id="tInput" type="text" placeholder="Add a task…" autocomplete="off"/>
+      <button class="t-add" id="tAdd">+</button>
+    </div>
+    <div class="task-list" id="tList"></div>
+    <div class="t-empty" id="tEmpty" style="display:none">No tasks yet — add one above</div>
+  </div>
+</div>
+
+<script>
+// ─── Constants ───────────────────────────────────────────────
+const C = 2 * Math.PI * 104; // circumference for r=104
+const MODES = {
+  work:  { label:'Focus',       mins:25, color:'#e85c5c', btnClass:'' },
+  short: { label:'Short Break', mins:5,  color:'#c8f135', btnClass:'break-mode' },
+  long:  { label:'Long Break',  mins:15, color:'#5db8ff', btnClass:'long-mode' },
+};
+
+// ─── State ───────────────────────────────────────────────────
+let settings = JSON.parse(localStorage.getItem('pomo_settings') || 'null') || {work:25,short:5,long:15};
+let mode = 'work';
+let timeLeft = settings.work * 60;
+let totalTime = settings.work * 60;
+let running = false;
+let interval = null;
+let cyclePos = 0;   // 0-3, position in 4-session cycle
+let todayKey = new Date().toDateString();
+let stats = JSON.parse(localStorage.getItem('pomo_stats_' + todayKey) || '{"sessions":0,"focus":0,"break":0}');
+
+// ─── Elements ────────────────────────────────────────────────
+const ringProgress = document.getElementById('ringProgress');
+const ringTime     = document.getElementById('ringTime');
+const ringLabel    = document.getElementById('ringLabel');
+const ringWrap     = document.getElementById('ringWrap');
+const startBtn     = document.getElementById('startBtn');
+const resetBtn     = document.getElementById('resetBtn');
+const skipBtn      = document.getElementById('skipBtn');
+
+// ─── Init ring ───────────────────────────────────────────────
+ringProgress.style.strokeDasharray = C;
+ringProgress.style.stroke = MODES[mode].color;
+ringTime.style.color = MODES[mode].color;
+
+// ─── Timer display ───────────────────────────────────────────
+function fmt(s){return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`}
+
+function updateRing(){
+  const pct = timeLeft / totalTime;
+  const offset = (1 - pct) * C;
+  ringProgress.style.strokeDashoffset = offset;
+  ringTime.textContent = fmt(timeLeft);
+  document.title = `${fmt(timeLeft)} — ${MODES[mode].label} | MyToolPad`;
+}
+
+function setMode(m, reset=true){
+  mode = m;
+  if(reset){
+    timeLeft = settings[m] * 60;
+    totalTime = settings[m] * 60;
+  }
+  const cfg = MODES[m];
+  ringProgress.style.stroke = cfg.color;
+  ringTime.style.color = cfg.color;
+  ringLabel.textContent = cfg.label;
+  document.querySelectorAll('.mode-tab').forEach(t=>t.classList.toggle('active', t.dataset.mode===m));
+  startBtn.className = 'btn-main ' + cfg.btnClass;
+  updateRing();
+  updateDots();
+}
+
+function updateDots(){
+  document.querySelectorAll('.tomato-dot').forEach((d,i)=>{
+    d.classList.toggle('filled', i < cyclePos);
+  });
+}
+
+function updateStats(){
+  document.getElementById('statSessions').textContent = stats.sessions;
+  document.getElementById('statFocus').textContent = Math.round(stats.focus/60) + 'm';
+  document.getElementById('statBreak').textContent = Math.round(stats.break/60) + 'm';
+  localStorage.setItem('pomo_stats_' + todayKey, JSON.stringify(stats));
+}
+
+// ─── Tick ────────────────────────────────────────────────────
+function tick(){
+  timeLeft--;
+  if(mode==='work') stats.focus++;
+  else stats.break++;
+  updateRing();
+  updateStats();
+
+  if(timeLeft <= 0){
+    clearInterval(interval);
+    running = false;
+    ringWrap.classList.remove('running');
+    startBtn.textContent = 'Start';
+    playBeep();
+
+    if(mode === 'work'){
+      stats.sessions++;
+      cyclePos++;
+      if(cyclePos >= 4){
+        cyclePos = 0;
+        updateDots();
+        nextMode('long');
+      } else {
+        updateDots();
+        nextMode('short');
+      }
+    } else {
+      nextMode('work');
+    }
+    updateStats();
+  }
+}
+
+function nextMode(m){
+  setMode(m);
+  if(document.getElementById('autoAdvanceToggle').checked) startTimer();
+}
+
+// ─── Controls ────────────────────────────────────────────────
+function startTimer(){
+  if(running) return;
+  if(timeLeft <= 0){timeLeft = settings[mode]*60; totalTime=timeLeft; updateRing();}
+  running = true;
+  interval = setInterval(tick, 1000);
+  startBtn.textContent = 'Pause';
+  ringWrap.classList.add('running');
+}
+
+function pauseTimer(){
+  running = false;
+  clearInterval(interval);
+  startBtn.textContent = 'Resume';
+  ringWrap.classList.remove('running');
+}
+
+function resetTimer(){
+  clearInterval(interval);
+  running = false;
+  timeLeft = settings[mode] * 60;
+  totalTime = timeLeft;
+  startBtn.textContent = 'Start';
+  ringWrap.classList.remove('running');
+  updateRing();
+}
+
+startBtn.addEventListener('click', ()=> running ? pauseTimer() : startTimer());
+resetBtn.addEventListener('click', resetTimer);
+skipBtn.addEventListener('click', ()=>{
+  clearInterval(interval);running=false;ringWrap.classList.remove('running');
+  if(mode==='work'){stats.sessions++;cyclePos++;if(cyclePos>=4){cyclePos=0}updateDots();setMode(cyclePos===0?'long':'short');}
+  else setMode('work');
+  updateStats();startBtn.textContent='Start';
+});
+ringWrap.addEventListener('click', ()=> running ? pauseTimer() : startTimer());
+document.querySelectorAll('.mode-tab').forEach(btn=>btn.addEventListener('click',()=>{
+  clearInterval(interval);running=false;ringWrap.classList.remove('running');startBtn.textContent='Start';
+  setMode(btn.dataset.mode);
+}));
+
+// ─── Settings ────────────────────────────────────────────────
+document.getElementById('settingsBtn').addEventListener('click',()=>{
+  document.getElementById('settingsPanel').classList.toggle('open');
+});
+document.getElementById('applySettings').addEventListener('click',()=>{
+  settings.work  = Math.max(1,parseInt(document.getElementById('setWork').value)||25);
+  settings.short = Math.max(1,parseInt(document.getElementById('setShort').value)||5);
+  settings.long  = Math.max(1,parseInt(document.getElementById('setLong').value)||15);
+  localStorage.setItem('pomo_settings',JSON.stringify(settings));
+  resetTimer();setMode(mode);document.getElementById('settingsPanel').classList.remove('open');
+});
+
+// ─── Sound ───────────────────────────────────────────────────
+function playBeep(){
+  if(!document.getElementById('soundToggle').checked) return;
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0,0.15,0.3].forEach((delay,i)=>{
+      const osc=ctx.createOscillator(),gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.frequency.value = i===2?960:800;
+      osc.type='sine';
+      gain.gain.setValueAtTime(0,ctx.currentTime+delay);
+      gain.gain.linearRampToValueAtTime(0.25,ctx.currentTime+delay+0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+delay+0.6);
+      osc.start(ctx.currentTime+delay);osc.stop(ctx.currentTime+delay+0.7);
+    });
+  }catch(e){}
+}
+
+// ─── Task list (synced with todo.html) ───────────────────────
+let tasks = JSON.parse(localStorage.getItem('mytasks_v2') || '[]');
+
+function saveTasks(){localStorage.setItem('mytasks_v2',JSON.stringify(tasks))}
+function esc(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+
+function renderTasks(){
+  const list=document.getElementById('tList');
+  const empty=document.getElementById('tEmpty');
+  const active=tasks.filter(t=>!t.done);
+  document.getElementById('tasksCount').textContent=active.length+' active';
+  list.innerHTML='';
+  if(tasks.length===0){empty.style.display='block';return}
+  empty.style.display='none';
+  tasks.forEach(t=>{
+    const div=document.createElement('div');
+    div.className='t-item'+(t.done?' done':'');
+    div.innerHTML=`<div class="t-check"><span class="t-check-icon">✓</span></div>
+      <span class="t-text">${esc(t.text)}</span>
+      <button class="t-del">✕</button>`;
+    div.querySelector('.t-check').addEventListener('click',()=>{t.done=!t.done;saveTasks();renderTasks()});
+    div.querySelector('.t-del').addEventListener('click',()=>{tasks=tasks.filter(x=>x.id!==t.id);saveTasks();renderTasks()});
+    list.appendChild(div);
+  });
+}
+
+function addTask(){
+  const input=document.getElementById('tInput');
+  const text=input.value.trim();if(!text)return;
+  tasks.unshift({id:Date.now(),text,done:false,priority:'none'});
+  input.value='';saveTasks();renderTasks();
+}
+document.getElementById('tAdd').addEventListener('click',addTask);
+document.getElementById('tInput').addEventListener('keydown',e=>{if(e.key==='Enter')addTask()});
+
+// ─── Init ─────────────────────────────────────────────────────
+document.getElementById('setWork').value=settings.work;
+document.getElementById('setShort').value=settings.short;
+document.getElementById('setLong').value=settings.long;
+setMode('work');updateStats();renderTasks();
+
+// Sync tasks if another tab changes them
+window.addEventListener('storage', e=>{ if(e.key==='mytasks_v2'){tasks=JSON.parse(e.newValue||'[]');renderTasks()} });
+</script>
+
+<div style="max-width:720px;margin:0 auto;padding:8px 24px 56px;position:relative;z-index:1">
+  <div style="border-top:1px solid #1e1e1e;padding-top:32px">
+    <h2 style="font-family:'Playfair Display',serif;font-size:18px;font-weight:600;margin-bottom:10px;color:#c8c5be">Free Pomodoro Focus Timer — no ads</h2>
+    <p style="font-size:13px;color:#555;line-height:1.85">A clean Pomodoro timer that actually respects your focus. 25-minute work sessions, auto short and long breaks, session tracking, and a built-in task list synced across tools. No pop-ups, no sign-up, no distractions.</p>
+  </div>
+</div>
+</body>
+</html>
