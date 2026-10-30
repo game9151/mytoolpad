@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Free QR Code Generator: URL, Text & Wi-Fi, PNG and SVG | MyToolPad</title>
+<meta name="description" content="Create a QR code for any link, text or Wi-Fi network. Download PNG or SVG with custom colors. No sign-up, no watermark, nothing uploaded."/>
+<link rel="canonical" href="https://www.mytoolpad.com/qr-code.html"/>
+<meta name="robots" content="index, follow, max-image-preview:large"/>
+<meta name="theme-color" content="#0f0f0f"/>
+<meta property="og:title" content="Free QR Code Generator: URL, Text & Wi-Fi, PNG and SVG | MyToolPad"/>
+<meta property="og:description" content="Create a QR code for any link, text or Wi-Fi network. Download PNG or SVG with custom colors. No sign-up, no watermark, nothing uploaded."/>
+<meta property="og:url" content="https://www.mytoolpad.com/qr-code.html"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MyToolPad"/>
+<meta property="og:image" content="https://www.mytoolpad.com/og-image.png"/>
+<meta property="og:image:alt" content="MyToolPad logo"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Free QR Code Generator: URL, Text & Wi-Fi, PNG and SVG | MyToolPad"/>
+<meta name="twitter:description" content="Create a QR code for any link, text or Wi-Fi network. Download PNG or SVG with custom colors. No sign-up, no watermark, nothing uploaded."/>
+<meta name="twitter:image" content="https://www.mytoolpad.com/og-image.png"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%230f0f0f%22/%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22none%22%20stroke%3D%22%23c8f135%22%20stroke-width%3D%222%22/%3E%3Ctext%20x%3D%2216%22%20y%3D%2213%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%229%22%20font-weight%3D%22700%22%20fill%3D%22%23c8f135%22%20text-anchor%3D%22middle%22%3EMY%3C/text%3E%3Ctext%20x%3D%2216%22%20y%3D%2224%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%229%22%20font-weight%3D%22700%22%20fill%3D%22%23f0ede6%22%20text-anchor%3D%22middle%22%3ETOOL%3C/text%3E%3C/svg%3E"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f0f;--surface:#181818;--surface2:#212121;--border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);--text:#f0ede6;--muted:#5a5a5a;--mid:#888}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(15,15,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:24px;z-index:100}
+.nav-brand{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);text-decoration:none;flex-shrink:0;letter-spacing:-.3px}
+.nav-brand em{color:var(--accent);font-style:normal}
+.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:all .15s;white-space:nowrap}
+.nav-links a:hover{color:var(--text);background:var(--surface)}
+.nav-links a.active{color:var(--accent);background:var(--accent-dim)}
+
+.page{max-width:640px;margin:0 auto;padding:50px 24px 80px;position:relative;z-index:1}
+.page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;letter-spacing:-1px;margin-bottom:6px}
+.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:14px;color:var(--muted);margin-bottom:36px;font-weight:300}
+
+.input-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px;margin-bottom:16px}
+.input-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:10px}
+.date-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.date-input{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s;flex:1;min-width:180px}
+.date-input:focus{border-color:var(--accent)}
+.today-lnk{font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;transition:color .15s}
+.today-lnk:hover{color:var(--accent)}
+
+/* Main age display */
+.age-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px 28px;margin-bottom:14px;text-align:center;border-color:rgba(200,241,53,.15)}
+.age-big{font-size:80px;font-weight:300;letter-spacing:-6px;color:var(--accent);line-height:1;margin-bottom:8px;font-variant-numeric:tabular-nums}
+.age-word{font-family:'Playfair Display',serif;font-size:22px;color:var(--mid);letter-spacing:-.3px;font-style:italic}
+.age-detail{font-size:14px;color:var(--muted);margin-top:12px;line-height:1.8}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat-c{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center}
+.stat-c-num{font-size:26px;font-weight:300;letter-spacing:-1.5px;color:var(--text)}
+.stat-c-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:4px}
+
+/* Birthday countdown */
+.bday-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px 28px;display:flex;align-items:center;gap:20px}
+.bday-icon{font-size:32px}
+.bday-info{flex:1}
+.bday-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:5px}
+.bday-text{font-size:17px;font-weight:400;line-height:1.4}
+.bday-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.bday-days{font-size:36px;font-weight:300;letter-spacing:-2px;color:var(--accent)}
+
+.empty-state{text-align:center;padding:60px 0;color:var(--muted)}
+.empty-icon{font-size:44px;margin-bottom:14px;opacity:.25}
+.empty-text{font-family:'Playfair Display',serif;font-size:18px;font-style:italic}
+</style>
+<style>
+.seo{border-top:1px solid #1e1e1e;padding-top:32px;margin-top:32px;color:#8a8a8a}
+.seo h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;margin:0 0 12px;color:#e6e3dc}
+.seo h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin:26px 0 10px;color:#c8c5be}
+.seo p{font-size:14px;line-height:1.85;margin-bottom:12px}
+.seo strong{color:#c8c5be;font-weight:500}
+.seo ol{padding-left:20px;font-size:14px;line-height:1.85}
+.seo details{border:1px solid #232323;border-radius:10px;padding:12px 16px;margin-bottom:8px;background:#141414}
+.seo summary{cursor:pointer;font-size:14px;color:#d8d5ce}
+.seo details p{margin:10px 0 0;font-size:13.5px}
+.seo .related{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.seo .related a{font-size:13px;color:#c8f135;text-decoration:none;border:1px solid #2a2a2a;border-radius:99px;padding:6px 14px}
+.seo .related a:hover{background:rgba(200,241,53,.08)}
+.site-footer{text-align:center;padding:40px 24px 60px;border-top:1px solid var(--border,#2a2a2a);position:relative;z-index:1;margin-top:40px}
+.site-footer .ft-tools{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;max-width:760px;margin:0 auto 20px}
+.site-footer a{color:#777;font-size:12.5px;text-decoration-color:#333}
+.site-footer a:hover{color:#c8f135}
+.site-footer p{font-size:12px;color:#5a5a5a;line-height:2}
+
+.page.wide{max-width:860px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px}
+.fld{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s}
+.fld:focus{border-color:var(--accent)}
+select.fld{cursor:pointer}
+textarea.fld{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.6;resize:vertical;min-height:220px}
+.btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:border-color .15s,background .15s;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:#0f0f0f;border-color:var(--accent);font-weight:500}
+.btn.primary:hover{filter:brightness(1.06)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:560px){.grid2,.grid3{grid-template-columns:1fr}}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:8px;display:block}
+.status{font-size:13px;margin:10px 0 0;color:var(--mid);min-height:20px}
+.status.ok{color:#5cdb9a}.status.err{color:#e85c5c}.status.warn{color:#f5a623}
+.big{font-size:56px;font-weight:300;letter-spacing:-3px;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
+.kpi{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}
+.kpi b{display:block;font-size:24px;font-weight:300;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.tabs{display:flex;gap:6px;margin-bottom:18px}
+.tab{background:none;border:1px solid var(--border);color:var(--mid);border-radius:99px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.tab.active{color:var(--accent);border-color:rgba(200,241,53,.4);background:var(--accent-dim)}
+label.chk{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--mid);cursor:pointer}
+input[type=range]{accent-color:#c8f135;width:100%}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "QR Code Generator", "url": "https://www.mytoolpad.com/qr-code.html", "description": "Create a QR code for any link, text or Wi-Fi network. Download PNG or SVG with custom colors. No sign-up, no watermark, nothing uploaded.", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "publisher": {"@type": "Organization", "name": "MyToolPad", "url": "https://www.mytoolpad.com/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Do these QR codes expire?", "acceptedAnswer": {"@type": "Answer", "text": "No. The code contains your text directly, so it works forever and there is nothing to renew."}}, {"@type": "Question", "name": "What does error correction do?", "acceptedAnswer": {"@type": "Answer", "text": "Higher levels (Q, H) let a code still scan when part of it is damaged or covered by a logo, but make the pattern denser. Use M for most things."}}, {"@type": "Question", "name": "PNG or SVG?", "acceptedAnswer": {"@type": "Answer", "text": "PNG is fine for screens and documents. SVG is a vector format, so choose it for signs, flyers and anything printed large."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "MyToolPad", "item": "https://www.mytoolpad.com/"}, {"@type": "ListItem", "position": 2, "name": "QR Code Generator", "item": "https://www.mytoolpad.com/qr-code.html"}]}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<nav class="topnav">
+  <a href="/" class="nav-brand">My<em>Tool</em>Pad</a>
+  <div class="nav-links"><a href="/todo.html">To-Do</a><a href="/pomodoro.html">Focus</a><a href="/notes.html">Notes</a><a href="/percentage.html">Percentage</a><a href="/age.html">Age</a><a href="/tip.html">Tip</a><a href="/bmi.html">BMI</a><a href="/loan.html">Loan</a><a href="/gpa.html">GPA</a><a href="/color.html">Color</a><a href="/spinner.html">Spinner</a><a href="/counter.html">Counter</a><a href="/budget.html">Budget</a><a href="/countdown.html">Countdown</a><a href="/converter.html">Converter</a><a href="/password.html">Password</a><a href="/json-formatter.html">JSON</a><a href="/qr-code.html" class="active">QR</a><a href="/image-compressor.html">Image</a><a href="/days-between-dates.html">Dates</a><a href="/final-grade.html">Final Grade</a><a href="/gst-calculator.html">GST</a></div>
+</nav>
+<div class="page">
+  <h1 class="page-title">QR<em>.</em>Code</h1>
+  <div class="page-sub">Make a QR code for a link, text or Wi-Fi network. Download as PNG or SVG.</div>
+
+  <div class="card">
+    <div class="tabs" role="tablist">
+      <button class="tab active" id="tabText" role="tab">Link / Text</button>
+      <button class="tab" id="tabWifi" role="tab">Wi-Fi</button>
+    </div>
+    <div id="paneText">
+      <label class="lbl" for="qtext">Link or text</label>
+      <textarea class="fld" id="qtext" style="min-height:90px;font-family:'DM Sans',sans-serif;font-size:16px" placeholder="https://www.mytoolpad.com">https://www.mytoolpad.com</textarea>
+    </div>
+    <div id="paneWifi" hidden>
+      <div class="grid2">
+        <div><label class="lbl" for="wssid">Network name (SSID)</label><input class="fld" id="wssid" autocomplete="off"/></div>
+        <div><label class="lbl" for="wpass">Password</label><input class="fld" id="wpass" autocomplete="off"/></div>
+        <div><label class="lbl" for="wsec">Security</label>
+          <select class="fld" id="wsec"><option value="WPA">WPA/WPA2/WPA3</option><option value="WEP">WEP</option><option value="nopass">None</option></select></div>
+        <div style="display:flex;align-items:end;padding-bottom:12px"><label class="chk"><input type="checkbox" id="whidden"/> Hidden network</label></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="grid3">
+      <div><label class="lbl" for="qsize">Size</label>
+        <select class="fld" id="qsize"><option value="256">256 px</option><option value="512" selected>512 px</option><option value="1024">1024 px</option></select></div>
+      <div><label class="lbl" for="qec">Error correction</label>
+        <select class="fld" id="qec"><option value="L">L (7%)</option><option value="M" selected>M (15%)</option><option value="Q">Q (25%)</option><option value="H">H (30%)</option></select></div>
+      <div><label class="lbl">Colors</label>
+        <div class="row" style="flex-wrap:nowrap"><input type="color" id="qfg" value="#000000" aria-label="Foreground" style="width:100%;height:46px;border:1px solid var(--border);border-radius:12px;background:var(--surface2);padding:4px"/>
+        <input type="color" id="qbg" value="#ffffff" aria-label="Background" style="width:100%;height:46px;border:1px solid var(--border);border-radius:12px;background:var(--surface2);padding:4px"/></div></div>
+    </div>
+  </div>
+  <div class="card" style="text-align:center">
+    <canvas id="qcanvas" width="256" height="256" style="max-width:100%;height:auto;border-radius:10px;background:#fff" aria-label="QR code preview"></canvas>
+    <div class="status" id="qstatus" aria-live="polite"></div>
+    <div class="row" style="justify-content:center;margin-top:14px">
+      <button class="btn primary" id="dPng">Download PNG</button>
+      <button class="btn" id="dSvg">Download SVG</button>
+      <button class="btn" id="dCopy">Copy image</button>
+    </div>
+  </div>
+  <div class="seo">
+    <h2>Free QR code generator with no watermark</h2>
+    <p>Type a link or any text, or switch to the Wi-Fi tab to make a code guests can scan to join your network. Download the result as a PNG for screens and documents, or as an SVG that stays sharp at any print size.</p><p>Codes are generated in your browser and the text you enter is never uploaded. They do not expire and there is no tracking redirect, because a QR code simply contains your text. For print, keep strong contrast (dark code on a light background) and leave the white border around it.</p>
+    <h3>How to use it</h3>
+    <ol><li>Enter a link or text, or fill in your Wi-Fi details.</li><li>Choose size, error correction and colors.</li><li>Download the PNG or SVG, then test it with your phone before printing.</li></ol>
+    <h3>Frequently asked questions</h3>
+    <details><summary>Do these QR codes expire?</summary><p>No. The code contains your text directly, so it works forever and there is nothing to renew.</p></details><details><summary>What does error correction do?</summary><p>Higher levels (Q, H) let a code still scan when part of it is damaged or covered by a logo, but make the pattern denser. Use M for most things.</p></details><details><summary>PNG or SVG?</summary><p>PNG is fine for screens and documents. SVG is a vector format, so choose it for signs, flyers and anything printed large.</p></details>
+    <h3>More free tools</h3>
+    <div class="related"><a href="/json-formatter.html">JSON Formatter</a><a href="/password.html">Password Generator</a><a href="/color.html">Color Picker</a></div>
+  </div>
+</div>
+<script src="/vendor/qrcode.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+try{ qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8']; }catch(e){}
+let mode='text', current=null;
+function wifiString(){
+  const e=s=>s.replace(/([\\;,:"])/g,'\\$1');
+  const sec=$('wsec').value;
+  return 'WIFI:T:'+sec+';S:'+e($('wssid').value)+';'+(sec==='nopass'?'':'P:'+e($('wpass').value)+';')+($('whidden').checked?'H:true;':'')+';';
+}
+function payload(){ return mode==='wifi' ? ($('wssid').value?wifiString():'') : $('qtext').value; }
+function lum(hex){const n=parseInt(hex.slice(1),16),f=c=>{c/=255;return c<=.03928?c/12.92:Math.pow((c+.055)/1.055,2.4)};return .2126*f(n>>16&255)+.7152*f(n>>8&255)+.0722*f(n&255)}
+function render(){
+  const text=payload(), st=$('qstatus'), cv=$('qcanvas'), ctx=cv.getContext('2d');
+  current=null; st.className='status';
+  if(!text){ctx.clearRect(0,0,cv.width,cv.height);st.textContent='Enter something to generate a code.';return}
+  let qr;
+  try{ qr=qrcode(0,$('qec').value); qr.addData(text,'Byte'); qr.make(); }
+  catch(e){ st.textContent='Too much text for a QR code. Try something shorter.'; st.className='status err'; return }
+  const n=qr.getModuleCount(), quiet=4, total=n+quiet*2, size=+$('qsize').value;
+  const scale=Math.max(1,Math.floor(size/total));
+  cv.width=cv.height=total*scale;
+  const fg=$('qfg').value, bg=$('qbg').value;
+  ctx.fillStyle=bg;ctx.fillRect(0,0,cv.width,cv.height);
+  ctx.fillStyle=fg;
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++) if(qr.isDark(r,c)) ctx.fillRect((c+quiet)*scale,(r+quiet)*scale,scale,scale);
+  current={qr,n,quiet,total,fg,bg};
+  const a=lum(fg),b=lum(bg), ratio=(Math.max(a,b)+.05)/(Math.min(a,b)+.05);
+  if(a>b){st.textContent='Light code on a dark background may not scan on all phones. Test it first.';st.className='status warn'}
+  else if(ratio<4){st.textContent='Low contrast: this code may be hard to scan. Test it first.';st.className='status warn'}
+  else st.textContent=n+'×'+n+' modules · works offline, never expires';
+}
+function svgString(){
+  const {qr,n,quiet,total,fg,bg}=current; let d='';
+  for(let r=0;r<n;r++)for(let c=0;c<n;c++) if(qr.isDark(r,c)) d+='M'+(c+quiet)+' '+(r+quiet)+'h1v1h-1z';
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+total+' '+total+'" shape-rendering="crispEdges"><rect width="'+total+'" height="'+total+'" fill="'+bg+'"/><path d="'+d+'" fill="'+fg+'"/></svg>';
+}
+function save(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+$('dPng').onclick=()=>{ if(!current)return; $('qcanvas').toBlob(b=>save(b,'qr-code.png')) };
+$('dSvg').onclick=()=>{ if(!current)return; save(new Blob([svgString()],{type:'image/svg+xml'}),'qr-code.svg') };
+$('dCopy').onclick=async()=>{
+  if(!current)return;
+  try{
+    const blob=await new Promise(r=>$('qcanvas').toBlob(r));
+    await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);
+    $('dCopy').textContent='Copied ✓';setTimeout(()=>$('dCopy').textContent='Copy image',1500);
+  }catch(e){ $('qstatus').textContent='Your browser blocked copying images. Use Download PNG instead.'; $('qstatus').className='status warn'; }
+};
+function setMode(m){
+  mode=m;
+  $('paneText').hidden=m!=='text'; $('paneWifi').hidden=m!=='wifi';
+  $('tabText').classList.toggle('active',m==='text'); $('tabWifi').classList.toggle('active',m==='wifi');
+  render();
+}
+$('tabText').onclick=()=>setMode('text'); $('tabWifi').onclick=()=>setMode('wifi');
+['qtext','wssid','wpass','wsec','whidden','qsize','qec','qfg','qbg'].forEach(id=>{ $(id).addEventListener('input',render); $(id).addEventListener('change',render); });
+render();
+</script>
+<footer class="site-footer">
+  <div class="ft-tools"><a href="/todo.html">To-Do List</a><a href="/pomodoro.html">Pomodoro Timer</a><a href="/notes.html">Online Notes</a><a href="/percentage.html">Percentage Calculator</a><a href="/age.html">Age Calculator</a><a href="/tip.html">Tip Calculator</a><a href="/bmi.html">BMI Calculator</a><a href="/loan.html">Loan Calculator</a><a href="/gpa.html">GPA Calculator</a><a href="/color.html">Color Picker</a><a href="/spinner.html">Decision Spinner Wheel</a><a href="/counter.html">Word Counter</a><a href="/budget.html">Budget Tracker</a><a href="/countdown.html">Countdown Timer</a><a href="/converter.html">Unit Converter</a><a href="/password.html">Password Generator</a><a href="/json-formatter.html">JSON Formatter</a><a href="/qr-code.html">QR Code Generator</a><a href="/image-compressor.html">Image Compressor</a><a href="/days-between-dates.html">Days Between Dates</a><a href="/final-grade.html">Final Grade Calculator</a><a href="/gst-calculator.html">GST Calculator</a></div>
+  <p>MyToolPad: free tools for students and everyday life.<br>
+  No sign-up · No pop-ups · Your data stays in your browser<br>
+  <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="https://github.com/game9151/mytoolpad/issues" rel="noopener">Feedback</a>
+  <!-- DONATE: paste your Buy Me a Coffee / Ko-fi link here once you have one, e.g.
+  · <a href="https://buymeacoffee.com/YOURNAME" rel="noopener">☕ Support MyToolPad</a> -->
+  </p>
+</footer>
+</body>
+</html>

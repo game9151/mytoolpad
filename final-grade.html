@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Final Grade Calculator: What Do I Need on My Final Exam? | MyToolPad</title>
+<meta name="description" content="Find the score you need on your final exam to reach the grade you want. Includes Australian grade bands (P, C, D, HD) and US letters. Free, no ads."/>
+<link rel="canonical" href="https://www.mytoolpad.com/final-grade.html"/>
+<meta name="robots" content="index, follow, max-image-preview:large"/>
+<meta name="theme-color" content="#0f0f0f"/>
+<meta property="og:title" content="Final Grade Calculator: What Do I Need on My Final Exam? | MyToolPad"/>
+<meta property="og:description" content="Find the score you need on your final exam to reach the grade you want. Includes Australian grade bands (P, C, D, HD) and US letters. Free, no ads."/>
+<meta property="og:url" content="https://www.mytoolpad.com/final-grade.html"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MyToolPad"/>
+<meta property="og:image" content="https://www.mytoolpad.com/og-image.png"/>
+<meta property="og:image:alt" content="MyToolPad logo"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Final Grade Calculator: What Do I Need on My Final Exam? | MyToolPad"/>
+<meta name="twitter:description" content="Find the score you need on your final exam to reach the grade you want. Includes Australian grade bands (P, C, D, HD) and US letters. Free, no ads."/>
+<meta name="twitter:image" content="https://www.mytoolpad.com/og-image.png"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%230f0f0f%22/%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22none%22%20stroke%3D%22%23c8f135%22%20stroke-width%3D%222%22/%3E%3Ctext%20x%3D%2216%22%20y%3D%2213%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%229%22%20font-weight%3D%22700%22%20fill%3D%22%23c8f135%22%20text-anchor%3D%22middle%22%3EMY%3C/text%3E%3Ctext%20x%3D%2216%22%20y%3D%2224%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%229%22%20font-weight%3D%22700%22%20fill%3D%22%23f0ede6%22%20text-anchor%3D%22middle%22%3ETOOL%3C/text%3E%3C/svg%3E"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f0f;--surface:#181818;--surface2:#212121;--border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);--text:#f0ede6;--muted:#5a5a5a;--mid:#888}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(15,15,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:24px;z-index:100}
+.nav-brand{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);text-decoration:none;flex-shrink:0;letter-spacing:-.3px}
+.nav-brand em{color:var(--accent);font-style:normal}
+.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:all .15s;white-space:nowrap}
+.nav-links a:hover{color:var(--text);background:var(--surface)}
+.nav-links a.active{color:var(--accent);background:var(--accent-dim)}
+
+.page{max-width:640px;margin:0 auto;padding:50px 24px 80px;position:relative;z-index:1}
+.page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;letter-spacing:-1px;margin-bottom:6px}
+.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:14px;color:var(--muted);margin-bottom:36px;font-weight:300}
+
+.input-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px;margin-bottom:16px}
+.input-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:10px}
+.date-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.date-input{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s;flex:1;min-width:180px}
+.date-input:focus{border-color:var(--accent)}
+.today-lnk{font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;transition:color .15s}
+.today-lnk:hover{color:var(--accent)}
+
+/* Main age display */
+.age-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px 28px;margin-bottom:14px;text-align:center;border-color:rgba(200,241,53,.15)}
+.age-big{font-size:80px;font-weight:300;letter-spacing:-6px;color:var(--accent);line-height:1;margin-bottom:8px;font-variant-numeric:tabular-nums}
+.age-word{font-family:'Playfair Display',serif;font-size:22px;color:var(--mid);letter-spacing:-.3px;font-style:italic}
+.age-detail{font-size:14px;color:var(--muted);margin-top:12px;line-height:1.8}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat-c{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center}
+.stat-c-num{font-size:26px;font-weight:300;letter-spacing:-1.5px;color:var(--text)}
+.stat-c-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:4px}
+
+/* Birthday countdown */
+.bday-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px 28px;display:flex;align-items:center;gap:20px}
+.bday-icon{font-size:32px}
+.bday-info{flex:1}
+.bday-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:5px}
+.bday-text{font-size:17px;font-weight:400;line-height:1.4}
+.bday-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.bday-days{font-size:36px;font-weight:300;letter-spacing:-2px;color:var(--accent)}
+
+.empty-state{text-align:center;padding:60px 0;color:var(--muted)}
+.empty-icon{font-size:44px;margin-bottom:14px;opacity:.25}
+.empty-text{font-family:'Playfair Display',serif;font-size:18px;font-style:italic}
+</style>
+<style>
+.seo{border-top:1px solid #1e1e1e;padding-top:32px;margin-top:32px;color:#8a8a8a}
+.seo h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;margin:0 0 12px;color:#e6e3dc}
+.seo h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin:26px 0 10px;color:#c8c5be}
+.seo p{font-size:14px;line-height:1.85;margin-bottom:12px}
+.seo strong{color:#c8c5be;font-weight:500}
+.seo ol{padding-left:20px;font-size:14px;line-height:1.85}
+.seo details{border:1px solid #232323;border-radius:10px;padding:12px 16px;margin-bottom:8px;background:#141414}
+.seo summary{cursor:pointer;font-size:14px;color:#d8d5ce}
+.seo details p{margin:10px 0 0;font-size:13.5px}
+.seo .related{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.seo .related a{font-size:13px;color:#c8f135;text-decoration:none;border:1px solid #2a2a2a;border-radius:99px;padding:6px 14px}
+.seo .related a:hover{background:rgba(200,241,53,.08)}
+.site-footer{text-align:center;padding:40px 24px 60px;border-top:1px solid var(--border,#2a2a2a);position:relative;z-index:1;margin-top:40px}
+.site-footer .ft-tools{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;max-width:760px;margin:0 auto 20px}
+.site-footer a{color:#777;font-size:12.5px;text-decoration-color:#333}
+.site-footer a:hover{color:#c8f135}
+.site-footer p{font-size:12px;color:#5a5a5a;line-height:2}
+
+.page.wide{max-width:860px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px}
+.fld{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s}
+.fld:focus{border-color:var(--accent)}
+select.fld{cursor:pointer}
+textarea.fld{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.6;resize:vertical;min-height:220px}
+.btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:border-color .15s,background .15s;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:#0f0f0f;border-color:var(--accent);font-weight:500}
+.btn.primary:hover{filter:brightness(1.06)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:560px){.grid2,.grid3{grid-template-columns:1fr}}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:8px;display:block}
+.status{font-size:13px;margin:10px 0 0;color:var(--mid);min-height:20px}
+.status.ok{color:#5cdb9a}.status.err{color:#e85c5c}.status.warn{color:#f5a623}
+.big{font-size:56px;font-weight:300;letter-spacing:-3px;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
+.kpi{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}
+.kpi b{display:block;font-size:24px;font-weight:300;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.tabs{display:flex;gap:6px;margin-bottom:18px}
+.tab{background:none;border:1px solid var(--border);color:var(--mid);border-radius:99px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.tab.active{color:var(--accent);border-color:rgba(200,241,53,.4);background:var(--accent-dim)}
+label.chk{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--mid);cursor:pointer}
+input[type=range]{accent-color:#c8f135;width:100%}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Final Grade Calculator", "url": "https://www.mytoolpad.com/final-grade.html", "description": "Find the score you need on your final exam to reach the grade you want. Includes Australian grade bands (P, C, D, HD) and US letters. Free, no ads.", "applicationCategory": "EducationApplication", "operatingSystem": "Any", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "publisher": {"@type": "Organization", "name": "MyToolPad", "url": "https://www.mytoolpad.com/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I calculate what I need on my final?", "acceptedAnswer": {"@type": "Answer", "text": "Subtract the part of your target already earned from the target, then divide by the weight of the final. This tool does that instantly."}}, {"@type": "Question", "name": "What are the Australian grade bands?", "acceptedAnswer": {"@type": "Answer", "text": "Commonly Pass 50–64, Credit 65–74, Distinction 75–84 and High Distinction 85–100, but universities differ, so check yours."}}, {"@type": "Question", "name": "What if the result is over 100%?", "acceptedAnswer": {"@type": "Answer", "text": "It means the target is out of reach with the final alone. The tool shows the best overall grade you could still reach."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "MyToolPad", "item": "https://www.mytoolpad.com/"}, {"@type": "ListItem", "position": 2, "name": "Final Grade Calculator", "item": "https://www.mytoolpad.com/final-grade.html"}]}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<nav class="topnav">
+  <a href="/" class="nav-brand">My<em>Tool</em>Pad</a>
+  <div class="nav-links"><a href="/todo.html">To-Do</a><a href="/pomodoro.html">Focus</a><a href="/notes.html">Notes</a><a href="/percentage.html">Percentage</a><a href="/age.html">Age</a><a href="/tip.html">Tip</a><a href="/bmi.html">BMI</a><a href="/loan.html">Loan</a><a href="/gpa.html">GPA</a><a href="/color.html">Color</a><a href="/spinner.html">Spinner</a><a href="/counter.html">Counter</a><a href="/budget.html">Budget</a><a href="/countdown.html">Countdown</a><a href="/converter.html">Converter</a><a href="/password.html">Password</a><a href="/json-formatter.html">JSON</a><a href="/qr-code.html">QR</a><a href="/image-compressor.html">Image</a><a href="/days-between-dates.html">Dates</a><a href="/final-grade.html" class="active">Final Grade</a><a href="/gst-calculator.html">GST</a></div>
+</nav>
+<div class="page">
+  <h1 class="page-title">Final<em>.</em>Grade</h1>
+  <div class="page-sub">Work out the mark you need on your final to hit the grade you want.</div>
+
+  <div class="card">
+    <div class="grid3">
+      <div><label class="lbl" for="cur">Current grade (%)</label><input class="fld" type="number" id="cur" inputmode="decimal" placeholder="e.g. 72" min="0" max="100" step="any"/></div>
+      <div><label class="lbl" for="wt">Final is worth (%)</label><input class="fld" type="number" id="wt" inputmode="decimal" placeholder="e.g. 40" min="1" max="100" step="any"/></div>
+      <div><label class="lbl" for="tg">Target grade (%)</label><input class="fld" type="number" id="tg" inputmode="decimal" placeholder="e.g. 75" min="0" max="100" step="any"/></div>
+    </div>
+  </div>
+  <div class="card" id="fres" style="text-align:center"><div style="color:var(--muted);font-size:14px">Enter your numbers above.</div></div>
+  <div class="card">
+    <label class="lbl">What you would need for each grade</label>
+    <div id="ftable"></div>
+  </div>
+  <div class="seo">
+    <h2>Free final grade calculator: what do I need on my exam?</h2>
+    <p>Enter the grade you have so far, how much the final exam or assignment is worth, and the overall grade you are aiming for. The calculator tells you the exact mark you need. A table below shows what you would need for each Australian grade band and each US letter grade.</p><p>The formula is <strong>needed = (target − current × (1 − weight)) ÷ weight</strong>, where weight is the final’s share of the course as a decimal. "Current grade" should be your average on everything else, as a percentage. Check your course outline for the exact weights and cut-offs.</p>
+    <h3>How to use it</h3>
+    <ol><li>Enter your current grade as a percentage.</li><li>Enter how much the final is worth, as a percentage of the course.</li><li>Enter your target. Read the score you need, and the table for other grades.</li></ol>
+    <h3>Frequently asked questions</h3>
+    <details><summary>How do I calculate what I need on my final?</summary><p>Subtract the part of your target already earned from the target, then divide by the weight of the final. This tool does that instantly.</p></details><details><summary>What are the Australian grade bands?</summary><p>Commonly Pass 50–64, Credit 65–74, Distinction 75–84 and High Distinction 85–100, but universities differ, so check yours.</p></details><details><summary>What if the result is over 100%?</summary><p>It means the target is out of reach with the final alone. The tool shows the best overall grade you could still reach.</p></details>
+    <h3>More free tools</h3>
+    <div class="related"><a href="/gpa.html">GPA Calculator</a><a href="/percentage.html">Percentage Calculator</a><a href="/pomodoro.html">Pomodoro Timer</a></div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const AU=[['Pass (P)',50],['Credit (C)',65],['Distinction (D)',75],['High Distinction (HD)',85]];
+const US=[['D',60],['C',70],['B',80],['A',90]];
+const need=(c,w,t)=>(t-c*(1-w))/w;
+const f1=n=>(Math.round(n*10)/10).toString();
+function valid(){
+  const c=parseFloat($('cur').value), w=parseFloat($('wt').value);
+  return !isNaN(c)&&!isNaN(w)&&w>0&&w<=100&&c>=0 ? {c,w:w/100} : null;
+}
+function row(name,t,v){
+  const n=need(v.c,v.w,t);
+  let txt,col;
+  if(n>100){txt='Out of reach';col='#e85c5c'} else if(n<=0){txt='Already secured';col='#5cdb9a'} else {txt=f1(n)+'%';col=n>90?'#f5a623':'var(--text)'}
+  return '<div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--mid)">'+name+' <span style="color:var(--muted)">('+t+'%)</span></span><span style="color:'+col+'">'+txt+'</span></div>';
+}
+function calc(){
+  const v=valid(), tg=parseFloat($('tg').value), res=$('fres'), tbl=$('ftable');
+  if(!v){res.innerHTML='<div style="color:var(--muted);font-size:14px">Enter your numbers above.</div>';tbl.innerHTML='';return}
+  tbl.innerHTML='<div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:4px 0">Australian bands</div>'+AU.map(([n,t])=>row(n,t,v)).join('')
+    +'<div style="font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin:18px 0 4px">US letter grades</div>'+US.map(([n,t])=>row(n,t,v)).join('');
+  if(isNaN(tg)){res.innerHTML='<div style="color:var(--muted);font-size:14px">Add a target grade to see the score you need.</div>';return}
+  const n=need(v.c,v.w,tg), best=v.c*(1-v.w)+100*v.w, worst=v.c*(1-v.w);
+  if(n>100) res.innerHTML='<div class="big" style="color:#e85c5c">'+f1(n)+'%</div><div style="margin-top:12px;font-size:14px;color:var(--mid)">That is above 100%, so '+tg+'% is out of reach. With a perfect final your best overall grade is <strong style="color:var(--text)">'+f1(best)+'%</strong>.</div>';
+  else if(n<=0) res.innerHTML='<div class="big" style="color:#5cdb9a">0%</div><div style="margin-top:12px;font-size:14px;color:var(--mid)">You have already secured '+tg+'%. Even a zero on the final leaves you on <strong style="color:var(--text)">'+f1(worst)+'%</strong>.</div>';
+  else res.innerHTML='<div style="font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px">You need</div><div class="big">'+f1(n)+'%</div><div style="margin-top:12px;font-size:14px;color:var(--mid)">on the final to finish with '+tg+'% overall.</div>';
+}
+['cur','wt','tg'].forEach(id=>$(id).addEventListener('input',calc));
+</script>
+<footer class="site-footer">
+  <div class="ft-tools"><a href="/todo.html">To-Do List</a><a href="/pomodoro.html">Pomodoro Timer</a><a href="/notes.html">Online Notes</a><a href="/percentage.html">Percentage Calculator</a><a href="/age.html">Age Calculator</a><a href="/tip.html">Tip Calculator</a><a href="/bmi.html">BMI Calculator</a><a href="/loan.html">Loan Calculator</a><a href="/gpa.html">GPA Calculator</a><a href="/color.html">Color Picker</a><a href="/spinner.html">Decision Spinner Wheel</a><a href="/counter.html">Word Counter</a><a href="/budget.html">Budget Tracker</a><a href="/countdown.html">Countdown Timer</a><a href="/converter.html">Unit Converter</a><a href="/password.html">Password Generator</a><a href="/json-formatter.html">JSON Formatter</a><a href="/qr-code.html">QR Code Generator</a><a href="/image-compressor.html">Image Compressor</a><a href="/days-between-dates.html">Days Between Dates</a><a href="/final-grade.html">Final Grade Calculator</a><a href="/gst-calculator.html">GST Calculator</a></div>
+  <p>MyToolPad: free tools for students and everyday life.<br>
+  No sign-up · No pop-ups · Your data stays in your browser<br>
+  <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="https://github.com/game9151/mytoolpad/issues" rel="noopener">Feedback</a>
+  <!-- DONATE: paste your Buy Me a Coffee / Ko-fi link here once you have one, e.g.
+  · <a href="https://buymeacoffee.com/YOURNAME" rel="noopener">☕ Support MyToolPad</a> -->
+  </p>
+</footer>
+</body>
+</html>

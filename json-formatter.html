@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>JSON Formatter & Validator: Beautify, Minify, Fix Errors | MyToolPad</title>
+<meta name="description" content="Free JSON formatter and validator. Beautify, minify and sort JSON with exact line and column for errors. Runs in your browser, nothing is uploaded."/>
+<link rel="canonical" href="https://www.mytoolpad.com/json-formatter.html"/>
+<meta name="robots" content="index, follow, max-image-preview:large"/>
+<meta name="theme-color" content="#0f0f0f"/>
+<meta property="og:title" content="JSON Formatter & Validator: Beautify, Minify, Fix Errors | MyToolPad"/>
+<meta property="og:description" content="Free JSON formatter and validator. Beautify, minify and sort JSON with exact line and column for errors. Runs in your browser, nothing is uploaded."/>
+<meta property="og:url" content="https://www.mytoolpad.com/json-formatter.html"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MyToolPad"/>
+<meta property="og:image" content="https://www.mytoolpad.com/og-image.png"/>
+<meta property="og:image:alt" content="MyToolPad logo"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="JSON Formatter & Validator: Beautify, Minify, Fix Errors | MyToolPad"/>
+<meta name="twitter:description" content="Free JSON formatter and validator. Beautify, minify and sort JSON with exact line and column for errors. Runs in your browser, nothing is uploaded."/>
+<meta name="twitter:image" content="https://www.mytoolpad.com/og-image.png"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%230f0f0f%22/%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22none%22%20stroke%3D%22%23c8f135%22%20stroke-width%3D%222%22/%3E%3Ctext%20x%3D%2216%22%20y%3D%2213%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%229%22%20font-weight%3D%22700%22%20fill%3D%22%23c8f135%22%20text-anchor%3D%22middle%22%3EMY%3C/text%3E%3Ctext%20x%3D%2216%22%20y%3D%2224%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%229%22%20font-weight%3D%22700%22%20fill%3D%22%23f0ede6%22%20text-anchor%3D%22middle%22%3ETOOL%3C/text%3E%3C/svg%3E"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f0f;--surface:#181818;--surface2:#212121;--border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);--text:#f0ede6;--muted:#5a5a5a;--mid:#888}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(15,15,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:24px;z-index:100}
+.nav-brand{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);text-decoration:none;flex-shrink:0;letter-spacing:-.3px}
+.nav-brand em{color:var(--accent);font-style:normal}
+.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:all .15s;white-space:nowrap}
+.nav-links a:hover{color:var(--text);background:var(--surface)}
+.nav-links a.active{color:var(--accent);background:var(--accent-dim)}
+
+.page{max-width:640px;margin:0 auto;padding:50px 24px 80px;position:relative;z-index:1}
+.page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;letter-spacing:-1px;margin-bottom:6px}
+.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:14px;color:var(--muted);margin-bottom:36px;font-weight:300}
+
+.input-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px;margin-bottom:16px}
+.input-label{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:10px}
+.date-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.date-input{background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s;flex:1;min-width:180px}
+.date-input:focus{border-color:var(--accent)}
+.today-lnk{font-size:12px;color:var(--muted);cursor:pointer;text-decoration:underline;text-underline-offset:3px;white-space:nowrap;transition:color .15s}
+.today-lnk:hover{color:var(--accent)}
+
+/* Main age display */
+.age-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:32px 28px;margin-bottom:14px;text-align:center;border-color:rgba(200,241,53,.15)}
+.age-big{font-size:80px;font-weight:300;letter-spacing:-6px;color:var(--accent);line-height:1;margin-bottom:8px;font-variant-numeric:tabular-nums}
+.age-word{font-family:'Playfair Display',serif;font-size:22px;color:var(--mid);letter-spacing:-.3px;font-style:italic}
+.age-detail{font-size:14px;color:var(--muted);margin-top:12px;line-height:1.8}
+
+/* Stats grid */
+.stats-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat-c{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px 16px;text-align:center}
+.stat-c-num{font-size:26px;font-weight:300;letter-spacing:-1.5px;color:var(--text)}
+.stat-c-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-top:4px}
+
+/* Birthday countdown */
+.bday-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px 28px;display:flex;align-items:center;gap:20px}
+.bday-icon{font-size:32px}
+.bday-info{flex:1}
+.bday-label{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:5px}
+.bday-text{font-size:17px;font-weight:400;line-height:1.4}
+.bday-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.bday-days{font-size:36px;font-weight:300;letter-spacing:-2px;color:var(--accent)}
+
+.empty-state{text-align:center;padding:60px 0;color:var(--muted)}
+.empty-icon{font-size:44px;margin-bottom:14px;opacity:.25}
+.empty-text{font-family:'Playfair Display',serif;font-size:18px;font-style:italic}
+</style>
+<style>
+.seo{border-top:1px solid #1e1e1e;padding-top:32px;margin-top:32px;color:#8a8a8a}
+.seo h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;margin:0 0 12px;color:#e6e3dc}
+.seo h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin:26px 0 10px;color:#c8c5be}
+.seo p{font-size:14px;line-height:1.85;margin-bottom:12px}
+.seo strong{color:#c8c5be;font-weight:500}
+.seo ol{padding-left:20px;font-size:14px;line-height:1.85}
+.seo details{border:1px solid #232323;border-radius:10px;padding:12px 16px;margin-bottom:8px;background:#141414}
+.seo summary{cursor:pointer;font-size:14px;color:#d8d5ce}
+.seo details p{margin:10px 0 0;font-size:13.5px}
+.seo .related{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.seo .related a{font-size:13px;color:#c8f135;text-decoration:none;border:1px solid #2a2a2a;border-radius:99px;padding:6px 14px}
+.seo .related a:hover{background:rgba(200,241,53,.08)}
+.site-footer{text-align:center;padding:40px 24px 60px;border-top:1px solid var(--border,#2a2a2a);position:relative;z-index:1;margin-top:40px}
+.site-footer .ft-tools{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;max-width:760px;margin:0 auto 20px}
+.site-footer a{color:#777;font-size:12.5px;text-decoration-color:#333}
+.site-footer a:hover{color:#c8f135}
+.site-footer p{font-size:12px;color:#5a5a5a;line-height:2}
+
+.page.wide{max-width:860px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px}
+.fld{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s}
+.fld:focus{border-color:var(--accent)}
+select.fld{cursor:pointer}
+textarea.fld{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.6;resize:vertical;min-height:220px}
+.btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:border-color .15s,background .15s;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:#0f0f0f;border-color:var(--accent);font-weight:500}
+.btn.primary:hover{filter:brightness(1.06)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:560px){.grid2,.grid3{grid-template-columns:1fr}}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);margin-bottom:8px;display:block}
+.status{font-size:13px;margin:10px 0 0;color:var(--mid);min-height:20px}
+.status.ok{color:#5cdb9a}.status.err{color:#e85c5c}.status.warn{color:#f5a623}
+.big{font-size:56px;font-weight:300;letter-spacing:-3px;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
+.kpi{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}
+.kpi b{display:block;font-size:24px;font-weight:300;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.tabs{display:flex;gap:6px;margin-bottom:18px}
+.tab{background:none;border:1px solid var(--border);color:var(--mid);border-radius:99px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.tab.active{color:var(--accent);border-color:rgba(200,241,53,.4);background:var(--accent-dim)}
+label.chk{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--mid);cursor:pointer}
+input[type=range]{accent-color:#c8f135;width:100%}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "JSON Formatter", "url": "https://www.mytoolpad.com/json-formatter.html", "description": "Free JSON formatter and validator. Beautify, minify and sort JSON with exact line and column for errors. Runs in your browser, nothing is uploaded.", "applicationCategory": "DeveloperApplication", "operatingSystem": "Any", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "publisher": {"@type": "Organization", "name": "MyToolPad", "url": "https://www.mytoolpad.com/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I validate JSON?", "acceptedAnswer": {"@type": "Answer", "text": "Paste it in. The status line shows \"Valid JSON\" or the exact line and column of the first error."}}, {"@type": "Question", "name": "What are the most common JSON errors?", "acceptedAnswer": {"@type": "Answer", "text": "Trailing commas, single quotes instead of double quotes, unquoted keys, missing commas between items and comments, none of which are allowed in JSON."}}, {"@type": "Question", "name": "Is my JSON uploaded anywhere?", "acceptedAnswer": {"@type": "Answer", "text": "No. Formatting and validation happen entirely in your browser."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "MyToolPad", "item": "https://www.mytoolpad.com/"}, {"@type": "ListItem", "position": 2, "name": "JSON Formatter", "item": "https://www.mytoolpad.com/json-formatter.html"}]}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<nav class="topnav">
+  <a href="/" class="nav-brand">My<em>Tool</em>Pad</a>
+  <div class="nav-links"><a href="/todo.html">To-Do</a><a href="/pomodoro.html">Focus</a><a href="/notes.html">Notes</a><a href="/percentage.html">Percentage</a><a href="/age.html">Age</a><a href="/tip.html">Tip</a><a href="/bmi.html">BMI</a><a href="/loan.html">Loan</a><a href="/gpa.html">GPA</a><a href="/color.html">Color</a><a href="/spinner.html">Spinner</a><a href="/counter.html">Counter</a><a href="/budget.html">Budget</a><a href="/countdown.html">Countdown</a><a href="/converter.html">Converter</a><a href="/password.html">Password</a><a href="/json-formatter.html" class="active">JSON</a><a href="/qr-code.html">QR</a><a href="/image-compressor.html">Image</a><a href="/days-between-dates.html">Dates</a><a href="/final-grade.html">Final Grade</a><a href="/gst-calculator.html">GST</a></div>
+</nav>
+<div class="page wide">
+  <h1 class="page-title">JSON<em>.</em>Formatter</h1>
+  <div class="page-sub">Paste JSON to format, minify, sort and validate. Errors show the exact line and column.</div>
+
+  <div class="card">
+    <label class="lbl" for="jin">Input JSON</label>
+    <textarea class="fld" id="jin" spellcheck="false" placeholder='{"hello":"world","items":[1,2,3]}'></textarea>
+    <div class="row" style="margin-top:14px">
+      <button class="btn primary" id="bFormat">Format</button>
+      <button class="btn" id="bMin">Minify</button>
+      <select class="fld" id="indent" style="width:auto;padding:9px 12px;font-size:13px" aria-label="Indent">
+        <option value="2">2 spaces</option><option value="4">4 spaces</option><option value="tab">Tab</option>
+      </select>
+      <label class="chk"><input type="checkbox" id="sortk"/> Sort keys</label>
+      <span style="flex:1"></span>
+      <button class="btn" id="bSample">Sample</button>
+      <button class="btn" id="bClear">Clear</button>
+    </div>
+    <div class="status" id="jstatus" aria-live="polite"></div>
+  </div>
+  <div class="card">
+    <label class="lbl" for="jout">Output</label>
+    <textarea class="fld" id="jout" spellcheck="false" readonly></textarea>
+    <div class="row" style="margin-top:14px">
+      <button class="btn primary" id="bCopy">Copy</button>
+      <button class="btn" id="bDown">Download .json</button>
+    </div>
+  </div>
+  <div class="seo">
+    <h2>Free JSON formatter and validator</h2>
+    <p>Paste any JSON and this tool formats it with clean indentation, minifies it for production, or sorts the keys alphabetically. It validates as you type and points to the exact line and column of the first error, so you can fix a missing comma or stray quote quickly.</p><p>Everything runs in your browser. Your JSON is never uploaded, which makes it safe to use with API responses and config files. A note on numbers: JavaScript cannot hold integers larger than 9,007,199,254,740,991 exactly, so very large IDs may be rounded when formatted.</p>
+    <h3>How to use it</h3>
+    <ol><li>Paste your JSON into the input box.</li><li>Choose an indent size and press Format, or press Minify.</li><li>Copy or download the result. Fix any error shown with its line and column.</li></ol>
+    <h3>Frequently asked questions</h3>
+    <details><summary>How do I validate JSON?</summary><p>Paste it in. The status line shows "Valid JSON" or the exact line and column of the first error.</p></details><details><summary>What are the most common JSON errors?</summary><p>Trailing commas, single quotes instead of double quotes, unquoted keys, missing commas between items and comments, none of which are allowed in JSON.</p></details><details><summary>Is my JSON uploaded anywhere?</summary><p>No. Formatting and validation happen entirely in your browser.</p></details>
+    <h3>More free tools</h3>
+    <div class="related"><a href="/qr-code.html">QR Code Generator</a><a href="/counter.html">Word Counter</a><a href="/password.html">Password Generator</a></div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const jin=$('jin'), jout=$('jout'), st=$('jstatus');
+function setStatus(t,c){st.textContent=t;st.className='status '+(c||'')}
+function sortKeys(v){
+  if(Array.isArray(v)) return v.map(sortKeys);
+  if(v&&typeof v==='object') return Object.fromEntries(Object.keys(v).sort().map(k=>[k,sortKeys(v[k])]));
+  return v;
+}
+function stats(v){
+  let keys=0,depth=0;
+  (function w(x,d){
+    depth=Math.max(depth,d);
+    if(Array.isArray(x)) x.forEach(i=>w(i,d+1));
+    else if(x&&typeof x==='object'){const ks=Object.keys(x);keys+=ks.length;ks.forEach(k=>w(x[k],d+1))}
+  })(v,0);
+  return {keys,depth};
+}
+function errInfo(e,src){
+  const m=e.message.replace(/\s*\(line \d+ column \d+\)/,'').replace(/ in JSON at position \d+/,'').replace(/\s+at position \d+/,'');
+  const full=e.message;
+  const lc=full.match(/line (\d+) column (\d+)/);
+  if(lc) return 'Line '+lc[1]+', column '+lc[2]+': '+m;
+  const pos=full.match(/position (\d+)/);
+  if(pos){
+    const p=+pos[1], before=src.slice(0,p);
+    return 'Line '+before.split('\n').length+', column '+(p-before.lastIndexOf('\n'))+': '+m;
+  }
+  return m;
+}
+function size(n){return n<1024?n+' B':(n/1024).toFixed(1)+' KB'}
+function run(mode){
+  const src=jin.value;
+  if(!src.trim()){jout.value='';setStatus('');return}
+  let v;
+  try{ v=JSON.parse(src); }
+  catch(e){ jout.value=''; setStatus('✗ '+errInfo(e,src),'err'); return }
+  if($('sortk').checked) v=sortKeys(v);
+  const ind=$('indent').value==='tab'?'\t':+$('indent').value;
+  jout.value = mode==='min' ? JSON.stringify(v) : JSON.stringify(v,null,ind);
+  const s=stats(v);
+  let msg='✓ Valid JSON · '+size(new Blob([jout.value]).size)+' · '+s.keys+' keys · depth '+s.depth;
+  if(/[:\[,]\s*-?\d{16,}\b/.test(src)) { msg+=' · large numbers may lose precision'; setStatus(msg,'warn'); }
+  else setStatus(msg,'ok');
+}
+let mode='fmt', t;
+$('bFormat').onclick=()=>{mode='fmt';run('fmt')};
+$('bMin').onclick=()=>{mode='min';run('min')};
+$('indent').onchange=()=>run(mode);
+$('sortk').onchange=()=>run(mode);
+jin.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(()=>run(mode),250)});
+$('bClear').onclick=()=>{jin.value='';jout.value='';setStatus('');jin.focus()};
+$('bSample').onclick=()=>{jin.value='{"name":"MyToolPad","tools":16,"free":true,"tags":["json","format"],"owner":{"city":"Sydney","active":true}}';mode='fmt';run('fmt')};
+$('bCopy').onclick=async()=>{
+  if(!jout.value)return;
+  try{await navigator.clipboard.writeText(jout.value)}catch(e){jout.select();document.execCommand('copy')}
+  const b=$('bCopy');b.textContent='Copied ✓';setTimeout(()=>b.textContent='Copy',1500);
+};
+$('bDown').onclick=()=>{
+  if(!jout.value)return;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([jout.value],{type:'application/json'}));
+  a.download='formatted.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+};
+</script>
+<footer class="site-footer">
+  <div class="ft-tools"><a href="/todo.html">To-Do List</a><a href="/pomodoro.html">Pomodoro Timer</a><a href="/notes.html">Online Notes</a><a href="/percentage.html">Percentage Calculator</a><a href="/age.html">Age Calculator</a><a href="/tip.html">Tip Calculator</a><a href="/bmi.html">BMI Calculator</a><a href="/loan.html">Loan Calculator</a><a href="/gpa.html">GPA Calculator</a><a href="/color.html">Color Picker</a><a href="/spinner.html">Decision Spinner Wheel</a><a href="/counter.html">Word Counter</a><a href="/budget.html">Budget Tracker</a><a href="/countdown.html">Countdown Timer</a><a href="/converter.html">Unit Converter</a><a href="/password.html">Password Generator</a><a href="/json-formatter.html">JSON Formatter</a><a href="/qr-code.html">QR Code Generator</a><a href="/image-compressor.html">Image Compressor</a><a href="/days-between-dates.html">Days Between Dates</a><a href="/final-grade.html">Final Grade Calculator</a><a href="/gst-calculator.html">GST Calculator</a></div>
+  <p>MyToolPad: free tools for students and everyday life.<br>
+  No sign-up · No pop-ups · Your data stays in your browser<br>
+  <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="https://github.com/game9151/mytoolpad/issues" rel="noopener">Feedback</a>
+  <!-- DONATE: paste your Buy Me a Coffee / Ko-fi link here once you have one, e.g.
+  · <a href="https://buymeacoffee.com/YOURNAME" rel="noopener">☕ Support MyToolPad</a> -->
+  </p>
+</footer>
+</body>
+</html>
