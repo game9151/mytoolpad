@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Wallpaper Preview and Resolution Checker for Any Device | MyToolPad</title>
+<meta name="description" content="Preview a wallpaper on an iPhone, Android phone, iPad, MacBook or monitor and see if the image is high-res enough. Free, private, nothing is uploaded."/>
+<link rel="canonical" href="https://www.mytoolpad.com/wallpaper-preview.html"/>
+<meta name="robots" content="index, follow, max-image-preview:large"/>
+<meta name="theme-color" content="#0f0f0f"/>
+<meta property="og:title" content="Wallpaper Preview and Resolution Checker for Any Device | MyToolPad"/>
+<meta property="og:description" content="Preview a wallpaper on an iPhone, Android phone, iPad, MacBook or monitor and see if the image is high-res enough. Free, private, nothing is uploaded."/>
+<meta property="og:url" content="https://www.mytoolpad.com/wallpaper-preview.html"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MyToolPad"/>
+<meta property="og:image" content="https://www.mytoolpad.com/og-image.png"/>
+<meta property="og:image:alt" content="MyToolPad logo"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Wallpaper Preview and Resolution Checker for Any Device | MyToolPad"/>
+<meta name="twitter:description" content="Preview a wallpaper on an iPhone, Android phone, iPad, MacBook or monitor and see if the image is high-res enough. Free, private, nothing is uploaded."/>
+<meta name="twitter:image" content="https://www.mytoolpad.com/og-image.png"/>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2032%2032%22%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22%230f0f0f%22/%3E%3Crect%20width%3D%2232%22%20height%3D%2232%22%20rx%3D%227%22%20fill%3D%22none%22%20stroke%3D%22%23c8f135%22%20stroke-width%3D%222%22/%3E%3Ctext%20x%3D%2216%22%20y%3D%2213%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%229%22%20font-weight%3D%22700%22%20fill%3D%22%23c8f135%22%20text-anchor%3D%22middle%22%3EMY%3C/text%3E%3Ctext%20x%3D%2216%22%20y%3D%2224%22%20font-family%3D%22Georgia%2Cserif%22%20font-size%3D%229%22%20font-weight%3D%22700%22%20fill%3D%22%23f0ede6%22%20text-anchor%3D%22middle%22%3ETOOL%3C/text%3E%3C/svg%3E"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f0f;--surface:#181818;--surface2:#212121;--border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);--text:#f0ede6;--muted:#5a5a5a;--dim:#8c8c8c;--mid:#888}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(15,15,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:24px;z-index:100}
+.nav-brand{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);text-decoration:none;flex-shrink:0;letter-spacing:-.3px}
+.nav-brand em{color:var(--accent);font-style:normal}
+.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.nav-links::-webkit-scrollbar{display:none}
+.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:all .15s;white-space:nowrap}
+.nav-links a:hover{color:var(--text);background:var(--surface)}
+.nav-links a.active{color:var(--accent);background:var(--accent-dim)}
+
+.page{max-width:640px;margin:0 auto;padding:50px 24px 80px;position:relative;z-index:1}
+.page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;letter-spacing:-1px;margin-bottom:6px}
+.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:14px;color:var(--dim);margin-bottom:36px;font-weight:300}
+</style>
+<style>
+.seo{border-top:1px solid #1e1e1e;padding-top:32px;margin-top:32px;color:#8a8a8a}
+.seo h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;margin:0 0 12px;color:#e6e3dc}
+.seo h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin:26px 0 10px;color:#c8c5be}
+.seo p{font-size:14px;line-height:1.85;margin-bottom:12px}
+.seo strong{color:#c8c5be;font-weight:500}
+.seo ol{padding-left:20px;font-size:14px;line-height:1.85}
+.seo details{border:1px solid #232323;border-radius:10px;padding:12px 16px;margin-bottom:8px;background:#141414}
+.seo summary{cursor:pointer;font-size:14px;color:#d8d5ce}
+.seo details p{margin:10px 0 0;font-size:13.5px}
+.seo .related{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.seo .related a{font-size:13px;color:#c8f135;text-decoration:none;border:1px solid #2a2a2a;border-radius:99px;padding:6px 14px}
+.seo .related a:hover{background:rgba(200,241,53,.08)}
+.site-footer{text-align:center;padding:40px 24px 60px;border-top:1px solid var(--border,#2a2a2a);position:relative;z-index:1;margin-top:40px}
+.site-footer .ft-tools{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;max-width:760px;margin:0 auto 20px}
+.site-footer a{color:#777;font-size:12.5px;text-decoration-color:#333}
+.site-footer a:hover{color:#c8f135}
+.site-footer p{font-size:12px;color:#5a5a5a;line-height:2}
+
+.page.wide{max-width:900px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px}
+.fld{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:13px 16px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s}
+.fld:focus{border-color:var(--accent)}
+select.fld{cursor:pointer}
+.btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:border-color .15s,background .15s;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn:disabled:hover{border-color:var(--border)}
+.btn.primary{background:var(--accent);color:#0f0f0f;border-color:var(--accent);font-weight:500}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.primary:disabled:hover{border-color:var(--accent);filter:none}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);margin-bottom:8px;display:block}
+.status{font-size:13px;margin:10px 0 0;color:var(--mid);min-height:20px}
+.status.ok{color:#5cdb9a}.status.err{color:#e85c5c}.status.warn{color:#f5a623}
+.big{font-size:56px;font-weight:300;letter-spacing:-3px;color:var(--accent);line-height:1;font-variant-numeric:tabular-nums}
+.kpi{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px 14px;text-align:center}
+.kpi b{display:block;font-size:16px;font-weight:400;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{background:none;border:1px solid var(--border);color:var(--mid);border-radius:99px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.tab.active{color:var(--accent);border-color:rgba(200,241,53,.4);background:var(--accent-dim)}
+input[type=range]{accent-color:#c8f135;width:100%}
+input[type=number].fld{padding:10px 12px;font-size:15px}
+
+/* wallpaper tool */
+[hidden]{display:none!important}
+.wp-grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);grid-template-areas:"controls preview" "verdict preview";gap:0 16px;align-items:start}
+.wp-grid>.card{margin-bottom:16px}
+@media(max-width:760px){.wp-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"controls" "preview" "verdict"}}
+.wp-ctl>*+*{margin-top:18px}
+.wp-stage{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:300px;padding:6px 0 4px}
+.wp-dev{position:relative;background:#0a0a0a;border:1px solid #3a3a3a;box-shadow:0 22px 50px rgba(0,0,0,.55),inset 0 0 0 2px #1a1a1a}
+.wp-scr{position:relative;overflow:hidden;background:#000;touch-action:none;outline:none}
+.wp-scr.pan{cursor:grab}
+.wp-scr.pan:active{cursor:grabbing}
+.wp-scr:focus-visible{box-shadow:0 0 0 2px var(--accent)}
+.wp-scr canvas{display:block}
+.wp-cut{position:absolute;background:#000;pointer-events:none}
+.wp-hb{position:absolute;border:2px solid #3a3a3a;border-radius:50%}
+.wp-ov{position:absolute;inset:0;pointer-events:none;color:#fff;font-family:'DM Sans',sans-serif;text-shadow:0 1px 8px rgba(0,0,0,.35)}
+.wp-ov .t{position:absolute;left:0;right:0;text-align:center;font-weight:500;line-height:1;letter-spacing:-.03em}
+.wp-ov .d{position:absolute;left:0;right:0;text-align:center;font-weight:400}
+.wp-ov .ic{background:rgba(255,255,255,.24);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
+.wp-ov .grid{position:absolute;left:0;right:0;display:grid;justify-content:space-evenly;align-content:start}
+.wp-ov .dock{position:absolute;display:flex;justify-content:space-evenly;align-items:center;background:rgba(255,255,255,.2);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.wp-stand{background:linear-gradient(#2e2e2e,#181818)}
+.chip{display:inline-block;font-size:12px;font-weight:500;padding:4px 12px;border-radius:99px;border:1px solid}
+.chip.ok{color:#5cdb9a;border-color:rgba(92,219,154,.4);background:rgba(92,219,154,.08)}
+.chip.good{color:var(--accent);border-color:rgba(200,241,53,.4);background:var(--accent-dim)}
+.chip.soft{color:#f5a623;border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.08)}
+.chip.bad{color:#e85c5c;border-color:rgba(232,92,92,.4);background:rgba(232,92,92,.08)}
+.wp-msg{font-size:14px;line-height:1.7;color:#b5b2ab;margin-top:12px}
+.wp-msg+.wp-msg{margin-top:8px;font-size:13px;color:var(--mid)}
+.wp-kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px}
+.wp-loupe{margin-top:16px}
+.wp-loupe canvas{display:block;width:100%;max-width:280px;height:auto;border:1px solid var(--border);border-radius:10px;background:#000}
+.wp-all{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px;margin-top:14px}
+.wp-all button{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.wp-all button:hover{border-color:var(--accent)}
+.wp-all small{display:block;color:var(--dim);font-size:11px;margin-top:2px}
+.wp-all .chip{font-size:11px;padding:3px 9px;flex-shrink:0}
+.wp-empty{color:var(--dim);font-size:14px;line-height:1.7}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Wallpaper Preview and Resolution Checker", "url": "https://www.mytoolpad.com/wallpaper-preview.html", "description": "Preview a wallpaper on an iPhone, Android phone, iPad, MacBook or monitor and see if the image is high-res enough. Free, private, nothing is uploaded.", "applicationCategory": "MultimediaApplication", "operatingSystem": "Any", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "publisher": {"@type": "Organization", "name": "MyToolPad", "url": "https://www.mytoolpad.com/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What resolution should a phone wallpaper be?", "acceptedAnswer": {"@type": "Answer", "text": "At least the phone's screen resolution in both directions, for example 1320 x 2868 pixels for an iPhone 17 Pro Max. Anything bigger is fine because the phone scales it down. If the image has fewer pixels than the screen, the phone stretches it and it looks soft."}}, {"@type": "Question", "name": "Are my images uploaded?", "acceptedAnswer": {"@type": "Answer", "text": "No. The image is read and drawn by your own browser. It is never sent to a server, so it stays private and works with large files."}}, {"@type": "Question", "name": "Why does my wallpaper look cropped on my phone?", "acceptedAnswer": {"@type": "Answer", "text": "Phone screens are tall and narrow, while most photos are wide. To fill the screen the phone crops the sides. Drag the image in the preview to pick which part stays, or switch to Fit to see the whole image with bars."}}, {"@type": "Question", "name": "Is a 4K wallpaper good enough for a phone?", "acceptedAnswer": {"@type": "Answer", "text": "Usually yes if the image is also tall enough. A 3840 x 2160 landscape image is only 2160 pixels tall, so on a phone it is cropped and stretched to fill a 2796 pixel tall screen. Check the verdict for your exact phone."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "MyToolPad", "item": "https://www.mytoolpad.com/"}, {"@type": "ListItem", "position": 2, "name": "Wallpaper Preview", "item": "https://www.mytoolpad.com/wallpaper-preview.html"}]}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<nav class="topnav">
+  <a href="/" class="nav-brand">My<em>Tool</em>Pad</a>
+  <div class="nav-links"><a href="/todo.html">To-Do</a><a href="/pomodoro.html">Focus</a><a href="/notes.html">Notes</a><a href="/percentage.html">Percentage</a><a href="/age.html">Age</a><a href="/tip.html">Tip</a><a href="/bmi.html">BMI</a><a href="/loan.html">Loan</a><a href="/gpa.html">GPA</a><a href="/color.html">Color</a><a href="/spinner.html">Spinner</a><a href="/counter.html">Counter</a><a href="/budget.html">Budget</a><a href="/countdown.html">Countdown</a><a href="/converter.html">Converter</a><a href="/password.html">Password</a><a href="/json-formatter.html">JSON</a><a href="/qr-code.html">QR</a><a href="/image-compressor.html">Image</a><a href="/days-between-dates.html">Dates</a><a href="/final-grade.html">Final Grade</a><a href="/gst-calculator.html">GST</a><a href="/wallpaper-preview.html" class="active">Wallpaper</a></div>
+</nav>
+<div class="page wide">
+  <h1 class="page-title">Wallpaper<em>.</em>Preview</h1>
+  <div class="page-sub">See a wallpaper on a phone, tablet, laptop or monitor, and whether it has enough pixels. Nothing is uploaded.</div>
+
+  <div class="card">
+    <div id="drop" tabindex="0" role="button" aria-label="Choose a wallpaper image" style="border:2px dashed var(--border);border-radius:16px;padding:34px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s">
+      <div style="font-size:15px;color:var(--text)">Drop a wallpaper here, click to choose, or paste one</div>
+      <div style="font-size:12px;color:var(--dim);margin-top:6px">JPG, PNG or WebP · stays on your device</div>
+      <input id="file" type="file" accept="image/*" hidden/>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn" id="sample" type="button">Try a sample image</button></div>
+    <div class="status" id="lstatus" aria-live="polite"></div>
+  </div>
+
+  <div class="wp-grid">
+    <div class="card wp-ctl" style="grid-area:controls">
+      <div>
+        <label class="lbl" for="devsel">Device</label>
+        <select class="fld" id="devsel"></select>
+        <div class="grid2" id="customrow" hidden style="margin-top:10px">
+          <div><label class="lbl" for="cw">Width (px)</label><input class="fld" id="cw" type="number" min="100" max="8000" value="1080" inputmode="numeric"/></div>
+          <div><label class="lbl" for="ch">Height (px)</label><input class="fld" id="ch" type="number" min="100" max="8000" value="1920" inputmode="numeric"/></div>
+        </div>
+      </div>
+      <div id="orirow">
+        <span class="lbl" id="orilbl">Orientation</span>
+        <div class="tabs" role="group" aria-labelledby="orilbl">
+          <button class="tab active" type="button" data-ori="p" aria-pressed="true">Portrait</button>
+          <button class="tab" type="button" data-ori="l" aria-pressed="false">Landscape</button>
+        </div>
+      </div>
+      <div>
+        <span class="lbl" id="modelbl">How it fills the screen</span>
+        <div class="tabs" role="group" aria-labelledby="modelbl">
+          <button class="tab active" type="button" data-mode="fill" aria-pressed="true">Fill screen</button>
+          <button class="tab" type="button" data-mode="fit" aria-pressed="false">Fit whole image</button>
+        </div>
+      </div>
+      <div id="zoomrow">
+        <label class="lbl" for="zoom">Zoom: <span id="zoomv">100</span>%</label>
+        <input type="range" id="zoom" min="100" max="300" value="100"/>
+        <div style="font-size:12px;color:var(--dim);margin-top:6px">Drag the preview, or use the arrow keys, to choose which part stays.</div>
+      </div>
+      <div id="ovrow">
+        <label class="lbl" for="ovsel">Show on top</label>
+        <select class="fld" id="ovsel"><option value="none">Nothing, just the wallpaper</option><option value="lock">Lock screen clock</option><option value="home">Home screen icons</option></select>
+      </div>
+    </div>
+
+    <div class="card" style="grid-area:preview">
+      <div class="wp-stage" id="stage"><div id="devwrap" style="display:flex;flex-direction:column;align-items:center"></div></div>
+      <div class="row" style="justify-content:center;margin-top:14px">
+        <button class="btn" type="button" id="reset">Reset position</button>
+        <select class="fld" id="xfmt" aria-label="Download format" style="width:auto;padding:9px 12px;font-size:13px"><option value="image/png">PNG</option><option value="image/jpeg">JPG</option></select>
+        <button class="btn primary" type="button" id="dl" disabled>Download for this screen</button>
+      </div>
+      <div class="status" id="xstatus" aria-live="polite" style="text-align:center"></div>
+    </div>
+
+    <div class="card" id="verdict" style="grid-area:verdict" aria-live="polite">
+      <div class="wp-empty">Choose an image to see whether it is sharp enough for this screen.</div>
+    </div>
+  </div>
+
+  <div class="card" id="allcard" hidden>
+    <span class="lbl" style="margin-bottom:2px">Check every device</span>
+    <div style="font-size:14px;color:#b5b2ab" id="allsum"></div>
+    <div class="wp-all" id="all"></div>
+  </div>
+
+  <div class="seo">
+    <h2>Preview a wallpaper on any phone, tablet or monitor</h2>
+    <p>Pick a device, drop in an image, and this tool shows how the wallpaper will sit on that screen, including what gets cropped. It also compares the pixels in your image with the pixels the screen needs, so you find out <strong>before</strong> you set it whether it will look soft or blurry.</p><p>Phones are tall and narrow, monitors are wide, and most photos are somewhere in between, so a wallpaper is almost always cropped. Drag the preview to choose the part you want to keep, or turn on the lock screen clock to see whether the subject collides with the time. Nothing leaves your device: the image is only read by your browser.</p>
+    <h3>How to use it</h3>
+    <ol><li>Drop an image onto the box, or try the sample.</li><li>Choose your device, or enter a custom size in pixels.</li><li>Drag to position the image. Read the verdict and the 100% pixel view underneath.</li><li>Optionally download a copy cropped to the exact screen size.</li></ol>
+    <h3>Frequently asked questions</h3>
+    <details><summary>What resolution should a phone wallpaper be?</summary><p>At least the phone's screen resolution in both directions, for example 1320 × 2868 pixels for an iPhone 17 Pro Max. Anything bigger is fine because the phone scales it down. If the image has fewer pixels than the screen, the phone stretches it and it looks soft.</p></details>
+    <details><summary>Are my images uploaded?</summary><p>No. The image is read and drawn by your own browser. It is never sent to a server, so it stays private and works with large files.</p></details>
+    <details><summary>Why does my wallpaper look cropped on my phone?</summary><p>Phone screens are tall and narrow, while most photos are wide. To fill the screen the phone crops the sides. Drag the image in the preview to pick which part stays, or switch to Fit to see the whole image with bars.</p></details>
+    <details><summary>Is a 4K wallpaper good enough for a phone?</summary><p>Usually yes if the image is also tall enough. A 3840 × 2160 landscape image is only 2160 pixels tall, so on a phone it is cropped and stretched to fill a 2796 pixel tall screen. Check the verdict for your exact phone.</p></details>
+    <details><summary>Where do the screen sizes come from?</summary><p>They are each model's native panel resolution in pixels. Models in the same family can differ slightly, so if your device is not listed, choose Custom size and type its resolution. iOS can also zoom a wallpaper a little when Perspective Zoom is on, so a bit of extra resolution helps.</p></details>
+    <h3>More free tools</h3>
+    <div class="related"><a href="/image-compressor.html">Image Compressor</a><a href="/color.html">Color Picker</a><a href="/qr-code.html">QR Code Generator</a></div>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const DEVICES=[
+ {g:'iPhone',n:'iPhone 17 Pro Max / 16 Pro Max',w:1320,h:2868,k:'island'},
+ {g:'iPhone',n:'iPhone Air',w:1260,h:2736,k:'island'},
+ {g:'iPhone',n:'iPhone 17 / 17 Pro / 16 Pro',w:1206,h:2622,k:'island'},
+ {g:'iPhone',n:'iPhone 16 Plus / 15 Plus / 15 Pro Max',w:1290,h:2796,k:'island'},
+ {g:'iPhone',n:'iPhone 16 / 15 / 15 Pro',w:1179,h:2556,k:'island'},
+ {g:'iPhone',n:'iPhone 16e / 14 / 13',w:1170,h:2532,k:'notch'},
+ {g:'iPhone',n:'iPhone SE (3rd generation)',w:750,h:1334,k:'home'},
+ {g:'Android',n:'Galaxy S25 Ultra / S25+',w:1440,h:3120,k:'hole'},
+ {g:'Android',n:'Galaxy S25',w:1080,h:2340,k:'hole'},
+ {g:'Android',n:'Pixel 9 Pro XL',w:1344,h:2992,k:'hole'},
+ {g:'Android',n:'Pixel 9 Pro',w:1280,h:2856,k:'hole'},
+ {g:'Android',n:'Pixel 9 / 9a',w:1080,h:2424,k:'hole'},
+ {g:'Android',n:'Typical Android (1080 × 2400)',w:1080,h:2400,k:'hole'},
+ {g:'Tablet',n:'iPad Pro 13"',w:2064,h:2752,k:'tablet'},
+ {g:'Tablet',n:'iPad Pro 11"',w:1668,h:2420,k:'tablet'},
+ {g:'Tablet',n:'iPad Air 11" / iPad (10th gen)',w:1640,h:2360,k:'tablet'},
+ {g:'Tablet',n:'iPad mini',w:1488,h:2266,k:'tablet'},
+ {g:'Laptop',n:'MacBook Pro 16"',w:3456,h:2234,k:'laptop'},
+ {g:'Laptop',n:'MacBook Pro 14"',w:3024,h:1964,k:'laptop'},
+ {g:'Laptop',n:'MacBook Air 15"',w:2880,h:1864,k:'laptop'},
+ {g:'Laptop',n:'MacBook Air 13"',w:2560,h:1664,k:'laptop'},
+ {g:'Laptop',n:'Windows laptop (1920 × 1080)',w:1920,h:1080,k:'laptop'},
+ {g:'Monitor / TV',n:'Full HD (1920 × 1080)',w:1920,h:1080,k:'mon'},
+ {g:'Monitor / TV',n:'QHD (2560 × 1440)',w:2560,h:1440,k:'mon'},
+ {g:'Monitor / TV',n:'4K UHD (3840 × 2160)',w:3840,h:2160,k:'mon'},
+ {g:'Monitor / TV',n:'5K (5120 × 2880)',w:5120,h:2880,k:'mon'},
+ {g:'Monitor / TV',n:'Ultrawide (3440 × 1440)',w:3440,h:1440,k:'mon'},
+ {g:'Monitor / TV',n:'Super ultrawide (5120 × 1440)',w:5120,h:1440,k:'mon'}
+];
+const ROT={island:1,notch:1,home:1,hole:1,tablet:1};
+const PHONE={island:1,notch:1,home:1,hole:1};
+const S={bmp:null,iw:0,ih:0,name:'',di:'0',land:false,mode:'fill',zoom:1,px:.5,py:.5,ov:'none',cw:1080,ch:1920};
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+
+/* device menu */
+(function(){
+  const sel=$('devsel');let og=null,last='';
+  DEVICES.forEach((d,i)=>{
+    if(d.g!==last){og=document.createElement('optgroup');og.label=d.g;sel.appendChild(og);last=d.g}
+    const o=document.createElement('option');o.value=i;o.textContent=d.n;og.appendChild(o);
+  });
+  const c=document.createElement('option');c.value='custom';c.textContent='Custom size…';sel.appendChild(c);
+  const saved=store.get('mytoolpad_wallpaper_device');
+  if(saved&&(saved==='custom'||DEVICES[+saved])){sel.value=saved;S.di=saved}else{S.di='0';sel.value='0'}
+})();
+
+function curDev(){
+  if(S.di==='custom') return {n:'Custom size',w:S.cw,h:S.ch,k:'plain'};
+  return DEVICES[+S.di];
+}
+function screenSize(){
+  const d=curDev();let w=d.w,h=d.h;
+  if(ROT[d.k]&&S.land){const t=w;w=h;h=t}
+  return {w,h,d};
+}
+function scaleFor(sw,sh,iw,ih,mode,zoom){
+  return mode==='fill'?Math.max(sw/iw,sh/ih)*zoom:Math.min(sw/iw,sh/ih);
+}
+function tier(pct){
+  if(pct>=100) return {key:'ok',label:'Sharp'};
+  if(pct>=75)  return {key:'good',label:'Slightly soft'};
+  if(pct>=50)  return {key:'soft',label:'Soft'};
+  return {key:'bad',label:'Too low-res'};
+}
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+
+/* painting: draws the wallpaper into ctx where 1 device pixel = k canvas pixels */
+function paint(ctx,k,sw,sh){
+  const s=scaleFor(sw,sh,S.iw,S.ih,S.mode,S.zoom),dw=S.iw*s,dh=S.ih*s;
+  let dx,dy;
+  if(S.mode==='fill'){dx=-(dw-sw)*S.px;dy=-(dh-sh)*S.py}else{dx=(sw-dw)/2;dy=(sh-dh)/2}
+  ctx.fillStyle='#000';ctx.fillRect(0,0,sw*k,sh*k);
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  ctx.drawImage(S.bmp,dx*k,dy*k,dw*k,dh*k);
+}
+function paintPlaceholder(ctx,w,h){
+  ctx.fillStyle='#141414';ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle='rgba(255,255,255,.06)';ctx.lineWidth=1;
+  for(let x=-h;x<w;x+=18){ctx.beginPath();ctx.moveTo(x,h);ctx.lineTo(x+h,0);ctx.stroke()}
+  ctx.fillStyle='#5a5a5a';ctx.font='500 '+Math.max(11,Math.round(Math.min(w,h)*.07))+'px DM Sans,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';
+  ctx.fillText('Your wallpaper',w/2,h/2);
+}
+
+/* device frame + overlays */
+function buildFrame(){
+  const {w:sw,h:sh,d}=screenSize();
+  const stageW=$('stage').clientWidth||320;
+  const k=d.k, phone=!!PHONE[k];
+  const maxW=Math.min(stageW-16,k==='laptop'||k==='mon'||k==='plain'?520:420);
+  const maxH=phone?500:k==='tablet'?460:k==='plain'?420:300;
+  const sc=Math.min(maxW/sw,maxH/sh);
+  const dw=Math.max(40,Math.round(sw*sc)),dh=Math.max(40,Math.round(sh*sc));
+  const m=Math.min(dw,dh);
+  let pad=6,padTop=6,padBot=6,rin=4,rout=10;
+  if(phone){pad=padTop=padBot=Math.max(5,Math.round(m*.04));rin=Math.round(m*.13);rout=rin+pad}
+  if(k==='home'){padTop=padBot=Math.round(dh*.11);pad=Math.round(m*.05);rin=3;rout=Math.round(m*.12)}
+  if(k==='tablet'){pad=padTop=padBot=Math.max(6,Math.round(m*.035));rin=Math.round(m*.035);rout=rin+pad}
+  if(k==='laptop'){pad=padBot=Math.max(6,Math.round(m*.02));padTop=Math.max(8,Math.round(m*.025));rin=4;rout=12}
+  if(k==='mon'){pad=padTop=padBot=Math.max(6,Math.round(m*.02));rin=2;rout=8}
+  const wrap=$('devwrap');wrap.innerHTML='';
+  const dev=document.createElement('div');dev.className='wp-dev';
+  dev.style.padding=padTop+'px '+pad+'px '+padBot+'px';
+  dev.style.borderRadius=k==='laptop'?rout+'px '+rout+'px 4px 4px':rout+'px';
+  const scr=document.createElement('div');scr.className='wp-scr';scr.id='scr';
+  scr.style.width=dw+'px';scr.style.height=dh+'px';scr.style.borderRadius=rin+'px';
+  scr.tabIndex=0;scr.setAttribute('role','img');
+  scr.setAttribute('aria-label','Wallpaper preview. Use the arrow keys to move the image.');
+  const dpr=Math.min(2,window.devicePixelRatio||1);
+  const cv=document.createElement('canvas');cv.id='cv';cv.width=Math.round(dw*dpr);cv.height=Math.round(dh*dpr);
+  cv.style.width=dw+'px';cv.style.height=dh+'px';
+  scr.appendChild(cv);
+  const ov=document.createElement('div');ov.className='wp-ov';ov.id='ov';scr.appendChild(ov);
+  const land=sw>sh;
+  if(k==='island'||k==='hole'||k==='notch'){
+    const c=document.createElement('div');c.className='wp-cut';
+    let L,T;
+    if(k==='island'){L=Math.round(m*.27);T=Math.round(m*.075)}
+    else if(k==='hole'){L=T=Math.max(5,Math.round(m*.036))}
+    else{L=Math.round(m*.42);T=Math.round(m*.062)}
+    const mt=Math.round(m*.026);
+    if(!land){
+      c.style.width=L+'px';c.style.height=T+'px';c.style.left=Math.round((dw-L)/2)+'px';c.style.top=(k==='notch'?0:mt)+'px';
+      c.style.borderRadius=k==='notch'?'0 0 '+Math.round(T*.6)+'px '+Math.round(T*.6)+'px':'99px';
+    }else{
+      c.style.width=T+'px';c.style.height=L+'px';c.style.top=Math.round((dh-L)/2)+'px';c.style.left=(k==='notch'?0:mt)+'px';
+      c.style.borderRadius=k==='notch'?'0 '+Math.round(T*.6)+'px '+Math.round(T*.6)+'px 0':'99px';
+    }
+    scr.appendChild(c);
+  }
+  dev.appendChild(scr);
+  if(k==='home'){
+    const b=document.createElement('div');b.className='wp-hb';const bs=Math.round(padBot*.5);
+    b.style.width=b.style.height=bs+'px';b.style.left='50%';b.style.marginLeft=(-bs/2)+'px';b.style.bottom=Math.round((padBot-bs)/2)+'px';
+    dev.appendChild(b);
+  }
+  wrap.appendChild(dev);
+  if(k==='laptop'){
+    const b=document.createElement('div');b.className='wp-stand';
+    b.style.cssText+='width:'+Math.round(dw+pad*2+m*.18)+'px;height:11px;border-radius:0 0 14px 14px;margin-top:-1px;position:relative;box-shadow:0 10px 24px rgba(0,0,0,.45)';
+    const n=document.createElement('div');n.style.cssText='position:absolute;left:50%;top:0;width:18%;height:4px;margin-left:-9%;background:#0d0d0d;border-radius:0 0 6px 6px';
+    b.appendChild(n);wrap.appendChild(b);
+  }
+  if(k==='mon'){
+    const nk=document.createElement('div');nk.className='wp-stand';nk.style.cssText='width:'+Math.max(18,Math.round(dw*.1))+'px;height:'+Math.max(14,Math.round(dh*.1))+'px';
+    const ft=document.createElement('div');ft.className='wp-stand';ft.style.cssText='width:'+Math.max(70,Math.round(dw*.3))+'px;height:7px;border-radius:6px';
+    wrap.appendChild(nk);wrap.appendChild(ft);
+  }
+  fillOverlay(ov,dw,dh,k,land);
+  wireScreen(scr,sc);
+  return {cv,dw,dh,sw,sh,sc,dpr,scr};
+}
+
+function fillOverlay(ov,dw,dh,k,land){
+  const mode=(PHONE[k]||k==='tablet')?S.ov:'none';
+  if(mode==='none'){ov.innerHTML='';return}
+  const m=Math.min(dw,dh),tab=k==='tablet';
+  if(mode==='lock'){
+    const fs=Math.round(m*(tab?.15:.26)),top=Math.round(dh*(land?.12:.1)+m*(tab?.05:.07));
+    const now=new Date();
+    const date=now.toLocaleDateString(undefined,{weekday:'long',day:'numeric',month:'long'});
+    ov.innerHTML='<div class="d" style="top:'+(top-Math.round(m*.07))+'px;font-size:'+Math.max(9,Math.round(m*.048))+'px">'+esc(date)+'</div><div class="t" style="top:'+top+'px;font-size:'+fs+'px">9:41</div>';
+  }else{
+    const cols=land?(tab?7:7):(tab?6:4),rows=land?(tab?3:3):(tab?5:6);
+    const sz=Math.round((tab?m*.085:m*.15)),rad=Math.round(sz*.26);
+    let html='<div class="grid" style="top:'+Math.round(dh*.07)+'px;grid-template-columns:repeat('+cols+','+sz+'px);row-gap:'+Math.round(sz*.55)+'px">';
+    for(let i=0;i<cols*rows;i++) html+=(i%7===5||i%11===9)?'<div style="width:'+sz+'px;height:'+sz+'px"></div>':'<div class="ic" style="width:'+sz+'px;height:'+sz+'px;border-radius:'+rad+'px"></div>';
+    html+='</div>';
+    const dh2=Math.round(sz*1.28),dwid=Math.round(Math.min(dw*.92,sz*(land?5.6:4.9)*1.15));
+    html+='<div class="dock" style="height:'+dh2+'px;width:'+dwid+'px;left:'+Math.round((dw-dwid)/2)+'px;bottom:'+Math.round(m*.03)+'px;border-radius:'+Math.round(dh2*.34)+'px">';
+    for(let i=0;i<4;i++) html+='<div class="ic" style="width:'+sz+'px;height:'+sz+'px;border-radius:'+rad+'px"></div>';
+    ov.innerHTML=html+'</div>';
+  }
+}
+
+/* drag + keyboard panning */
+function wireScreen(scr,sc){
+  let drag=null;
+  const slack=()=>{
+    const {w:sw,h:sh}=screenSize();
+    const s=scaleFor(sw,sh,S.iw,S.ih,S.mode,S.zoom);
+    return {x:S.iw*s-sw,y:S.ih*s-sh};
+  };
+  const canPan=()=>S.bmp&&S.mode==='fill'&&(()=>{const v=slack();return v.x>0.5||v.y>0.5})();
+  scr.classList.toggle('pan',!!canPan());
+  scr.onpointerdown=e=>{if(!canPan())return;drag={x:e.clientX,y:e.clientY};scr.setPointerCapture(e.pointerId)};
+  scr.onpointermove=e=>{
+    if(!drag)return;
+    const v=slack();
+    if(v.x>0.5) S.px=clamp(S.px-(e.clientX-drag.x)/sc/v.x,0,1);
+    if(v.y>0.5) S.py=clamp(S.py-(e.clientY-drag.y)/sc/v.y,0,1);
+    drag={x:e.clientX,y:e.clientY};redrawOnly();
+  };
+  const end=()=>{drag=null};
+  scr.onpointerup=end;scr.onpointercancel=end;
+  scr.onkeydown=e=>{
+    if(!canPan())return;
+    const st=.03,v=slack();let hit=false;
+    if(e.key==='ArrowLeft'&&v.x>0.5){S.px=clamp(S.px-st,0,1);hit=true}
+    if(e.key==='ArrowRight'&&v.x>0.5){S.px=clamp(S.px+st,0,1);hit=true}
+    if(e.key==='ArrowUp'&&v.y>0.5){S.py=clamp(S.py-st,0,1);hit=true}
+    if(e.key==='ArrowDown'&&v.y>0.5){S.py=clamp(S.py+st,0,1);hit=true}
+    if(hit){e.preventDefault();redrawOnly()}
+  };
+}
+
+let FR=null;
+function redrawOnly(){
+  if(!FR)return;
+  const ctx=FR.cv.getContext('2d');
+  if(S.bmp) paint(ctx,FR.sc*FR.dpr,FR.sw,FR.sh); else paintPlaceholder(ctx,FR.cv.width,FR.cv.height);
+  drawLoupe();
+}
+function drawLoupe(){
+  const c=$('loupe');if(!c||!S.bmp)return;
+  const {w:sw,h:sh}=screenSize();
+  const ctx=c.getContext('2d');
+  ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);
+  ctx.beginPath();ctx.rect(0,0,c.width,c.height);ctx.clip();
+  ctx.translate(-(sw/2-c.width/2),-(sh/2-c.height/2));
+  paint(ctx,1,sw,sh);
+  ctx.restore();
+}
+
+function render(){
+  const {w:sw,h:sh,d}=screenSize();
+  // controls that depend on the device
+  const rot=!!ROT[d.k];
+  $('orirow').hidden=!rot;
+  $('ovrow').hidden=!(PHONE[d.k]||d.k==='tablet');
+  $('customrow').hidden=S.di!=='custom';
+  $('zoomrow').hidden=S.mode!=='fill';
+  document.querySelectorAll('[data-ori]').forEach(b=>{const on=(b.dataset.ori==='l')===S.land;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on)});
+  document.querySelectorAll('[data-mode]').forEach(b=>{const on=b.dataset.mode===S.mode;b.classList.toggle('active',on);b.setAttribute('aria-pressed',on)});
+  FR=buildFrame();
+  redrawOnly();
+  $('dl').disabled=!S.bmp;
+  renderVerdict(sw,sh,d);
+  renderAll();
+}
+
+function renderVerdict(sw,sh,d){
+  const box=$('verdict');
+  if(!S.bmp){box.innerHTML='<div class="wp-empty">Choose an image to see whether it is sharp enough for this screen.</div>';return}
+  const s=scaleFor(sw,sh,S.iw,S.ih,S.mode,S.zoom);
+  const pct=Math.round(100/s),t=tier(pct);
+  const fmt=n=>Math.ceil(n).toLocaleString('en-US');
+  let need;
+  if(S.mode==='fill') need='at least <strong>'+fmt(sw*S.zoom)+' × '+fmt(sh*S.zoom)+' px</strong>';
+  else need='at least <strong>'+fmt(sw)+' px wide</strong> or <strong>'+fmt(sh)+' px tall</strong>';
+  let msg;
+  if(t.key==='ok') msg='Your image has enough pixels for this screen'+(pct>=200?' (more than twice as many as it needs, which is fine: it is scaled down).':'.');
+  else if(t.key==='good') msg='The image is stretched about '+s.toFixed(2)+'× to fill this screen. On a phone most people will not notice; on a large screen it may look slightly soft.';
+  else if(t.key==='soft') msg='The image is stretched '+s.toFixed(1)+'× to fill this screen, so edges and fine detail will look fuzzy. Look for a version that is '+need+'.';
+  else msg='Too low-res for this screen. The image would be stretched '+s.toFixed(1)+'×, so expect visible blur or blocky edges. You need '+need+'.';
+  let crop='';
+  if(S.mode==='fill'){
+    const vis=Math.min(100,Math.round(100*(sw/s)*(sh/s)/(S.iw*S.ih)));
+    if(vis<98) crop='Showing about '+vis+'% of your image; the rest is cropped'+(S.iw>S.ih&&sh>sw?'. A wide photo on a tall screen keeps only a slice, so drag to choose it.':'. Drag the preview to choose which part stays.');
+    else crop='Almost the whole image is visible.';
+  }else{
+    const bw=Math.round(S.iw*s),bh=Math.round(S.ih*s);
+    crop=(Math.abs(bw-sw)<2&&Math.abs(bh-sh)<2)?'The image matches the screen shape, so there are no bars.':'The whole image is shown with black bars at the '+(bw<sw-1?'sides':'top and bottom')+'.';
+  }
+  box.innerHTML='<div class="row" style="justify-content:space-between;align-items:flex-end">'
+    +'<div><span class="lbl" style="margin-bottom:6px">Resolution match</span><div class="big">'+pct+'<span style="font-size:24px;letter-spacing:0">%</span></div></div>'
+    +'<span class="chip '+t.key+'">'+t.label+'</span></div>'
+    +'<div class="wp-msg">'+msg+'</div><div class="wp-msg">'+esc(crop)+'</div>'
+    +'<div class="wp-kpis"><div class="kpi"><b>'+S.iw.toLocaleString('en-US')+' × '+S.ih.toLocaleString('en-US')+'</b><span>Your image</span></div>'
+    +'<div class="kpi"><b>'+sw.toLocaleString('en-US')+' × '+sh.toLocaleString('en-US')+'</b><span>'+esc(d.k==='plain'?'Custom screen':'This screen')+'</span></div></div>'
+    +'<div class="wp-loupe"><span class="lbl">Detail at actual pixels (centre of the screen)</span><canvas id="loupe" width="280" height="150"></canvas></div>';
+  drawLoupe();
+}
+
+function renderAll(){
+  const card=$('allcard');
+  if(!S.bmp){card.hidden=true;return}
+  card.hidden=false;
+  let okN=0,html='';
+  DEVICES.forEach((d,i)=>{
+    const s=scaleFor(d.w,d.h,S.iw,S.ih,S.mode,S.mode==='fill'?S.zoom:1);
+    const pct=Math.round(100/s),t=tier(pct);
+    if(pct>=100) okN++;
+    html+='<button type="button" data-i="'+i+'"><span>'+esc(d.n)+'<small>'+d.w+' × '+d.h+'</small></span><span class="chip '+t.key+'">'+t.label+'</span></button>';
+  });
+  $('allsum').textContent='Sharp on '+okN+' of '+DEVICES.length+' devices at this zoom. Tap a device to preview it.';
+  $('all').innerHTML=html;
+}
+$('all').addEventListener('click',e=>{
+  const b=e.target.closest('button[data-i]');if(!b)return;
+  S.di=b.dataset.i;$('devsel').value=S.di;store.set('mytoolpad_wallpaper_device',S.di);
+  S.px=S.py=.5;render();$('stage').scrollIntoView({behavior:'smooth',block:'center'});
+});
+
+/* controls */
+$('devsel').onchange=()=>{S.di=$('devsel').value;store.set('mytoolpad_wallpaper_device',S.di);S.px=S.py=.5;S.land=false;render()};
+const readCustom=()=>{S.cw=clamp(Math.round(+$('cw').value)||1080,100,8000);S.ch=clamp(Math.round(+$('ch').value)||1920,100,8000)};
+['cw','ch'].forEach(id=>$(id).addEventListener('input',()=>{readCustom();S.px=S.py=.5;render()}));
+document.querySelectorAll('[data-ori]').forEach(b=>b.onclick=()=>{S.land=b.dataset.ori==='l';S.px=S.py=.5;render()});
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{S.mode=b.dataset.mode;S.px=S.py=.5;render()});
+$('zoom').oninput=()=>{S.zoom=+$('zoom').value/100;$('zoomv').textContent=$('zoom').value;render()};
+$('ovsel').onchange=()=>{S.ov=$('ovsel').value;render()};
+$('reset').onclick=()=>{S.px=S.py=.5;S.zoom=1;$('zoom').value=100;$('zoomv').textContent='100';render()};
+$('dl').onclick=()=>{
+  if(!S.bmp)return;
+  const {w,h}=screenSize();const c=document.createElement('canvas');c.width=w;c.height=h;
+  paint(c.getContext('2d'),1,w,h);
+  const type=$('xfmt').value;
+  c.toBlob(b=>{
+    if(!b){$('xstatus').textContent='This browser could not create the file.';$('xstatus').className='status err';return}
+    const a=document.createElement('a');const url=URL.createObjectURL(b);
+    a.href=url;a.download=(S.name||'wallpaper').replace(/\.[^.]+$/,'')+'-'+w+'x'+h+(type==='image/png'?'.png':'.jpg');
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),4000);
+    $('xstatus').textContent='Saved '+w+' × '+h+' px.';$('xstatus').className='status ok';
+  },type,.95);
+};
+
+/* loading images */
+const drop=$('drop'),input=$('file');
+drop.onclick=()=>input.click();
+drop.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();input.click()}};
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.borderColor='var(--accent)';drop.style.background='var(--accent-dim)'}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.style.borderColor='var(--border)';drop.style.background='none'}));
+drop.addEventListener('drop',e=>{if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0])});
+input.onchange=()=>{if(input.files[0])loadFile(input.files[0]);input.value=''};
+document.addEventListener('paste',e=>{
+  const it=[...(e.clipboardData&&e.clipboardData.items||[])].find(i=>i.type.indexOf('image/')===0);
+  if(it){const f=it.getAsFile();if(f)loadFile(f)}
+});
+function setStatus(msg,cls){$('lstatus').textContent=msg;$('lstatus').className='status '+(cls||'')}
+async function loadFile(f){
+  if(f.type&&f.type.indexOf('image/')!==0){setStatus(f.name+': that is not an image file.','err');return}
+  if(f.size>80*1024*1024){setStatus(f.name+': larger than 80 MB.','warn');return}
+  let bmp;
+  try{bmp=await createImageBitmap(f,{imageOrientation:'from-image'})}
+  catch(e){try{bmp=await createImageBitmap(f)}catch(e2){
+    setStatus('This browser could not open '+f.name+'. HEIC photos from an iPhone usually need converting to JPG first.','err');return}}
+  setImage(bmp,f.name);
+}
+function setImage(bmp,name){
+  if(S.bmp&&S.bmp.close)S.bmp.close();
+  S.bmp=bmp;S.iw=bmp.width;S.ih=bmp.height;S.name=name;S.px=S.py=.5;S.zoom=1;$('zoom').value=100;$('zoomv').textContent='100';
+  setStatus(name+' · '+bmp.width.toLocaleString('en-US')+' × '+bmp.height.toLocaleString('en-US')+' px','ok');
+  $('xstatus').textContent='';
+  render();
+}
+$('sample').onclick=async()=>{
+  const w=1920,h=1080,c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,w,h);g.addColorStop(0,'#1d2671');g.addColorStop(.55,'#c33764');g.addColorStop(1,'#f5a623');
+  x.fillStyle=g;x.fillRect(0,0,w,h);
+  x.strokeStyle='rgba(255,255,255,.1)';x.lineWidth=1;
+  for(let i=0;i<=w;i+=40){x.beginPath();x.moveTo(i+.5,0);x.lineTo(i+.5,h);x.stroke()}
+  for(let j=0;j<=h;j+=40){x.beginPath();x.moveTo(0,j+.5);x.lineTo(w,j+.5);x.stroke()}
+  x.strokeStyle='rgba(255,255,255,.35)';x.lineWidth=2;
+  for(let r=120;r<=480;r+=120){x.beginPath();x.arc(w/2,h/2,r,0,Math.PI*2);x.stroke()}
+  x.fillStyle='#fff';x.textAlign='center';x.textBaseline='middle';x.font='600 120px DM Sans,sans-serif';x.fillText('Sample',w/2,h/2-30);
+  x.font='400 44px DM Sans,sans-serif';x.fillText('1920 × 1080',w/2,h/2+60);
+  setImage(await createImageBitmap(c),'sample');
+};
+
+let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(render,150)});
+render();
+</script>
+<footer class="site-footer">
+  <div class="ft-tools"><a href="/todo.html">To-Do List</a><a href="/pomodoro.html">Pomodoro Timer</a><a href="/notes.html">Online Notes</a><a href="/percentage.html">Percentage Calculator</a><a href="/age.html">Age Calculator</a><a href="/tip.html">Tip Calculator</a><a href="/bmi.html">BMI Calculator</a><a href="/loan.html">Loan Calculator</a><a href="/gpa.html">GPA Calculator</a><a href="/color.html">Color Picker</a><a href="/spinner.html">Decision Spinner Wheel</a><a href="/counter.html">Word Counter</a><a href="/budget.html">Budget Tracker</a><a href="/countdown.html">Countdown Timer</a><a href="/converter.html">Unit Converter</a><a href="/password.html">Password Generator</a><a href="/json-formatter.html">JSON Formatter</a><a href="/qr-code.html">QR Code Generator</a><a href="/image-compressor.html">Image Compressor</a><a href="/days-between-dates.html">Days Between Dates</a><a href="/final-grade.html">Final Grade Calculator</a><a href="/gst-calculator.html">GST Calculator</a><a href="/wallpaper-preview.html">Wallpaper Preview</a></div>
+  <p>MyToolPad: free tools for students and everyday life.<br>
+  No sign-up · No pop-ups · Your data stays in your browser<br>
+  <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="https://github.com/game9151/mytoolpad/issues" rel="noopener">Feedback</a>
+  <!-- DONATE: paste your Buy Me a Coffee / Ko-fi link here once you have one, e.g.
+  · <a href="https://buymeacoffee.com/YOURNAME" rel="noopener">☕ Support MyToolPad</a> -->
+  </p>
+</footer>
+</body>
+</html>
