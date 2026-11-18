@@ -67,6 +67,32 @@ PAGES = ['index.html', 'about.html', 'privacy.html', '404.html'] + [c[2] for c i
 NO_ASIDE = {'wallpaper-preview.html'}  # big visual tools keep the full width
 
 
+# Small-print disclaimers. Money tools get the finance wording, health tools the health wording.
+DISCLAIMER_MONEY = ('General information only, not financial, tax or legal advice. Results are estimates and may not suit your '
+                    'situation, and rates and rules change. Check with the ATO, Revenue NSW, your lender or a '
+                    'qualified adviser before you rely on them. MyToolPad accepts no responsibility for any loss or decision made '
+                    'using this tool.')
+DISCLAIMER_HEALTH = ('General information only, not medical advice. BMI is a rough screening measure and does not account for '
+                     'muscle, age, sex or ethnicity. Talk to a doctor about your health. MyToolPad accepts no responsibility for '
+                     'decisions made using this tool.')
+DISCLAIMER_STUDY = ('Estimates only. Grading scales and rules differ between universities and courses, so check your official '
+                    'results and handbook. MyToolPad accepts no responsibility for decisions made using this tool.')
+HEALTH = {'bmi.html'}
+
+
+def disclaimer_for(fname):
+    t = next((x for x in TOOLS if x[0] == fname), None)
+    if not t:
+        return ''
+    if fname in HEALTH:
+        return DISCLAIMER_HEALTH
+    if t[4][0] == 'money':
+        return DISCLAIMER_MONEY
+    if t[4][0] == 'study':
+        return DISCLAIMER_STUDY
+    return ''
+
+
 def esc(s):
     return (s or '').replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
 
@@ -115,6 +141,7 @@ def footer_html():
     return ('<footer class="mtp-footer"><div class="mtp-fcols">%s</div>'
             '<p>MyToolPad: free tools for students and everyday life.<br>No sign-up · No pop-ups · Your data stays in your browser<br>'
             '<a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="https://github.com/game9151/mytoolpad/issues" rel="noopener">Feedback</a><br>'
+            'Tools are provided as is, for general information, without any warranty.<br>'
             'I design websites. <a href="mailto:officialmeridianstudio@gmail.com">Contact me</a></p></footer>') % cols
 
 
@@ -205,6 +232,10 @@ def process_page(fname, v):
     html = replace_block(html, 'head', head_html(v), lambda h, b: h.replace('</head>', b + '\n</head>', 1))
     html = replace_block(html, 'nav', nav_html(fname),
                          lambda h, b: re.sub(r'<nav class="topnav">.*?</nav>', lambda m: b, h, count=1, flags=re.S))
+    d = disclaimer_for(fname)
+    if d or '<!-- mtp:disclaimer -->' in html:
+        html = replace_block(html, 'disclaimer', '<p class="mtp-disclaimer">%s</p>' % esc(d) if d else '',
+                             lambda h, b: h.replace('<!-- mtp:footer -->', b + '\n<!-- mtp:footer -->', 1))
     html = replace_block(html, 'footer', footer_html(),
                          lambda h, b: re.sub(r'<footer class="site-footer">.*?</footer>', lambda m: b, h, count=1, flags=re.S))
     # one-time clean-ups (no-ops once applied)
