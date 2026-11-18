@@ -43,11 +43,11 @@ body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;
 
 
 /* Hero */
-.hero{position:relative;z-index:1;text-align:center;padding:100px 24px 80px}
-.hero-eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:22px;animation:fadeUp .6s ease both}
-.hero-title{font-family:'Playfair Display',serif;font-size:clamp(46px,9vw,86px);font-weight:600;line-height:.95;letter-spacing:-3px;margin-bottom:28px;animation:fadeUp .6s .08s ease both}
+.hero{position:relative;z-index:1;text-align:center;padding:64px 24px 36px}
+.hero-eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:18px;animation:fadeUp .6s ease both}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(46px,9vw,86px);font-weight:600;line-height:.95;letter-spacing:-3px;margin-bottom:20px;animation:fadeUp .6s .08s ease both}
 .hero-title span{color:var(--accent)}
-.hero-sub{font-size:17px;font-weight:300;color:var(--mid);max-width:460px;margin:0 auto 44px;line-height:1.65;animation:fadeUp .6s .16s ease both}
+.hero-sub{font-size:17px;font-weight:300;color:var(--mid);max-width:480px;margin:0 auto 26px;line-height:1.65;animation:fadeUp .6s .16s ease both}
 .hero-tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;animation:fadeUp .6s .24s ease both}
 .tag{background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:6px 16px;font-size:12px;color:var(--mid);letter-spacing:.02em}
 
@@ -80,7 +80,7 @@ footer p{font-size:12px;color:var(--muted);line-height:2}
 footer a{color:var(--muted);text-decoration-color:var(--border)}
 
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-@media(max-width:600px){.hero{padding:70px 20px 60px}.tools-wrap{padding:0 16px 80px}}
+@media(max-width:600px){.hero{padding:44px 20px 28px}.tools-wrap{padding:0 16px 80px}}
 </style>
   <script defer src="/_vercel/insights/script.js"></script>
 <style>
@@ -120,7 +120,7 @@ footer a{color:var(--muted);text-decoration-color:var(--border)}
 <section class="hero">
   <div class="hero-eyebrow">Free · Private · No sign-up</div>
   <h1 class="hero-title">MyToolPad</h1>
-  <p class="hero-sub">Beautiful, free tools for students and everyday life. Everything saves automatically in your browser — no account needed, ever.</p>
+  <p class="hero-sub">Free tools for students and everyday life. They run in your browser, save as you go and never need an account.</p>
   <div class="hero-tags">
     <span class="tag">No sign-up</span>
     <span class="tag">No ads</span>
