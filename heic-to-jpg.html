@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>HEIC to JPG Converter: Private, No Upload | MyToolPad</title>
+<meta name="description" content="Convert iPhone HEIC and HEIF photos to JPG or PNG in your browser. Batch convert, no upload, no sign-up, no watermark."/>
+<link rel="canonical" href="https://www.mytoolpad.com/heic-to-jpg.html"/>
+<meta name="robots" content="index, follow, max-image-preview:large"/>
+<meta name="theme-color" content="#0f0f0f"/>
+<meta property="og:title" content="HEIC to JPG Converter: Private, No Upload | MyToolPad"/>
+<meta property="og:description" content="Convert iPhone HEIC and HEIF photos to JPG or PNG in your browser. Batch convert, no upload, no sign-up, no watermark."/>
+<meta property="og:url" content="https://www.mytoolpad.com/heic-to-jpg.html"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MyToolPad"/>
+<meta property="og:image" content="https://www.mytoolpad.com/og-image.png"/>
+<meta property="og:image:alt" content="MyToolPad logo"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="HEIC to JPG Converter: Private, No Upload | MyToolPad"/>
+<meta name="twitter:description" content="Convert iPhone HEIC and HEIF photos to JPG or PNG in your browser. Batch convert, no upload, no sign-up, no watermark."/>
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f0f;--surface:#181818;--surface2:#212121;--border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);--text:#f0ede6;--muted:#5a5a5a;--mid:#888}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+[hidden]{display:none!important}
+.page{max-width:900px;margin:0 auto;padding:50px 24px 80px;position:relative;z-index:1}
+.page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;letter-spacing:-1px;margin-bottom:6px}
+.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:14px;color:var(--dim);margin-bottom:32px;font-weight:300;line-height:1.6}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px}
+.fld{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s}
+.fld:focus{border-color:var(--accent)}
+select.fld{cursor:pointer}
+.btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:border-color .15s,background .15s;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:500}
+.btn.primary:hover{filter:brightness(1.06)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:560px){.grid2,.grid3{grid-template-columns:1fr}}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);margin-bottom:8px;display:block}
+.status{font-size:13px;margin:10px 0 0;color:var(--mid);min-height:20px}
+.status.ok{color:var(--ok)}.status.err{color:var(--err)}.status.warn{color:var(--warn)}
+.big{font-size:52px;font-weight:300;letter-spacing:-2.5px;color:var(--accent);line-height:1.05;font-variant-numeric:tabular-nums}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:16px}
+.kpi{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px 14px}
+.kpi b{display:block;font-size:18px;font-weight:400;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{background:none;border:1px solid var(--border);color:var(--mid);border-radius:99px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.tab[aria-pressed=true]{color:var(--accent);border-color:rgba(var(--accent-rgb),.45);background:var(--accent-dim)}
+label.chk{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text);cursor:pointer;padding:6px 0}
+label.chk input{width:18px;height:18px;accent-color:var(--accent)}
+input[type=range]{accent-color:var(--accent);width:100%}
+.money{position:relative}
+.money span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:16px;pointer-events:none}
+.money .fld{padding-left:28px}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:9px 8px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left;white-space:normal}
+.tbl th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-weight:500}
+.tbl tr.total td{font-weight:500;color:var(--text);border-bottom:0}
+.tbl tr.hi td{background:var(--accent-dim)}
+.note{font-size:12.5px;color:var(--dim);line-height:1.6;margin-top:12px}
+.note a{color:var(--accent)}
+.drop{border:2px dashed var(--border);border-radius:16px;padding:40px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.drop.over{border-color:var(--accent);background:var(--accent-dim)}
+.drop b{display:block;font-size:15px;font-weight:400;color:var(--text)}
+.drop small{display:block;font-size:12px;color:var(--dim);margin-top:6px}
+.res{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.res img{width:84px;height:84px;object-fit:cover;border-radius:10px;background:var(--surface2)}
+.res .meta{flex:1;min-width:180px}
+.res .nm{font-size:14px;word-break:break-all}
+.res .sz{font-size:12px;color:var(--dim);margin-top:4px}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "HEIC to JPG Converter", "url": "https://www.mytoolpad.com/heic-to-jpg.html", "description": "Convert iPhone HEIC and HEIF photos to JPG or PNG in your browser. Batch convert, no upload, no sign-up, no watermark.", "applicationCategory": "MultimediaApplication", "operatingSystem": "Any", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "AUD"}, "publisher": {"@type": "Organization", "name": "MyToolPad", "url": "https://www.mytoolpad.com/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Are my photos uploaded?", "acceptedAnswer": {"@type": "Answer", "text": "No. The conversion runs on your device. The page only downloads the converter code, never your photos."}}, {"@type": "Question", "name": "JPG or PNG?", "acceptedAnswer": {"@type": "Answer", "text": "JPG for photos: the files are much smaller. PNG keeps every pixel but files are often five to ten times larger."}}, {"@type": "Question", "name": "How do I stop my iPhone saving HEIC?", "acceptedAnswer": {"@type": "Answer", "text": "Go to Settings, Camera, Formats and choose Most Compatible. New photos will be saved as JPG. Existing photos stay HEIC."}}, {"@type": "Question", "name": "Is location data kept?", "acceptedAnswer": {"@type": "Answer", "text": "No. The converted file is redrawn from the pixels, so EXIF data such as GPS location and camera details is not copied across."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "MyToolPad", "item": "https://www.mytoolpad.com/"}, {"@type": "ListItem", "position": 2, "name": "HEIC to JPG Converter", "item": "https://www.mytoolpad.com/heic-to-jpg.html"}]}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<!-- mtp:head -->
+<script>(function(){var d=document.documentElement;try{var t=localStorage.getItem("mtp-theme")||"dark",a=localStorage.getItem("mtp-accent")||"lime";if(t==="auto")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";d.setAttribute("data-theme",t);d.setAttribute("data-accent",a)}catch(e){d.setAttribute("data-theme","dark")}})()</script>
+<link rel="stylesheet" href="/assets/site.css?v=86224f4d"/>
+<link rel="manifest" href="/manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="/icons/icon-192.png"/>
+<script src="/assets/tools.js?v=86224f4d" defer></script>
+<script src="/assets/site.js?v=86224f4d" defer></script>
+<!-- /mtp:head -->
+</head>
+<body>
+<!-- mtp:nav -->
+<nav class="mtp-nav" aria-label="Main" data-tool="/heic-to-jpg.html"><a href="/" class="mtp-brand">My<em>Tool</em>Pad</a><div class="mtp-cats"><a href="/study-tools.html">Study</a><a href="/money-tools.html">Money</a><a href="/image-tools.html" class="active">Images</a><a href="/productivity-tools.html">Productivity</a><a href="/everyday-tools.html">Everyday</a><a href="/text-and-dev-tools.html">Text &amp; Dev</a></div><button class="mtp-search-btn" type="button" data-mtp-search aria-label="Search tools"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search tools</span><kbd>/</kbd></button><button class="mtp-icon-btn" type="button" data-mtp-pin aria-pressed="false" aria-label="Pin this tool to My Pad" title="Pin to My Pad"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></button><button class="mtp-icon-btn" type="button" data-mtp-theme aria-label="Theme and colour" title="Theme and colour"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button></nav>
+<!-- /mtp:nav -->
+<div class="page has-aside"><div class="tool-col">
+  <h1 class="page-title">HEIC<em>.</em>to JPG</h1>
+  <div class="page-sub">Turn iPhone photos into JPG or PNG. Your photos never leave this device.</div>
+  <div class="card">
+    <div class="drop" id="drop" tabindex="0" role="button" aria-label="Choose HEIC photos"><b>Drop HEIC photos here, or click to choose</b><small>HEIC or HEIF from an iPhone or iPad · up to 50 at once · stays on your device</small><input id="file" type="file" accept=".heic,.heif,image/heic,image/heif" multiple hidden/></div>
+    <div class="grid2" style="margin-top:16px">
+      <div><label class="lbl" for="fmt">Convert to</label><select class="fld" id="fmt"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option></select></div>
+      <div id="qrow"><label class="lbl" for="q">JPG quality: <span id="qv">90</span>%</label><input type="range" id="q" min="50" max="100" value="90" style="margin-top:12px"/></div>
+    </div>
+    <div class="status" id="st" aria-live="polite"></div>
+  </div>
+  <div id="out"></div>
+  <div class="row" id="allbar" hidden><button class="btn primary" type="button" id="dlAll">Download all</button><button class="btn" type="button" id="clr">Clear</button></div>
+
+  </div>
+  <div class="seo">
+    <h2>Convert HEIC to JPG without uploading your photos</h2>
+    <p>iPhones save photos as HEIC to save space, but Windows, many websites and some apps cannot open them. This converter turns HEIC and HEIF files into JPG or PNG right in your browser, so personal photos are never sent to a server.</p>
+    <p>Safari can read HEIC on its own. In Chrome, Edge and Firefox the page loads <a href="https://github.com/alexcorvi/heic2any" rel="noopener">heic2any</a>, an open-source converter, the first time you use it. Only that code is downloaded; your photos stay on your device.</p>
+    <h3>How to use it</h3>
+    <ol><li>Drop your HEIC photos on the box, or click to choose them.</li><li>Pick JPG or PNG. JPG at 90% looks the same as the original for most photos.</li><li>Download each photo, or use Download all.</li></ol>
+    <h3>Frequently asked questions</h3>
+    <details><summary>Are my photos uploaded?</summary><p>No. The conversion runs on your device. The page only downloads the converter code, never your photos.</p></details><details><summary>JPG or PNG?</summary><p>JPG for photos: the files are much smaller. PNG keeps every pixel but files are often five to ten times larger.</p></details><details><summary>How do I stop my iPhone saving HEIC?</summary><p>Go to Settings, Camera, Formats and choose Most Compatible. New photos will be saved as JPG. Existing photos stay HEIC.</p></details><details><summary>Is location data kept?</summary><p>No. The converted file is redrawn from the pixels, so EXIF data such as GPS location and camera details is not copied across.</p></details>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const aud=(n,dp)=>(n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-AU',{minimumFractionDigits:dp||0,maximumFractionDigits:dp||0});
+const num=v=>{const n=parseFloat(String(v).replace(/[^0-9.\-]/g,''));return isFinite(n)?n:0};
+const store={get(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function pressGroup(sel,cb){document.querySelectorAll(sel).forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll(sel).forEach(x=>x.setAttribute('aria-pressed',x===b));cb(b)}))}
+
+const LIB='https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js',SRI='sha384-OTofQ0MEeiSgh62havBcemCIK0gqj809wX6UA0uPISNMRnR6NZyCdGzX3SbLrgwL';
+let libP=null,urls=[],busy=false,queue=[];
+function loadLib(){if(window.heic2any)return Promise.resolve();if(libP)return libP;
+  libP=new Promise((res,rej)=>{const s=document.createElement('script');s.src=LIB;s.integrity=SRI;s.crossOrigin='anonymous';s.onload=res;s.onerror=()=>{libP=null;rej(new Error('Could not load the converter. Check your connection and try again.'))};document.head.appendChild(s)});return libP}
+const fmtSize=n=>n<1048576?(n/1024).toFixed(0)+' KB':(n/1048576).toFixed(2)+' MB';
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+const isHeic=f=>/\.(heic|heif)$/i.test(f.name)||/image\/hei[cf]/i.test(f.type);
+async function toCanvasBlob(src,type,q){const bmp=await createImageBitmap(src);const c=document.createElement('canvas');c.width=bmp.width;c.height=bmp.height;const x=c.getContext('2d');if(type==='image/jpeg'){x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height)}x.drawImage(bmp,0,0);bmp.close&&bmp.close();return await new Promise(r=>c.toBlob(r,type,q))}
+async function convert(f){
+  const type=$('fmt').value,q=num($('q').value)/100;
+  try{return await toCanvasBlob(f,type,q)}catch(e){} // Safari opens HEIC natively
+  $('st').textContent='Loading the HEIC converter (about 1.3 MB, first time only)…';$('st').className='status';
+  await loadLib();
+  let out=await window.heic2any({blob:f,toType:type,quality:q});
+  return Array.isArray(out)?out[0]:out;
+}
+async function pump(){
+  if(busy)return;busy=true;
+  while(queue.length){
+    const f=queue.shift(),row=document.createElement('div');row.className='card res';row.innerHTML='<div class="sz">Converting '+esc(f.name)+'…</div>';$('out').appendChild(row);$('allbar').hidden=false;
+    try{
+      const blob=await convert(f);if(!blob)throw new Error('This browser could not save that format.');
+      const url=URL.createObjectURL(blob);urls.push(url);
+      const ext=$('fmt').value==='image/png'?'png':'jpg',name=f.name.replace(/\.[^.]+$/,'')+'.'+ext;
+      row.innerHTML='<img src="'+url+'" alt=""/><div class="meta"><div class="nm">'+esc(name)+'</div><div class="sz">'+fmtSize(f.size)+' HEIC → '+fmtSize(blob.size)+' '+ext.toUpperCase()+'</div></div><a class="btn primary dl" href="'+url+'" download="'+esc(name)+'">Download</a>';
+      $('st').textContent='';
+    }catch(e){row.innerHTML='<div class="sz" style="color:var(--err)">'+esc(f.name)+': '+esc(e&&e.message&&!/ERR_LIBHEIF|ERR_/.test(e.message)?e.message:'could not be converted. It may not be a HEIC photo, or it may be damaged.')+'</div>'}
+  }
+  busy=false;
+  const n=document.querySelectorAll('a.dl').length;if(n){$('st').textContent=n+' converted. Your photos never left this device.';$('st').className='status ok'}
+}
+function add(list){const msgs=[];for(const f of list){if(!isHeic(f)&&!/^image\//.test(f.type)){msgs.push(f.name+' is not an image');continue}if(f.size>60*1048576){msgs.push(f.name+' is over 60 MB');continue}queue.push(f)}
+  if(msgs.length){$('st').textContent=msgs.join(' · ');$('st').className='status warn'}pump()}
+const drop=$('drop'),inp=$('file');
+drop.onclick=()=>inp.click();drop.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();inp.click()}};
+['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over')}));
+['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',e=>add(e.dataTransfer.files));inp.onchange=()=>{add(inp.files);inp.value=''};
+$('fmt').onchange=()=>{$('qrow').style.visibility=$('fmt').value==='image/jpeg'?'visible':'hidden'};
+$('q').oninput=()=>{$('qv').textContent=$('q').value};
+$('dlAll').onclick=()=>document.querySelectorAll('a.dl').forEach((a,i)=>setTimeout(()=>a.click(),i*400));
+$('clr').onclick=()=>{urls.forEach(u=>URL.revokeObjectURL(u));urls=[];$('out').innerHTML='';$('allbar').hidden=true;$('st').textContent=''};
+
+</script>
+<!-- mtp:footer -->
+<footer class="mtp-footer"><div class="mtp-fcols"><div><a class="mtp-fh" href="/study-tools.html">Study</a><a href="/gpa.html">GPA Calculator</a><a href="/wam-calculator.html">WAM Calculator</a><a href="/final-grade.html">Final Grade Calculator</a></div><div><a class="mtp-fh" href="/money-tools.html">Money</a><a href="/budget.html">Budget Tracker</a><a href="/loan.html">Loan Calculator</a><a href="/gst-calculator.html">GST Calculator</a><a href="/take-home-pay.html">Take-Home Pay Calculator</a><a href="/help-repayment.html">HECS-HELP Repayment Calculator</a><a href="/stamp-duty-nsw.html">NSW Stamp Duty Calculator</a></div><div><a class="mtp-fh" href="/image-tools.html">Images</a><a href="/qr-code.html">QR Code Generator</a><a href="/image-compressor.html">Image Compressor</a><a href="/image-resizer.html">Image Resizer and Converter</a><a href="/heic-to-jpg.html">HEIC to JPG Converter</a><a href="/wallpaper-preview.html">Wallpaper Preview</a><a href="/wallpaper-sizes.html">Wallpaper Sizes for Every Device</a></div><div><a class="mtp-fh" href="/productivity-tools.html">Productivity</a><a href="/todo.html">To-Do List</a><a href="/pomodoro.html">Pomodoro Focus Timer</a><a href="/notes.html">Online Notes</a><a href="/countdown.html">Countdown Timer</a></div><div><a class="mtp-fh" href="/everyday-tools.html">Everyday</a><a href="/spinner.html">Decision Spinner Wheel</a><a href="/converter.html">Unit Converter</a><a href="/percentage.html">Percentage Calculator</a><a href="/age.html">Age Calculator</a><a href="/tip.html">Tip Calculator</a><a href="/bmi.html">BMI Calculator</a><a href="/days-between-dates.html">Days Between Dates</a></div><div><a class="mtp-fh" href="/text-and-dev-tools.html">Text &amp; Dev</a><a href="/counter.html">Word Counter</a><a href="/password.html">Password Generator</a><a href="/color.html">Color Picker</a><a href="/json-formatter.html">JSON Formatter</a></div></div><p>MyToolPad: free tools for students and everyday life.<br>No sign-up · No pop-ups · Your data stays in your browser<br><a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="https://github.com/game9151/mytoolpad/issues" rel="noopener">Feedback</a><br>I design websites. <a href="mailto:officialmeridianstudio@gmail.com">Contact me</a></p></footer>
+<!-- /mtp:footer -->
+</body>
+</html>

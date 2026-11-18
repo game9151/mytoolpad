@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Take-Home Pay Calculator Australia 2026-27: Salary After Tax | MyToolPad</title>
+<meta name="description" content="Work out your Australian take-home pay for 2026-27: weekly, fortnightly, monthly and yearly pay after tax, Medicare levy and HECS-HELP. Free, private."/>
+<link rel="canonical" href="https://www.mytoolpad.com/take-home-pay.html"/>
+<meta name="robots" content="index, follow, max-image-preview:large"/>
+<meta name="theme-color" content="#0f0f0f"/>
+<meta property="og:title" content="Take-Home Pay Calculator Australia 2026-27: Salary After Tax | MyToolPad"/>
+<meta property="og:description" content="Work out your Australian take-home pay for 2026-27: weekly, fortnightly, monthly and yearly pay after tax, Medicare levy and HECS-HELP. Free, private."/>
+<meta property="og:url" content="https://www.mytoolpad.com/take-home-pay.html"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MyToolPad"/>
+<meta property="og:image" content="https://www.mytoolpad.com/og-image.png"/>
+<meta property="og:image:alt" content="MyToolPad logo"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Take-Home Pay Calculator Australia 2026-27: Salary After Tax | MyToolPad"/>
+<meta name="twitter:description" content="Work out your Australian take-home pay for 2026-27: weekly, fortnightly, monthly and yearly pay after tax, Medicare levy and HECS-HELP. Free, private."/>
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f0f;--surface:#181818;--surface2:#212121;--border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);--text:#f0ede6;--muted:#5a5a5a;--mid:#888}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+[hidden]{display:none!important}
+.page{max-width:900px;margin:0 auto;padding:50px 24px 80px;position:relative;z-index:1}
+.page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;letter-spacing:-1px;margin-bottom:6px}
+.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:14px;color:var(--dim);margin-bottom:32px;font-weight:300;line-height:1.6}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px}
+.fld{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s}
+.fld:focus{border-color:var(--accent)}
+select.fld{cursor:pointer}
+.btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:border-color .15s,background .15s;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:500}
+.btn.primary:hover{filter:brightness(1.06)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:560px){.grid2,.grid3{grid-template-columns:1fr}}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);margin-bottom:8px;display:block}
+.status{font-size:13px;margin:10px 0 0;color:var(--mid);min-height:20px}
+.status.ok{color:var(--ok)}.status.err{color:var(--err)}.status.warn{color:var(--warn)}
+.big{font-size:52px;font-weight:300;letter-spacing:-2.5px;color:var(--accent);line-height:1.05;font-variant-numeric:tabular-nums}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:16px}
+.kpi{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px 14px}
+.kpi b{display:block;font-size:18px;font-weight:400;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{background:none;border:1px solid var(--border);color:var(--mid);border-radius:99px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.tab[aria-pressed=true]{color:var(--accent);border-color:rgba(var(--accent-rgb),.45);background:var(--accent-dim)}
+label.chk{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text);cursor:pointer;padding:6px 0}
+label.chk input{width:18px;height:18px;accent-color:var(--accent)}
+input[type=range]{accent-color:var(--accent);width:100%}
+.money{position:relative}
+.money span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:16px;pointer-events:none}
+.money .fld{padding-left:28px}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:9px 8px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left;white-space:normal}
+.tbl th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-weight:500}
+.tbl tr.total td{font-weight:500;color:var(--text);border-bottom:0}
+.tbl tr.hi td{background:var(--accent-dim)}
+.note{font-size:12.5px;color:var(--dim);line-height:1.6;margin-top:12px}
+.note a{color:var(--accent)}
+.drop{border:2px dashed var(--border);border-radius:16px;padding:40px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.drop.over{border-color:var(--accent);background:var(--accent-dim)}
+.drop b{display:block;font-size:15px;font-weight:400;color:var(--text)}
+.drop small{display:block;font-size:12px;color:var(--dim);margin-top:6px}
+.res{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.res img{width:84px;height:84px;object-fit:cover;border-radius:10px;background:var(--surface2)}
+.res .meta{flex:1;min-width:180px}
+.res .nm{font-size:14px;word-break:break-all}
+.res .sz{font-size:12px;color:var(--dim);margin-top:4px}
+.calc{display:grid;grid-template-columns:minmax(0,1fr);gap:0 16px}
+@media(min-width:980px){.calc{grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:start}}
+.split{display:flex;height:10px;border-radius:99px;overflow:hidden;margin:20px 0 6px;background:var(--surface2)}
+.split i{display:block;height:100%}
+.legend{display:inline-flex;align-items:center;gap:6px;margin-right:4px}
+.legend i{width:9px;height:9px;border-radius:3px;display:inline-block}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Take-Home Pay Calculator", "url": "https://www.mytoolpad.com/take-home-pay.html", "description": "Work out your Australian take-home pay for 2026-27: weekly, fortnightly, monthly and yearly pay after tax, Medicare levy and HECS-HELP. Free, private.", "applicationCategory": "FinanceApplication", "operatingSystem": "Any", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "AUD"}, "publisher": {"@type": "Organization", "name": "MyToolPad", "url": "https://www.mytoolpad.com/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How accurate is this?", "acceptedAnswer": {"@type": "Answer", "text": "It works out the tax you owe for the full year. Your payslip uses the ATO withholding tables, which round each pay a little differently, so your pay can be a few dollars off each period. Your tax return evens it out."}}, {"@type": "Question", "name": "Is super taken out of my pay?", "acceptedAnswer": {"@type": "Answer", "text": "No. The 12% super guarantee is paid by your employer on top of your salary, unless your salary is a package that includes super. Tick the box if yours does."}}, {"@type": "Question", "name": "What is not included?", "acceptedAnswer": {"@type": "Answer", "text": "The Medicare levy surcharge for people without private hospital cover, salary sacrifice, deductions, other offsets and second jobs. It also assumes you are an Australian resident for tax for the whole year."}}, {"@type": "Question", "name": "What changed on 1 July 2026?", "acceptedAnswer": {"@type": "Answer", "text": "The lowest tax rate fell from 16% to 15% for income between $18,201 and $45,000, which saves up to $268 a year. It is legislated to fall again to 14% from 1 July 2027."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "MyToolPad", "item": "https://www.mytoolpad.com/"}, {"@type": "ListItem", "position": 2, "name": "Take-Home Pay Calculator", "item": "https://www.mytoolpad.com/take-home-pay.html"}]}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<!-- mtp:head -->
+<script>(function(){var d=document.documentElement;try{var t=localStorage.getItem("mtp-theme")||"dark",a=localStorage.getItem("mtp-accent")||"lime";if(t==="auto")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";d.setAttribute("data-theme",t);d.setAttribute("data-accent",a)}catch(e){d.setAttribute("data-theme","dark")}})()</script>
+<link rel="stylesheet" href="/assets/site.css?v=86224f4d"/>
+<link rel="manifest" href="/manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="/icons/icon-192.png"/>
+<script src="/assets/tools.js?v=86224f4d" defer></script>
+<script src="/assets/site.js?v=86224f4d" defer></script>
+<!-- /mtp:head -->
+</head>
+<body>
+<!-- mtp:nav -->
+<nav class="mtp-nav" aria-label="Main" data-tool="/take-home-pay.html"><a href="/" class="mtp-brand">My<em>Tool</em>Pad</a><div class="mtp-cats"><a href="/study-tools.html">Study</a><a href="/money-tools.html" class="active">Money</a><a href="/image-tools.html">Images</a><a href="/productivity-tools.html">Productivity</a><a href="/everyday-tools.html">Everyday</a><a href="/text-and-dev-tools.html">Text &amp; Dev</a></div><button class="mtp-search-btn" type="button" data-mtp-search aria-label="Search tools"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search tools</span><kbd>/</kbd></button><button class="mtp-icon-btn" type="button" data-mtp-pin aria-pressed="false" aria-label="Pin this tool to My Pad" title="Pin to My Pad"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></button><button class="mtp-icon-btn" type="button" data-mtp-theme aria-label="Theme and colour" title="Theme and colour"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button></nav>
+<!-- /mtp:nav -->
+<div class="page has-aside"><div class="tool-col">
+  <h1 class="page-title">Take-home<em>.</em>Pay</h1>
+  <div class="page-sub">Your Australian pay after tax for 2026-27, per week, fortnight, month or year.</div>
+  <div class="calc">
+    <div class="card">
+      <div class="grid2">
+        <div><label class="lbl" for="amt">Pay before tax</label><div class="money"><span>$</span><input class="fld" id="amt" type="number" inputmode="decimal" min="0" step="any" value="85000"/></div></div>
+        <div><label class="lbl" for="per">Per</label><select class="fld" id="per"><option value="year">Year</option><option value="month">Month</option><option value="fortnight">Fortnight</option><option value="week">Week</option><option value="hour">Hour</option></select></div>
+      </div>
+      <div id="hrsrow" hidden style="margin-top:12px"><label class="lbl" for="hrs">Hours per week</label><input class="fld" id="hrs" type="number" inputmode="decimal" min="1" max="100" value="38"/></div>
+      <div style="margin-top:14px">
+        <label class="chk"><input type="checkbox" id="inclsuper"/> This amount includes super (a package)</label>
+        <label class="chk"><input type="checkbox" id="help"/> I have a HECS-HELP or other study loan</label>
+      </div>
+      <p class="note">For Australian residents for tax, 2026-27 rates. One job, tax-free threshold claimed.</p>
+    </div>
+    <div class="card" aria-live="polite">
+      <div class="row" style="justify-content:space-between;align-items:flex-start">
+        <div><span class="lbl">Take-home pay</span><div class="big" id="net">$0</div><div style="font-size:13px;color:var(--dim);margin-top:4px" id="netper">per year</div></div>
+        <div class="tabs" role="group" aria-label="Show take-home pay per">
+          <button class="tab" type="button" data-p="year" aria-pressed="true">Year</button><button class="tab" type="button" data-p="month" aria-pressed="false">Month</button><button class="tab" type="button" data-p="fortnight" aria-pressed="false">Fortnight</button><button class="tab" type="button" data-p="week" aria-pressed="false">Week</button>
+        </div>
+      </div>
+      <div class="split" id="split" aria-hidden="true"></div>
+      <div style="overflow-x:auto"><table class="tbl" id="tbl"></table></div>
+      <div class="kpis">
+        <div class="kpi"><b id="super">$0</b><span>Super on top (12%)</span></div>
+        <div class="kpi"><b id="marg">0%</b><span>Tax on your next $1</span></div>
+        <div class="kpi"><b id="avg">0%</b><span>Average tax rate</span></div>
+      </div>
+    </div>
+  </div>
+
+  </div>
+  <div class="seo">
+    <h2>Australian take-home pay for 2026-27</h2>
+    <p>Enter your salary or hourly rate and see what lands in your account each week, fortnight and month. The calculator uses the 2026-27 resident tax rates, where the 16% rate dropped to <strong>15% on income between $18,201 and $45,000</strong>, plus the low income tax offset, the 2% Medicare levy and, if you tick it, your compulsory HECS-HELP repayment.</p>
+    <h3>2026-27 resident tax rates</h3>
+    <table><tr><th>Taxable income</th><th>Tax on this income</th></tr><tr><td>$0 – $18,200</td><td>Nil</td></tr><tr><td>$18,201 – $45,000</td><td>15c for each $1 over $18,200</td></tr><tr><td>$45,001 – $135,000</td><td>$4,020 + 30c for each $1 over $45,000</td></tr><tr><td>$135,001 – $190,000</td><td>$31,020 + 37c for each $1 over $135,000</td></tr><tr><td>$190,001 and over</td><td>$51,370 + 45c for each $1 over $190,000</td></tr></table>
+    <p>Source: <a href="https://www.ato.gov.au/tax-rates-and-codes/tax-rates-australian-residents" rel="noopener">ATO resident tax rates</a>. Rates exclude the Medicare levy.</p>
+    <h3>How to use it</h3>
+    <ol><li>Type your pay before tax and choose year, month, fortnight, week or hour.</li><li>Tick the boxes if your figure includes super or you have a study loan.</li><li>Switch the period above the result to see weekly, fortnightly or monthly pay.</li></ol>
+    <h3>Frequently asked questions</h3>
+    <details><summary>How accurate is this?</summary><p>It works out the tax you owe for the full year. Your payslip uses the ATO withholding tables, which round each pay a little differently, so your pay can be a few dollars off each period. Your tax return evens it out.</p></details><details><summary>Is super taken out of my pay?</summary><p>No. The 12% super guarantee is paid by your employer on top of your salary, unless your salary is a package that includes super. Tick the box if yours does.</p></details><details><summary>What is not included?</summary><p>The Medicare levy surcharge for people without private hospital cover, salary sacrifice, deductions, other offsets and second jobs. It also assumes you are an Australian resident for tax for the whole year.</p></details><details><summary>What changed on 1 July 2026?</summary><p>The lowest tax rate fell from 16% to 15% for income between $18,201 and $45,000, which saves up to $268 a year. It is legislated to fall again to 14% from 1 July 2027.</p></details>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const aud=(n,dp)=>(n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-AU',{minimumFractionDigits:dp||0,maximumFractionDigits:dp||0});
+const num=v=>{const n=parseFloat(String(v).replace(/[^0-9.\-]/g,''));return isFinite(n)?n:0};
+const store={get(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function pressGroup(sel,cb){document.querySelectorAll(sel).forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll(sel).forEach(x=>x.setAttribute('aria-pressed',x===b));cb(b)}))}
+// 2026-27 resident rates (ATO). Medicare low-income threshold: latest published (2025-26) figures.
+function incomeTax(x){if(x<=18200)return 0;if(x<=45000)return (x-18200)*.15;if(x<=135000)return 4020+(x-45000)*.30;if(x<=190000)return 31020+(x-135000)*.37;return 51370+(x-190000)*.45}
+function lito(x){if(x<=37500)return 700;if(x<=45000)return 700-(x-37500)*.05;if(x<=66667)return Math.max(0,325-(x-45000)*.015);return 0}
+function medicare(x){if(x<=28011)return 0;if(x<=35013)return (x-28011)*.10;return x*.02}
+function helpRepay(x){if(x<=69528)return 0;if(x<=129717)return (x-69528)*.15;if(x<=186050)return 9028+(x-129717)*.17;return x*.10}
+
+const MULT={year:1,month:12,fortnight:26,week:52};
+let show='year';
+const saved=store.get('mtp_thp');
+if(saved){$('amt').value=saved.amt;$('per').value=saved.per;$('hrs').value=saved.hrs;$('inclsuper').checked=saved.sup;$('help').checked=saved.help}
+function annual(){const a=num($('amt').value),p=$('per').value;if(p==='hour')return a*num($('hrs').value||38)*52;return a*MULT[p]}
+function calc(x,withHelp){const it=Math.max(0,incomeTax(x)-lito(x)),ml=medicare(x),hp=withHelp?helpRepay(x):0;return{it,ml,hp,net:x-it-ml-hp}}
+function render(){
+  $('hrsrow').hidden=$('per').value!=='hour';
+  let gross=annual(),sup;
+  if($('inclsuper').checked){const pkg=gross;gross=pkg/1.12;sup=pkg-gross}else sup=gross*.12;
+  const h=$('help').checked,r=calc(gross,h);
+  store.set('mtp_thp',{amt:$('amt').value,per:$('per').value,hrs:$('hrs').value,sup:$('inclsuper').checked,help:h});
+  $('net').textContent=aud(r.net/MULT[show]);$('netper').textContent='per '+show+(show==='fortnight'?' (26 a year)':'');
+  const rows=[['Gross pay',gross],['Income tax',-r.it],['Medicare levy',-r.ml]];if(h)rows.push(['Study loan repayment',-r.hp]);
+  $('tbl').innerHTML='<thead><tr><th></th><th>Year</th><th>Month</th><th>Fortnight</th><th>Week</th></tr></thead><tbody>'+
+    rows.map(x=>'<tr><td>'+x[0]+'</td>'+[1,12,26,52].map(m=>'<td>'+(x[1]?aud(x[1]/m):'$0')+'</td>').join('')+'</tr>').join('')+
+    '<tr class="total"><td>Take-home pay</td>'+[1,12,26,52].map(m=>'<td>'+aud(r.net/m)+'</td>').join('')+'</tr></tbody>';
+  const cols=[[r.net,'var(--accent)'],[r.it,'var(--mid)'],[r.ml,'var(--dim)'],[r.hp,'var(--warn)']];
+  $('split').innerHTML=gross>0?cols.filter(c=>c[0]>0).map(c=>'<i style="width:'+(c[0]/gross*100)+'%;background:'+c[1]+'"></i>').join(''):'';
+  $('super').textContent=aud(sup);
+  const step=100,r2=calc(gross+step,h);$('marg').textContent=gross>0?Math.round((1-(r2.net-r.net)/step)*1000)/10+'%':'0%';
+  $('avg').textContent=gross>0?Math.round((r.it+r.ml)/gross*1000)/10+'%':'0%';
+}
+['amt','per','hrs','inclsuper','help'].forEach(id=>$(id).addEventListener('input',render));
+['per','inclsuper','help'].forEach(id=>$(id).addEventListener('change',render));
+pressGroup('[data-p]',b=>{show=b.dataset.p;render()});
+render();
+
+</script>
+<!-- mtp:footer -->
+<footer class="mtp-footer"><div class="mtp-fcols"><div><a class="mtp-fh" href="/study-tools.html">Study</a><a href="/gpa.html">GPA Calculator</a><a href="/wam-calculator.html">WAM Calculator</a><a href="/final-grade.html">Final Grade Calculator</a></div><div><a class="mtp-fh" href="/money-tools.html">Money</a><a href="/budget.html">Budget Tracker</a><a href="/loan.html">Loan Calculator</a><a href="/gst-calculator.html">GST Calculator</a><a href="/take-home-pay.html">Take-Home Pay Calculator</a><a href="/help-repayment.html">HECS-HELP Repayment Calculator</a><a href="/stamp-duty-nsw.html">NSW Stamp Duty Calculator</a></div><div><a class="mtp-fh" href="/image-tools.html">Images</a><a href="/qr-code.html">QR Code Generator</a><a href="/image-compressor.html">Image Compressor</a><a href="/image-resizer.html">Image Resizer and Converter</a><a href="/heic-to-jpg.html">HEIC to JPG Converter</a><a href="/wallpaper-preview.html">Wallpaper Preview</a><a href="/wallpaper-sizes.html">Wallpaper Sizes for Every Device</a></div><div><a class="mtp-fh" href="/productivity-tools.html">Productivity</a><a href="/todo.html">To-Do List</a><a href="/pomodoro.html">Pomodoro Focus Timer</a><a href="/notes.html">Online Notes</a><a href="/countdown.html">Countdown Timer</a></div><div><a class="mtp-fh" href="/everyday-tools.html">Everyday</a><a href="/spinner.html">Decision Spinner Wheel</a><a href="/converter.html">Unit Converter</a><a href="/percentage.html">Percentage Calculator</a><a href="/age.html">Age Calculator</a><a href="/tip.html">Tip Calculator</a><a href="/bmi.html">BMI Calculator</a><a href="/days-between-dates.html">Days Between Dates</a></div><div><a class="mtp-fh" href="/text-and-dev-tools.html">Text &amp; Dev</a><a href="/counter.html">Word Counter</a><a href="/password.html">Password Generator</a><a href="/color.html">Color Picker</a><a href="/json-formatter.html">JSON Formatter</a></div></div><p>MyToolPad: free tools for students and everyday life.<br>No sign-up · No pop-ups · Your data stays in your browser<br><a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="https://github.com/game9151/mytoolpad/issues" rel="noopener">Feedback</a><br>I design websites. <a href="mailto:officialmeridianstudio@gmail.com">Contact me</a></p></footer>
+<!-- /mtp:footer -->
+</body>
+</html>

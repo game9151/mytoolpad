@@ -26,14 +26,13 @@
 :root{--bg:#0f0f0f;--surface:#181818;--surface2:#212121;--border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);--text:#f0ede6;--muted:#5a5a5a;--mid:#888;--green:#5cdb9a;--red:#e85c5c;--blue:#5db8ff}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
 body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(15,15,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:24px;z-index:100}
-.nav-brand{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);text-decoration:none;flex-shrink:0;letter-spacing:-.3px}
-.nav-brand em{color:var(--accent);font-style:normal}
-.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
-.nav-links::-webkit-scrollbar{display:none}
-.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:all .15s;white-space:nowrap}
-.nav-links a:hover{color:var(--text);background:var(--surface)}
-.nav-links a.active{color:var(--accent);background:var(--accent-dim)}
+
+
+
+
+
+
+
 
 .page{max-width:700px;margin:0 auto;padding:50px 24px 80px;position:relative;z-index:1}
 .page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;letter-spacing:-1px;margin-bottom:6px}
@@ -84,35 +83,40 @@ body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;
 }
 </style>
 <style>
-.seo{border-top:1px solid #1e1e1e;padding-top:32px;margin-top:32px;color:#8a8a8a}
-.seo h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;margin:0 0 12px;color:#e6e3dc}
-.seo h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin:26px 0 10px;color:#c8c5be}
-.seo p{font-size:14px;line-height:1.85;margin-bottom:12px}
-.seo strong{color:#c8c5be;font-weight:500}
-.seo ol{padding-left:20px;font-size:14px;line-height:1.85}
-.seo details{border:1px solid #232323;border-radius:10px;padding:12px 16px;margin-bottom:8px;background:#141414}
-.seo summary{cursor:pointer;font-size:14px;color:#d8d5ce}
-.seo details p{margin:10px 0 0;font-size:13.5px}
-.seo .related{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-.seo .related a{font-size:13px;color:#c8f135;text-decoration:none;border:1px solid #2a2a2a;border-radius:99px;padding:6px 14px}
-.seo .related a:hover{background:rgba(200,241,53,.08)}
-.site-footer{text-align:center;padding:40px 24px 60px;border-top:1px solid var(--border,#2a2a2a);position:relative;z-index:1;margin-top:40px}
-.site-footer .ft-tools{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;max-width:760px;margin:0 auto 20px}
-.site-footer a{color:#777;font-size:12.5px;text-decoration-color:#333}
-.site-footer a:hover{color:#c8f135}
-.site-footer p{font-size:12px;color:#5a5a5a;line-height:2}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 </style>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "GPA Calculator", "url": "https://www.mytoolpad.com/gpa.html", "description": "Calculate your GPA on the US 4.0 or Australian 7.0 scale. Add courses, grades and credits for an instant result. Free, no ads.", "applicationCategory": "EducationApplication", "operatingSystem": "Any", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}, "publisher": {"@type": "Organization", "name": "MyToolPad", "url": "https://www.mytoolpad.com/"}}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I calculate my GPA?", "acceptedAnswer": {"@type": "Answer", "text": "Multiply each course grade value by its credit hours, add those up, and divide by the total credit hours."}}, {"@type": "Question", "name": "What is the difference between weighted and unweighted GPA?", "acceptedAnswer": {"@type": "Answer", "text": "Unweighted GPA uses the plain 4.0 scale. Weighted GPA adds extra points for honors, AP or IB classes. Check your school’s policy for the exact scale."}}, {"@type": "Question", "name": "Are my courses saved?", "acceptedAnswer": {"@type": "Answer", "text": "They are stored only in your browser on your device. Clearing site data will remove them."}}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "MyToolPad", "item": "https://www.mytoolpad.com/"}, {"@type": "ListItem", "position": 2, "name": "GPA Calculator", "item": "https://www.mytoolpad.com/gpa.html"}]}</script>
+<!-- mtp:head -->
+<script>(function(){var d=document.documentElement;try{var t=localStorage.getItem("mtp-theme")||"dark",a=localStorage.getItem("mtp-accent")||"lime";if(t==="auto")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";d.setAttribute("data-theme",t);d.setAttribute("data-accent",a)}catch(e){d.setAttribute("data-theme","dark")}})()</script>
+<link rel="stylesheet" href="/assets/site.css?v=86224f4d"/>
+<link rel="manifest" href="/manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="/icons/icon-192.png"/>
+<script src="/assets/tools.js?v=86224f4d" defer></script>
+<script src="/assets/site.js?v=86224f4d" defer></script>
+<!-- /mtp:head -->
 </head>
 <body>
-<nav class="topnav">
-  <a href="/" class="nav-brand">My<em>Tool</em>Pad</a>
-  <div class="nav-links"><a href="/todo.html">To-Do</a><a href="/pomodoro.html">Focus</a><a href="/notes.html">Notes</a><a href="/percentage.html">Percentage</a><a href="/age.html">Age</a><a href="/tip.html">Tip</a><a href="/bmi.html">BMI</a><a href="/loan.html">Loan</a><a href="/gpa.html" class="active">GPA</a><a href="/color.html">Color</a><a href="/spinner.html">Spinner</a><a href="/counter.html">Counter</a><a href="/budget.html">Budget</a><a href="/countdown.html">Countdown</a><a href="/converter.html">Converter</a><a href="/password.html">Password</a><a href="/json-formatter.html">JSON</a><a href="/qr-code.html">QR</a><a href="/image-compressor.html">Image</a><a href="/days-between-dates.html">Dates</a><a href="/final-grade.html">Final Grade</a><a href="/gst-calculator.html">GST</a><a href="/wallpaper-preview.html">Wallpaper</a></div>
-</nav>
+<!-- mtp:nav -->
+<nav class="mtp-nav" aria-label="Main" data-tool="/gpa.html"><a href="/" class="mtp-brand">My<em>Tool</em>Pad</a><div class="mtp-cats"><a href="/study-tools.html" class="active">Study</a><a href="/money-tools.html">Money</a><a href="/image-tools.html">Images</a><a href="/productivity-tools.html">Productivity</a><a href="/everyday-tools.html">Everyday</a><a href="/text-and-dev-tools.html">Text &amp; Dev</a></div><button class="mtp-search-btn" type="button" data-mtp-search aria-label="Search tools"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search tools</span><kbd>/</kbd></button><button class="mtp-icon-btn" type="button" data-mtp-pin aria-pressed="false" aria-label="Pin this tool to My Pad" title="Pin to My Pad"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></button><button class="mtp-icon-btn" type="button" data-mtp-theme aria-label="Theme and colour" title="Theme and colour"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button></nav>
+<!-- /mtp:nav -->
 
-<div class="page">
+<div class="page has-aside"><div class="tool-col">
   <h1 class="page-title">GPA<em>.</em>Calc</h1>
   <div class="page-sub">Add your courses, grades and credits. Switch between the US 4.0 and Australian 7.0 scales. GPA updates instantly.</div>
 
@@ -156,6 +160,7 @@ body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;
     <div class="scale-grid" id="scaleGrid"></div>
   </div>
 
+  </div>
   <div class="seo">
     <h2>Free GPA calculator for students</h2>
     <p>Add your courses, grades and credit hours and this GPA calculator works out your grade point average instantly. It supports the US 4.0 scale and the Australian 7.0 scale (HD, D, C, P, F), and your courses are saved in your browser so they are still there next time.</p><p>GPA is <strong>total grade points ÷ total credit hours</strong>, where each course contributes its grade value (on a 4.0 scale A = 4, B = 3, C = 2, D = 1, F = 0) multiplied by its credits.</p>
@@ -172,20 +177,20 @@ body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;
 <script>
 const SCALES = {
   us:{max:4, title:'4.0 grade scale (US)', def:'B', labels:[
-    {min:3.7,label:"Dean's List",color:'#5cdb9a'},{min:3.0,label:'Good Standing',color:'#c8f135'},
-    {min:2.0,label:'Satisfactory',color:'#f5a623'},{min:1.0,label:'Below Average',color:'#e85c5c'},{min:0,label:'Failing',color:'#5a5a5a'}],
+    {min:3.7,label:"Dean's List",color:'var(--ok)'},{min:3.0,label:'Good Standing',color:'var(--accent)'},
+    {min:2.0,label:'Satisfactory',color:'var(--warn)'},{min:1.0,label:'Below Average',color:'var(--err)'},{min:0,label:'Failing',color:'var(--muted)'}],
     grades:[
-    {letter:'A+', points:4.0, color:'#5cdb9a'},{letter:'A',  points:4.0, color:'#5cdb9a'},{letter:'A-', points:3.7, color:'#5cdb9a'},
-    {letter:'B+', points:3.3, color:'#c8f135'},{letter:'B',  points:3.0, color:'#c8f135'},{letter:'B-', points:2.7, color:'#c8f135'},
-    {letter:'C+', points:2.3, color:'#f5a623'},{letter:'C',  points:2.0, color:'#f5a623'},{letter:'C-', points:1.7, color:'#f5a623'},
-    {letter:'D+', points:1.3, color:'#e85c5c'},{letter:'D',  points:1.0, color:'#e85c5c'},{letter:'D-', points:0.7, color:'#e85c5c'},
-    {letter:'F',  points:0.0, color:'#5a5a5a'}]},
+    {letter:'A+', points:4.0, color:'var(--ok)'},{letter:'A',  points:4.0, color:'var(--ok)'},{letter:'A-', points:3.7, color:'var(--ok)'},
+    {letter:'B+', points:3.3, color:'var(--accent)'},{letter:'B',  points:3.0, color:'var(--accent)'},{letter:'B-', points:2.7, color:'var(--accent)'},
+    {letter:'C+', points:2.3, color:'var(--warn)'},{letter:'C',  points:2.0, color:'var(--warn)'},{letter:'C-', points:1.7, color:'var(--warn)'},
+    {letter:'D+', points:1.3, color:'var(--err)'},{letter:'D',  points:1.0, color:'var(--err)'},{letter:'D-', points:0.7, color:'var(--err)'},
+    {letter:'F',  points:0.0, color:'var(--muted)'}]},
   au:{max:7, title:'7.0 grade scale (Australia)', def:'D', labels:[
-    {min:6.5,label:'High Distinction range',color:'#5cdb9a'},{min:5.25,label:'Distinction / Credit range',color:'#c8f135'},
-    {min:3.5,label:'Pass range',color:'#f5a623'},{min:1.75,label:'Borderline',color:'#e85c5c'},{min:0,label:'Fail range',color:'#5a5a5a'}],
+    {min:6.5,label:'High Distinction range',color:'var(--ok)'},{min:5.25,label:'Distinction / Credit range',color:'var(--accent)'},
+    {min:3.5,label:'Pass range',color:'var(--warn)'},{min:1.75,label:'Borderline',color:'var(--err)'},{min:0,label:'Fail range',color:'var(--muted)'}],
     grades:[
-    {letter:'HD', points:7, color:'#5cdb9a'},{letter:'D', points:6, color:'#5cdb9a'},{letter:'C', points:5, color:'#c8f135'},
-    {letter:'P', points:4, color:'#f5a623'},{letter:'F', points:0, color:'#5a5a5a'}]}
+    {letter:'HD', points:7, color:'var(--ok)'},{letter:'D', points:6, color:'var(--ok)'},{letter:'C', points:5, color:'var(--accent)'},
+    {letter:'P', points:4, color:'var(--warn)'},{letter:'F', points:0, color:'var(--muted)'}]}
 };
 let scale = 'us';
 try{ const s=localStorage.getItem('mytoolpad_gpa_scale'); if(SCALES[s]) scale=s; }catch(e){}
@@ -313,13 +318,8 @@ renderScale();
 document.getElementById('addCourseBtn').addEventListener('click', addCourse);
 renderRows(); calcGPA();
 </script>
-<footer class="site-footer">
-  <div class="ft-tools"><a href="/todo.html">To-Do List</a><a href="/pomodoro.html">Pomodoro Timer</a><a href="/notes.html">Online Notes</a><a href="/percentage.html">Percentage Calculator</a><a href="/age.html">Age Calculator</a><a href="/tip.html">Tip Calculator</a><a href="/bmi.html">BMI Calculator</a><a href="/loan.html">Loan Calculator</a><a href="/gpa.html">GPA Calculator</a><a href="/color.html">Color Picker</a><a href="/spinner.html">Decision Spinner Wheel</a><a href="/counter.html">Word Counter</a><a href="/budget.html">Budget Tracker</a><a href="/countdown.html">Countdown Timer</a><a href="/converter.html">Unit Converter</a><a href="/password.html">Password Generator</a><a href="/json-formatter.html">JSON Formatter</a><a href="/qr-code.html">QR Code Generator</a><a href="/image-compressor.html">Image Compressor</a><a href="/days-between-dates.html">Days Between Dates</a><a href="/final-grade.html">Final Grade Calculator</a><a href="/gst-calculator.html">GST Calculator</a><a href="/wallpaper-preview.html">Wallpaper Preview</a></div>
-  <p>MyToolPad: free tools for students and everyday life.<br>
-  No sign-up · No pop-ups · Your data stays in your browser<br>
-  <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="https://github.com/game9151/mytoolpad/issues" rel="noopener">Feedback</a><br>
-  I design websites. <a href="mailto:officialmeridianstudio@gmail.com">Contact me</a>
-  </p>
-</footer>
+<!-- mtp:footer -->
+<footer class="mtp-footer"><div class="mtp-fcols"><div><a class="mtp-fh" href="/study-tools.html">Study</a><a href="/gpa.html">GPA Calculator</a><a href="/wam-calculator.html">WAM Calculator</a><a href="/final-grade.html">Final Grade Calculator</a></div><div><a class="mtp-fh" href="/money-tools.html">Money</a><a href="/budget.html">Budget Tracker</a><a href="/loan.html">Loan Calculator</a><a href="/gst-calculator.html">GST Calculator</a><a href="/take-home-pay.html">Take-Home Pay Calculator</a><a href="/help-repayment.html">HECS-HELP Repayment Calculator</a><a href="/stamp-duty-nsw.html">NSW Stamp Duty Calculator</a></div><div><a class="mtp-fh" href="/image-tools.html">Images</a><a href="/qr-code.html">QR Code Generator</a><a href="/image-compressor.html">Image Compressor</a><a href="/image-resizer.html">Image Resizer and Converter</a><a href="/heic-to-jpg.html">HEIC to JPG Converter</a><a href="/wallpaper-preview.html">Wallpaper Preview</a><a href="/wallpaper-sizes.html">Wallpaper Sizes for Every Device</a></div><div><a class="mtp-fh" href="/productivity-tools.html">Productivity</a><a href="/todo.html">To-Do List</a><a href="/pomodoro.html">Pomodoro Focus Timer</a><a href="/notes.html">Online Notes</a><a href="/countdown.html">Countdown Timer</a></div><div><a class="mtp-fh" href="/everyday-tools.html">Everyday</a><a href="/spinner.html">Decision Spinner Wheel</a><a href="/converter.html">Unit Converter</a><a href="/percentage.html">Percentage Calculator</a><a href="/age.html">Age Calculator</a><a href="/tip.html">Tip Calculator</a><a href="/bmi.html">BMI Calculator</a><a href="/days-between-dates.html">Days Between Dates</a></div><div><a class="mtp-fh" href="/text-and-dev-tools.html">Text &amp; Dev</a><a href="/counter.html">Word Counter</a><a href="/password.html">Password Generator</a><a href="/color.html">Color Picker</a><a href="/json-formatter.html">JSON Formatter</a></div></div><p>MyToolPad: free tools for students and everyday life.<br>No sign-up · No pop-ups · Your data stays in your browser<br><a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="https://github.com/game9151/mytoolpad/issues" rel="noopener">Feedback</a><br>I design websites. <a href="mailto:officialmeridianstudio@gmail.com">Contact me</a></p></footer>
+<!-- /mtp:footer -->
 </body>
 </html>

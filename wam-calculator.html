@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>WAM Calculator: Weighted Average Mark for Uni | MyToolPad</title>
+<meta name="description" content="Calculate your weighted average mark (WAM) from unit marks and credit points, and find the average you need to hit a target WAM. Saves in your browser."/>
+<link rel="canonical" href="https://www.mytoolpad.com/wam-calculator.html"/>
+<meta name="robots" content="index, follow, max-image-preview:large"/>
+<meta name="theme-color" content="#0f0f0f"/>
+<meta property="og:title" content="WAM Calculator: Weighted Average Mark for Uni | MyToolPad"/>
+<meta property="og:description" content="Calculate your weighted average mark (WAM) from unit marks and credit points, and find the average you need to hit a target WAM. Saves in your browser."/>
+<meta property="og:url" content="https://www.mytoolpad.com/wam-calculator.html"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MyToolPad"/>
+<meta property="og:image" content="https://www.mytoolpad.com/og-image.png"/>
+<meta property="og:image:alt" content="MyToolPad logo"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="WAM Calculator: Weighted Average Mark for Uni | MyToolPad"/>
+<meta name="twitter:description" content="Calculate your weighted average mark (WAM) from unit marks and credit points, and find the average you need to hit a target WAM. Saves in your browser."/>
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f0f;--surface:#181818;--surface2:#212121;--border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);--text:#f0ede6;--muted:#5a5a5a;--mid:#888}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+[hidden]{display:none!important}
+.page{max-width:900px;margin:0 auto;padding:50px 24px 80px;position:relative;z-index:1}
+.page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;letter-spacing:-1px;margin-bottom:6px}
+.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:14px;color:var(--dim);margin-bottom:32px;font-weight:300;line-height:1.6}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px}
+.fld{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s}
+.fld:focus{border-color:var(--accent)}
+select.fld{cursor:pointer}
+.btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:border-color .15s,background .15s;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:500}
+.btn.primary:hover{filter:brightness(1.06)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:560px){.grid2,.grid3{grid-template-columns:1fr}}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);margin-bottom:8px;display:block}
+.status{font-size:13px;margin:10px 0 0;color:var(--mid);min-height:20px}
+.status.ok{color:var(--ok)}.status.err{color:var(--err)}.status.warn{color:var(--warn)}
+.big{font-size:52px;font-weight:300;letter-spacing:-2.5px;color:var(--accent);line-height:1.05;font-variant-numeric:tabular-nums}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:16px}
+.kpi{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px 14px}
+.kpi b{display:block;font-size:18px;font-weight:400;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{background:none;border:1px solid var(--border);color:var(--mid);border-radius:99px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.tab[aria-pressed=true]{color:var(--accent);border-color:rgba(var(--accent-rgb),.45);background:var(--accent-dim)}
+label.chk{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text);cursor:pointer;padding:6px 0}
+label.chk input{width:18px;height:18px;accent-color:var(--accent)}
+input[type=range]{accent-color:var(--accent);width:100%}
+.money{position:relative}
+.money span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:16px;pointer-events:none}
+.money .fld{padding-left:28px}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:9px 8px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left;white-space:normal}
+.tbl th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-weight:500}
+.tbl tr.total td{font-weight:500;color:var(--text);border-bottom:0}
+.tbl tr.hi td{background:var(--accent-dim)}
+.note{font-size:12.5px;color:var(--dim);line-height:1.6;margin-top:12px}
+.note a{color:var(--accent)}
+.drop{border:2px dashed var(--border);border-radius:16px;padding:40px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.drop.over{border-color:var(--accent);background:var(--accent-dim)}
+.drop b{display:block;font-size:15px;font-weight:400;color:var(--text)}
+.drop small{display:block;font-size:12px;color:var(--dim);margin-top:6px}
+.res{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.res img{width:84px;height:84px;object-fit:cover;border-radius:10px;background:var(--surface2)}
+.res .meta{flex:1;min-width:180px}
+.res .nm{font-size:14px;word-break:break-all}
+.res .sz{font-size:12px;color:var(--dim);margin-top:4px}
+.calc{display:grid;grid-template-columns:minmax(0,1fr);gap:0 16px}
+@media(min-width:980px){.calc{grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:start}}
+.split{display:flex;height:10px;border-radius:99px;overflow:hidden;margin:20px 0 6px;background:var(--surface2)}
+.split i{display:block;height:100%}
+.legend{display:inline-flex;align-items:center;gap:6px;margin-right:4px}
+.legend i{width:9px;height:9px;border-radius:3px;display:inline-block}
+.wp-msg{font-size:14px;line-height:1.7;color:var(--mid);margin-top:10px}
+.wp-msg b{color:var(--text);font-weight:500}
+.wam-head,.wrow{display:grid;grid-template-columns:minmax(0,1fr) 90px 110px 40px;gap:8px;align-items:center}
+.wam-head.w,.wrow.w{grid-template-columns:minmax(0,1fr) 90px 110px 90px 40px}
+.wam-head{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim);padding:0 2px 8px}
+.wam-head .wcol,.wrow .wcol{display:none}
+.wam-head.w .wcol,.wrow.w .wcol{display:block}
+.wrow{margin-bottom:8px}
+.wrow .fld{padding:10px 12px;font-size:15px}
+.del{width:40px;height:40px;border-radius:10px;border:1px solid var(--border);background:none;color:var(--dim);cursor:pointer;font-size:18px}
+.del:hover{color:var(--err);border-color:var(--err)}
+@media(max-width:560px){.wam-head{display:none}.wrow,.wrow.w{grid-template-columns:1fr 1fr 40px;padding-bottom:10px;border-bottom:1px solid var(--border)}.wrow .nm{grid-column:1/-1}.wrow.w{grid-template-columns:1fr 1fr 1fr 40px}}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "WAM Calculator", "url": "https://www.mytoolpad.com/wam-calculator.html", "description": "Calculate your weighted average mark (WAM) from unit marks and credit points, and find the average you need to hit a target WAM. Saves in your browser.", "applicationCategory": "EducationalApplication", "operatingSystem": "Any", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "AUD"}, "publisher": {"@type": "Organization", "name": "MyToolPad", "url": "https://www.mytoolpad.com/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the difference between WAM and GPA?", "acceptedAnswer": {"@type": "Answer", "text": "WAM averages your actual marks out of 100. GPA converts each mark into grade points first, such as 7 for a High Distinction, so two students with the same GPA can have different WAMs."}}, {"@type": "Question", "name": "Do fails count in my WAM?", "acceptedAnswer": {"@type": "Answer", "text": "At most universities, yes: a failed unit counts at the mark you received. Some exclude units you later repeated. Check your university handbook."}}, {"@type": "Question", "name": "What is a good WAM?", "acceptedAnswer": {"@type": "Answer", "text": "It depends on the university and course. As a rough guide, 75 or above is in the Distinction range and is often the bar for honours and many scholarships."}}, {"@type": "Question", "name": "Is my data saved?", "acceptedAnswer": {"@type": "Answer", "text": "Your units are saved in this browser only, so they are still here next time. Nothing is sent anywhere."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "MyToolPad", "item": "https://www.mytoolpad.com/"}, {"@type": "ListItem", "position": 2, "name": "WAM Calculator", "item": "https://www.mytoolpad.com/wam-calculator.html"}]}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<!-- mtp:head -->
+<script>(function(){var d=document.documentElement;try{var t=localStorage.getItem("mtp-theme")||"dark",a=localStorage.getItem("mtp-accent")||"lime";if(t==="auto")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";d.setAttribute("data-theme",t);d.setAttribute("data-accent",a)}catch(e){d.setAttribute("data-theme","dark")}})()</script>
+<link rel="stylesheet" href="/assets/site.css?v=86224f4d"/>
+<link rel="manifest" href="/manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="/icons/icon-192.png"/>
+<script src="/assets/tools.js?v=86224f4d" defer></script>
+<script src="/assets/site.js?v=86224f4d" defer></script>
+<!-- /mtp:head -->
+</head>
+<body>
+<!-- mtp:nav -->
+<nav class="mtp-nav" aria-label="Main" data-tool="/wam-calculator.html"><a href="/" class="mtp-brand">My<em>Tool</em>Pad</a><div class="mtp-cats"><a href="/study-tools.html" class="active">Study</a><a href="/money-tools.html">Money</a><a href="/image-tools.html">Images</a><a href="/productivity-tools.html">Productivity</a><a href="/everyday-tools.html">Everyday</a><a href="/text-and-dev-tools.html">Text &amp; Dev</a></div><button class="mtp-search-btn" type="button" data-mtp-search aria-label="Search tools"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search tools</span><kbd>/</kbd></button><button class="mtp-icon-btn" type="button" data-mtp-pin aria-pressed="false" aria-label="Pin this tool to My Pad" title="Pin to My Pad"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></button><button class="mtp-icon-btn" type="button" data-mtp-theme aria-label="Theme and colour" title="Theme and colour"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button></nav>
+<!-- /mtp:nav -->
+<div class="page has-aside"><div class="tool-col">
+  <h1 class="page-title">WAM<em>.</em>Calculator</h1>
+  <div class="page-sub">Your weighted average mark from unit marks and credit points, plus what you need to reach a target.</div>
+  <div class="card">
+    <div class="wam-head" aria-hidden="true"><span>Unit (optional)</span><span>Mark</span><span>Credit points</span><span class="wcol">Weight</span><span></span></div>
+    <div id="rows"></div>
+    <div class="row" style="margin-top:12px"><button class="btn" type="button" id="add">Add a unit</button><label class="chk" style="margin-left:auto"><input type="checkbox" id="useW"/> Use a weighting column</label></div>
+  </div>
+  <div class="calc">
+    <div class="card" aria-live="polite">
+      <span class="lbl">Your WAM</span>
+      <div class="big" id="wam">–</div>
+      <div class="wp-msg" id="band"></div>
+      <div class="kpis"><div class="kpi"><b id="cp">0</b><span>Credit points counted</span></div><div class="kpi"><b id="units">0</b><span>Units</span></div></div>
+    </div>
+    <div class="card">
+      <span class="lbl">What do I need?</span>
+      <div class="grid2"><div><label class="lbl" for="tgt">Target WAM</label><input class="fld" id="tgt" type="number" inputmode="decimal" min="0" max="100" step="0.1" value="75"/></div>
+      <div><label class="lbl" for="rem">Credit points left</label><input class="fld" id="rem" type="number" inputmode="decimal" min="0" step="1" value="48"/></div></div>
+      <div class="wp-msg" id="need" aria-live="polite"></div>
+    </div>
+  </div>
+
+  </div>
+  <div class="seo">
+    <h2>WAM calculator for Australian universities</h2>
+    <p>Your weighted average mark (WAM) is the average of your unit marks, weighted by credit points. A 12-point unit counts twice as much as a 6-point unit. Many universities use it for honours entry, scholarships and graduate programs.</p>
+    <p><strong>WAM = sum of (mark × credit points) ÷ total credit points.</strong> Marks of 72, 80 and 65 in three 6-point units give (432 + 480 + 390) ÷ 18 = 72.33.</p>
+    <h3>How to use it</h3>
+    <ol><li>Enter the mark out of 100 and the credit points for each unit.</li><li>Turn on the weighting column if your faculty weights later years more heavily.</li><li>Set a target to see the average you need on the units you have left.</li></ol>
+    <h3>Frequently asked questions</h3>
+    <details><summary>What is the difference between WAM and GPA?</summary><p>WAM averages your actual marks out of 100. GPA converts each mark into grade points first, such as 7 for a High Distinction, so two students with the same GPA can have different WAMs.</p></details><details><summary>Do fails count in my WAM?</summary><p>At most universities, yes: a failed unit counts at the mark you received. Some exclude units you later repeated. Check your university handbook.</p></details><details><summary>What is a good WAM?</summary><p>It depends on the university and course. As a rough guide, 75 or above is in the Distinction range and is often the bar for honours and many scholarships.</p></details><details><summary>Is my data saved?</summary><p>Your units are saved in this browser only, so they are still here next time. Nothing is sent anywhere.</p></details>
+  </div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const aud=(n,dp)=>(n<0?'-':'')+'$'+Math.abs(n).toLocaleString('en-AU',{minimumFractionDigits:dp||0,maximumFractionDigits:dp||0});
+const num=v=>{const n=parseFloat(String(v).replace(/[^0-9.\-]/g,''));return isFinite(n)?n:0};
+const store={get(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+function pressGroup(sel,cb){document.querySelectorAll(sel).forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll(sel).forEach(x=>x.setAttribute('aria-pressed',x===b));cb(b)}))}
+
+let rows=store.get('mtp_wam')||[{n:'',m:'',c:6,w:1},{n:'',m:'',c:6,w:1},{n:'',m:'',c:6,w:1},{n:'',m:'',c:6,w:1}];
+let useW=!!store.get('mtp_wam_w');$('useW').checked=useW;
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function draw(){
+  document.querySelector('.wam-head').classList.toggle('w',useW);
+  $('rows').innerHTML=rows.map((r,i)=>'<div class="wrow'+(useW?' w':'')+'" data-i="'+i+'"><input class="fld nm" data-f="n" value="'+esc(r.n)+'" placeholder="Unit '+(i+1)+'" aria-label="Unit '+(i+1)+' name"/>'+
+    '<input class="fld" data-f="m" type="number" inputmode="decimal" min="0" max="100" step="any" value="'+esc(r.m)+'" placeholder="Mark" aria-label="Unit '+(i+1)+' mark"/>'+
+    '<input class="fld" data-f="c" type="number" inputmode="decimal" min="0" step="any" value="'+esc(r.c)+'" aria-label="Unit '+(i+1)+' credit points"/>'+
+    '<input class="fld wcol" data-f="w" type="number" inputmode="decimal" min="0" step="any" value="'+esc(r.w==null?1:r.w)+'" aria-label="Unit '+(i+1)+' weight"/>'+
+    '<button class="del" type="button" aria-label="Remove unit '+(i+1)+'">×</button></div>').join('');
+  calc();
+}
+function band(w){return w>=85?'High Distinction range (85 and above)':w>=75?'Distinction range (75 to 84)':w>=65?'Credit range (65 to 74)':w>=50?'Pass range (50 to 64)':'Below a pass (under 50)'}
+function calc(){
+  store.set('mtp_wam',rows);store.set('mtp_wam_w',useW);
+  let sw=0,s=0,n=0,cp=0;
+  rows.forEach(r=>{const m=parseFloat(r.m),c=parseFloat(r.c),w=useW?parseFloat(r.w==null?1:r.w):1;if(isFinite(m)&&isFinite(c)&&c>0&&isFinite(w)&&w>0&&m>=0&&m<=100){s+=m*c*w;sw+=c*w;cp+=c;n++}});
+  const wam=sw?s/sw:null;
+  $('wam').textContent=wam==null?'–':wam.toFixed(2);
+  $('band').innerHTML=wam==null?'Enter a mark and credit points for at least one unit.':'<b>'+band(wam)+'</b>. Grade bands differ between universities.';
+  $('cp').textContent=cp;$('units').textContent=n;
+  const tgt=num($('tgt').value),rem=num($('rem').value);
+  let msg;
+  if(wam==null)msg='Add your marks first.';
+  else if(rem<=0)msg='Enter how many credit points you still have to complete.';
+  else{const need=(tgt*(sw+rem)-s)/rem;
+    if(need>100)msg='A '+tgt+' WAM is out of reach: you would need <b>'+need.toFixed(1)+'</b> on average, above 100.';
+    else if(need<=0)msg='You have already locked in a '+tgt+' WAM, even with zero on the remaining units.';
+    else msg='Average <b>'+need.toFixed(1)+'</b> across your remaining '+rem+' credit points to finish on a '+tgt+' WAM.'+(useW?' This assumes the remaining units have a weight of 1.':'');}
+  $('need').innerHTML=msg;
+}
+$('rows').addEventListener('input',e=>{const f=e.target.dataset.f,i=+e.target.closest('.wrow').dataset.i;if(f){rows[i][f]=e.target.value;calc()}});
+$('rows').addEventListener('click',e=>{if(e.target.classList.contains('del')){rows.splice(+e.target.closest('.wrow').dataset.i,1);if(!rows.length)rows.push({n:'',m:'',c:6,w:1});draw()}});
+$('add').onclick=()=>{rows.push({n:'',m:'',c:6,w:1});draw();const r=$('rows').lastElementChild;r&&r.querySelector('[data-f=m]').focus()};
+$('useW').onchange=()=>{useW=$('useW').checked;draw()};
+['tgt','rem'].forEach(id=>$(id).addEventListener('input',calc));
+draw();
+
+</script>
+<!-- mtp:footer -->
+<footer class="mtp-footer"><div class="mtp-fcols"><div><a class="mtp-fh" href="/study-tools.html">Study</a><a href="/gpa.html">GPA Calculator</a><a href="/wam-calculator.html">WAM Calculator</a><a href="/final-grade.html">Final Grade Calculator</a></div><div><a class="mtp-fh" href="/money-tools.html">Money</a><a href="/budget.html">Budget Tracker</a><a href="/loan.html">Loan Calculator</a><a href="/gst-calculator.html">GST Calculator</a><a href="/take-home-pay.html">Take-Home Pay Calculator</a><a href="/help-repayment.html">HECS-HELP Repayment Calculator</a><a href="/stamp-duty-nsw.html">NSW Stamp Duty Calculator</a></div><div><a class="mtp-fh" href="/image-tools.html">Images</a><a href="/qr-code.html">QR Code Generator</a><a href="/image-compressor.html">Image Compressor</a><a href="/image-resizer.html">Image Resizer and Converter</a><a href="/heic-to-jpg.html">HEIC to JPG Converter</a><a href="/wallpaper-preview.html">Wallpaper Preview</a><a href="/wallpaper-sizes.html">Wallpaper Sizes for Every Device</a></div><div><a class="mtp-fh" href="/productivity-tools.html">Productivity</a><a href="/todo.html">To-Do List</a><a href="/pomodoro.html">Pomodoro Focus Timer</a><a href="/notes.html">Online Notes</a><a href="/countdown.html">Countdown Timer</a></div><div><a class="mtp-fh" href="/everyday-tools.html">Everyday</a><a href="/spinner.html">Decision Spinner Wheel</a><a href="/converter.html">Unit Converter</a><a href="/percentage.html">Percentage Calculator</a><a href="/age.html">Age Calculator</a><a href="/tip.html">Tip Calculator</a><a href="/bmi.html">BMI Calculator</a><a href="/days-between-dates.html">Days Between Dates</a></div><div><a class="mtp-fh" href="/text-and-dev-tools.html">Text &amp; Dev</a><a href="/counter.html">Word Counter</a><a href="/password.html">Password Generator</a><a href="/color.html">Color Picker</a><a href="/json-formatter.html">JSON Formatter</a></div></div><p>MyToolPad: free tools for students and everyday life.<br>No sign-up · No pop-ups · Your data stays in your browser<br><a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="https://github.com/game9151/mytoolpad/issues" rel="noopener">Feedback</a><br>I design websites. <a href="mailto:officialmeridianstudio@gmail.com">Contact me</a></p></footer>
+<!-- /mtp:footer -->
+</body>
+</html>

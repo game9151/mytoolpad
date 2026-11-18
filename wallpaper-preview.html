@@ -26,14 +26,13 @@
 :root{--bg:#0f0f0f;--surface:#181818;--surface2:#212121;--border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);--text:#f0ede6;--muted:#5a5a5a;--dim:#8c8c8c;--mid:#888}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
 body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
-.topnav{position:fixed;top:0;left:0;right:0;height:52px;background:rgba(15,15,15,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:24px;z-index:100}
-.nav-brand{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--text);text-decoration:none;flex-shrink:0;letter-spacing:-.3px}
-.nav-brand em{color:var(--accent);font-style:normal}
-.nav-links{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
-.nav-links::-webkit-scrollbar{display:none}
-.nav-links a{color:var(--muted);text-decoration:none;font-size:13px;padding:6px 12px;border-radius:8px;transition:all .15s;white-space:nowrap}
-.nav-links a:hover{color:var(--text);background:var(--surface)}
-.nav-links a.active{color:var(--accent);background:var(--accent-dim)}
+
+
+
+
+
+
+
 
 .page{max-width:640px;margin:0 auto;padding:50px 24px 80px;position:relative;z-index:1}
 .page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;letter-spacing:-1px;margin-bottom:6px}
@@ -41,23 +40,21 @@ body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;
 .page-sub{font-size:14px;color:var(--dim);margin-bottom:36px;font-weight:300}
 </style>
 <style>
-.seo{border-top:1px solid #1e1e1e;padding-top:32px;margin-top:32px;color:#8a8a8a}
-.seo h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;margin:0 0 12px;color:#e6e3dc}
-.seo h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:600;margin:26px 0 10px;color:#c8c5be}
-.seo p{font-size:14px;line-height:1.85;margin-bottom:12px}
-.seo strong{color:#c8c5be;font-weight:500}
-.seo ol{padding-left:20px;font-size:14px;line-height:1.85}
-.seo details{border:1px solid #232323;border-radius:10px;padding:12px 16px;margin-bottom:8px;background:#141414}
-.seo summary{cursor:pointer;font-size:14px;color:#d8d5ce}
-.seo details p{margin:10px 0 0;font-size:13.5px}
-.seo .related{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-.seo .related a{font-size:13px;color:#c8f135;text-decoration:none;border:1px solid #2a2a2a;border-radius:99px;padding:6px 14px}
-.seo .related a:hover{background:rgba(200,241,53,.08)}
-.site-footer{text-align:center;padding:40px 24px 60px;border-top:1px solid var(--border,#2a2a2a);position:relative;z-index:1;margin-top:40px}
-.site-footer .ft-tools{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;max-width:760px;margin:0 auto 20px}
-.site-footer a{color:#777;font-size:12.5px;text-decoration-color:#333}
-.site-footer a:hover{color:#c8f135}
-.site-footer p{font-size:12px;color:#5a5a5a;line-height:2}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 .page.wide{max-width:900px}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px}
@@ -68,7 +65,7 @@ select.fld{cursor:pointer}
 .btn:hover{border-color:var(--accent)}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .btn:disabled:hover{border-color:var(--border)}
-.btn.primary{background:var(--accent);color:#0f0f0f;border-color:var(--accent);font-weight:500}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:500}
 .btn.primary:hover{filter:brightness(1.06)}
 .btn.primary:disabled:hover{border-color:var(--accent);filter:none}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
@@ -82,8 +79,8 @@ select.fld{cursor:pointer}
 .kpi span{font-size:10px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim)}
 .tabs{display:flex;gap:6px;flex-wrap:wrap}
 .tab{background:none;border:1px solid var(--border);color:var(--mid);border-radius:99px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
-.tab.active{color:var(--accent);border-color:rgba(200,241,53,.4);background:var(--accent-dim)}
-input[type=range]{accent-color:#c8f135;width:100%}
+.tab.active{color:var(--accent);border-color:rgba(var(--accent-rgb),.4);background:var(--accent-dim)}
+input[type=range]{accent-color:var(--accent);width:100%}
 input[type=number].fld{padding:10px 12px;font-size:15px}
 
 /* wallpaper tool */
@@ -107,10 +104,10 @@ input[type=number].fld{padding:10px 12px;font-size:15px}
 .wp-ov .ic{background:rgba(255,255,255,.24);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14)}
 .wp-ov .grid{position:absolute;left:0;right:0;display:grid;justify-content:space-evenly;align-content:start}
 .wp-ov .dock{position:absolute;display:flex;justify-content:space-evenly;align-items:center;background:rgba(255,255,255,.2);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-.wp-stand{background:linear-gradient(#2e2e2e,#181818)}
+.wp-stand{background:linear-gradient(#2e2e2e,var(--surface))}
 .chip{display:inline-block;font-size:12px;font-weight:500;padding:4px 12px;border-radius:99px;border:1px solid}
 .chip.ok{color:#5cdb9a;border-color:rgba(92,219,154,.4);background:rgba(92,219,154,.08)}
-.chip.good{color:var(--accent);border-color:rgba(200,241,53,.4);background:var(--accent-dim)}
+.chip.good{color:var(--accent);border-color:rgba(var(--accent-rgb),.4);background:var(--accent-dim)}
 .chip.soft{color:#f5a623;border-color:rgba(245,166,35,.4);background:rgba(245,166,35,.08)}
 .chip.bad{color:#e85c5c;border-color:rgba(232,92,92,.4);background:rgba(232,92,92,.08)}
 .wp-msg{font-size:14px;line-height:1.7;color:#b5b2ab;margin-top:12px}
@@ -129,12 +126,19 @@ input[type=number].fld{padding:10px 12px;font-size:15px}
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What resolution should a phone wallpaper be?", "acceptedAnswer": {"@type": "Answer", "text": "At least the phone's screen resolution in both directions, for example 1320 x 2868 pixels for an iPhone 17 Pro Max. Anything bigger is fine because the phone scales it down. If the image has fewer pixels than the screen, the phone stretches it and it looks soft."}}, {"@type": "Question", "name": "Are my images uploaded?", "acceptedAnswer": {"@type": "Answer", "text": "No. The image is read and drawn by your own browser. It is never sent to a server, so it stays private and works with large files."}}, {"@type": "Question", "name": "Why does my wallpaper look cropped on my phone?", "acceptedAnswer": {"@type": "Answer", "text": "Phone screens are tall and narrow, while most photos are wide. To fill the screen the phone crops the sides. Drag the image in the preview to pick which part stays, or switch to Fit to see the whole image with bars."}}, {"@type": "Question", "name": "Is a 4K wallpaper good enough for a phone?", "acceptedAnswer": {"@type": "Answer", "text": "Usually yes if the image is also tall enough. A 3840 x 2160 landscape image is only 2160 pixels tall, so on a phone it is cropped and stretched to fill a 2796 pixel tall screen. Check the verdict for your exact phone."}}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "MyToolPad", "item": "https://www.mytoolpad.com/"}, {"@type": "ListItem", "position": 2, "name": "Wallpaper Preview", "item": "https://www.mytoolpad.com/wallpaper-preview.html"}]}</script>
 <script defer src="/_vercel/insights/script.js"></script>
+<!-- mtp:head -->
+<script>(function(){var d=document.documentElement;try{var t=localStorage.getItem("mtp-theme")||"dark",a=localStorage.getItem("mtp-accent")||"lime";if(t==="auto")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";d.setAttribute("data-theme",t);d.setAttribute("data-accent",a)}catch(e){d.setAttribute("data-theme","dark")}})()</script>
+<link rel="stylesheet" href="/assets/site.css?v=86224f4d"/>
+<link rel="manifest" href="/manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="/icons/icon-192.png"/>
+<script src="/assets/tools.js?v=86224f4d" defer></script>
+<script src="/assets/site.js?v=86224f4d" defer></script>
+<!-- /mtp:head -->
 </head>
 <body>
-<nav class="topnav">
-  <a href="/" class="nav-brand">My<em>Tool</em>Pad</a>
-  <div class="nav-links"><a href="/todo.html">To-Do</a><a href="/pomodoro.html">Focus</a><a href="/notes.html">Notes</a><a href="/percentage.html">Percentage</a><a href="/age.html">Age</a><a href="/tip.html">Tip</a><a href="/bmi.html">BMI</a><a href="/loan.html">Loan</a><a href="/gpa.html">GPA</a><a href="/color.html">Color</a><a href="/spinner.html">Spinner</a><a href="/counter.html">Counter</a><a href="/budget.html">Budget</a><a href="/countdown.html">Countdown</a><a href="/converter.html">Converter</a><a href="/password.html">Password</a><a href="/json-formatter.html">JSON</a><a href="/qr-code.html">QR</a><a href="/image-compressor.html">Image</a><a href="/days-between-dates.html">Dates</a><a href="/final-grade.html">Final Grade</a><a href="/gst-calculator.html">GST</a><a href="/wallpaper-preview.html" class="active">Wallpaper</a></div>
-</nav>
+<!-- mtp:nav -->
+<nav class="mtp-nav" aria-label="Main" data-tool="/wallpaper-preview.html"><a href="/" class="mtp-brand">My<em>Tool</em>Pad</a><div class="mtp-cats"><a href="/study-tools.html">Study</a><a href="/money-tools.html">Money</a><a href="/image-tools.html" class="active">Images</a><a href="/productivity-tools.html">Productivity</a><a href="/everyday-tools.html">Everyday</a><a href="/text-and-dev-tools.html">Text &amp; Dev</a></div><button class="mtp-search-btn" type="button" data-mtp-search aria-label="Search tools"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search tools</span><kbd>/</kbd></button><button class="mtp-icon-btn" type="button" data-mtp-pin aria-pressed="false" aria-label="Pin this tool to My Pad" title="Pin to My Pad"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></button><button class="mtp-icon-btn" type="button" data-mtp-theme aria-label="Theme and colour" title="Theme and colour"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button></nav>
+<!-- /mtp:nav -->
 <div class="page wide">
   <h1 class="page-title">Wallpaper<em>.</em>Preview</h1>
   <div class="page-sub">See a wallpaper on a phone, tablet, laptop or monitor, and whether it has enough pixels. Nothing is uploaded.</div>
@@ -267,6 +271,8 @@ const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},se
   const c=document.createElement('option');c.value='custom';c.textContent='Custom size…';sel.appendChild(c);
   const saved=store.get('mytoolpad_wallpaper_device');
   if(saved&&(saved==='custom'||DEVICES[+saved])){sel.value=saved;S.di=saved}else{S.di='0';sel.value='0'}
+  const want=new URLSearchParams(location.search).get('device');
+  if(want){const slug=n=>n.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');const i=DEVICES.findIndex(d=>slug(d.n)===want);if(i>-1){S.di=String(i);sel.value=S.di}}
 })();
 
 function curDev(){
@@ -586,14 +592,8 @@ $('sample').onclick=async()=>{
 let rt;window.addEventListener('resize',()=>{clearTimeout(rt);rt=setTimeout(render,150)});
 render();
 </script>
-<footer class="site-footer">
-  <div class="ft-tools"><a href="/todo.html">To-Do List</a><a href="/pomodoro.html">Pomodoro Timer</a><a href="/notes.html">Online Notes</a><a href="/percentage.html">Percentage Calculator</a><a href="/age.html">Age Calculator</a><a href="/tip.html">Tip Calculator</a><a href="/bmi.html">BMI Calculator</a><a href="/loan.html">Loan Calculator</a><a href="/gpa.html">GPA Calculator</a><a href="/color.html">Color Picker</a><a href="/spinner.html">Decision Spinner Wheel</a><a href="/counter.html">Word Counter</a><a href="/budget.html">Budget Tracker</a><a href="/countdown.html">Countdown Timer</a><a href="/converter.html">Unit Converter</a><a href="/password.html">Password Generator</a><a href="/json-formatter.html">JSON Formatter</a><a href="/qr-code.html">QR Code Generator</a><a href="/image-compressor.html">Image Compressor</a><a href="/days-between-dates.html">Days Between Dates</a><a href="/final-grade.html">Final Grade Calculator</a><a href="/gst-calculator.html">GST Calculator</a><a href="/wallpaper-preview.html">Wallpaper Preview</a></div>
-  <p>MyToolPad: free tools for students and everyday life.<br>
-  No sign-up · No pop-ups · Your data stays in your browser<br>
-  <a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="https://github.com/game9151/mytoolpad/issues" rel="noopener">Feedback</a>
-  <!-- DONATE: paste your Buy Me a Coffee / Ko-fi link here once you have one, e.g.
-  · <a href="https://buymeacoffee.com/YOURNAME" rel="noopener">☕ Support MyToolPad</a> -->
-  </p>
-</footer>
+<!-- mtp:footer -->
+<footer class="mtp-footer"><div class="mtp-fcols"><div><a class="mtp-fh" href="/study-tools.html">Study</a><a href="/gpa.html">GPA Calculator</a><a href="/wam-calculator.html">WAM Calculator</a><a href="/final-grade.html">Final Grade Calculator</a></div><div><a class="mtp-fh" href="/money-tools.html">Money</a><a href="/budget.html">Budget Tracker</a><a href="/loan.html">Loan Calculator</a><a href="/gst-calculator.html">GST Calculator</a><a href="/take-home-pay.html">Take-Home Pay Calculator</a><a href="/help-repayment.html">HECS-HELP Repayment Calculator</a><a href="/stamp-duty-nsw.html">NSW Stamp Duty Calculator</a></div><div><a class="mtp-fh" href="/image-tools.html">Images</a><a href="/qr-code.html">QR Code Generator</a><a href="/image-compressor.html">Image Compressor</a><a href="/image-resizer.html">Image Resizer and Converter</a><a href="/heic-to-jpg.html">HEIC to JPG Converter</a><a href="/wallpaper-preview.html">Wallpaper Preview</a><a href="/wallpaper-sizes.html">Wallpaper Sizes for Every Device</a></div><div><a class="mtp-fh" href="/productivity-tools.html">Productivity</a><a href="/todo.html">To-Do List</a><a href="/pomodoro.html">Pomodoro Focus Timer</a><a href="/notes.html">Online Notes</a><a href="/countdown.html">Countdown Timer</a></div><div><a class="mtp-fh" href="/everyday-tools.html">Everyday</a><a href="/spinner.html">Decision Spinner Wheel</a><a href="/converter.html">Unit Converter</a><a href="/percentage.html">Percentage Calculator</a><a href="/age.html">Age Calculator</a><a href="/tip.html">Tip Calculator</a><a href="/bmi.html">BMI Calculator</a><a href="/days-between-dates.html">Days Between Dates</a></div><div><a class="mtp-fh" href="/text-and-dev-tools.html">Text &amp; Dev</a><a href="/counter.html">Word Counter</a><a href="/password.html">Password Generator</a><a href="/color.html">Color Picker</a><a href="/json-formatter.html">JSON Formatter</a></div></div><p>MyToolPad: free tools for students and everyday life.<br>No sign-up · No pop-ups · Your data stays in your browser<br><a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="https://github.com/game9151/mytoolpad/issues" rel="noopener">Feedback</a><br>I design websites. <a href="mailto:officialmeridianstudio@gmail.com">Contact me</a></p></footer>
+<!-- /mtp:footer -->
 </body>
 </html>
