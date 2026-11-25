@@ -58,12 +58,11 @@ TOOLS = [
     ('heic-to-jpg.html', 'HEIC to JPG Converter', 'HEIC to JPG', '⇄', ['images'], 'Convert iPhone HEIC photos to JPG or PNG in your browser. Batch convert, nothing uploaded.', 'heic heif to jpg iphone photo convert apple'),
     ('wallpaper-preview.html', 'Wallpaper Preview', 'Wallpaper preview', '▯', ['images'], 'See a wallpaper on any phone, tablet or monitor and check if it is high-res enough.', 'wallpaper background preview resolution phone iphone screen size'),
     ('wallpaper-sizes.html', 'Wallpaper Sizes for Every Device', 'Wallpaper sizes', '⊞', ['images'], 'A reference table of screen resolutions for iPhone, Android, iPad, MacBook and monitors.', 'wallpaper size resolution iphone dimensions pixels screen'),
-    ('car-diagnostics-simulator.html', 'Car Diagnostics Simulator', 'Car diagnostics', '⚙', ['study', 'everyday'], 'Find and fix engine faults with a multimeter, oscilloscope, scan tool and wiring diagram. Practice and challenge modes.', 'car mechanic automotive engine diagnostics multimeter oscilloscope scan tool obd fault codes electude simulator apprentice tafe'),
     ('json-formatter.html', 'JSON Formatter', 'JSON', '{ }', ['text'], 'Beautify, minify, sort and validate JSON. Errors show the exact line and column.', 'json format beautify validate minify pretty print'),
     ('days-between-dates.html', 'Days Between Dates', 'Date calculator', '▤', ['everyday'], 'Count days, weeks and weekdays between dates, or add and subtract time from a date.', 'days between dates date calculator weekdays add days'),
 ]
 assert len({t[0] for t in TOOLS}) == len(TOOLS), 'duplicate tool file'
-FEATURED = ['car-diagnostics-simulator.html', 'take-home-pay.html', 'help-repayment.html', 'wam-calculator.html', 'image-compressor.html', 'heic-to-jpg.html']
+FEATURED = ['take-home-pay.html', 'help-repayment.html', 'wam-calculator.html', 'pomodoro.html', 'image-compressor.html', 'heic-to-jpg.html']
 PAGES = ['index.html', 'about.html', 'privacy.html', '404.html'] + [c[2] for c in CATS]
 NO_ASIDE = {'wallpaper-preview.html', 'car-diagnostics-simulator.html'}  # big visual tools keep the full width
 
