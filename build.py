@@ -30,6 +30,7 @@ CAT = {c[0]: c for c in CATS}
 
 # file, name, short (nav/search label), icon, categories (first = main), description, extra search words
 TOOLS = [
+    ('car-diagnostics-simulator.html', 'Car Diagnostics Simulator', 'Car simulator', '⚙', ['study', 'everyday'], 'New: probe a 3D-rendered engine bay with a multimeter, scope and scan tool, find the fault, then road test your fix.', 'car engine simulator diagnostics mechanic automotive multimeter oscilloscope scan tool obd faults game electude'),
     ('todo.html', 'To-Do List', 'To-Do', '✓', ['productivity'], 'Tasks with priorities, drag-to-reorder, and filter by status. Double-click any task to edit it inline.', 'todo tasks checklist list jobs'),
     ('pomodoro.html', 'Pomodoro Focus Timer', 'Focus timer', '◔', ['productivity', 'study'], 'Pomodoro timer with auto long-breaks, session tracking, sound alerts and a built-in task list.', 'pomodoro timer focus study tomato break'),
     ('notes.html', 'Online Notes', 'Notes', '✦', ['productivity', 'study'], 'Multiple notes, instant search, auto-saves as you type. Your private scratchpad.', 'notes notepad scratchpad write memo'),
@@ -62,9 +63,12 @@ TOOLS = [
     ('days-between-dates.html', 'Days Between Dates', 'Date calculator', '▤', ['everyday'], 'Count days, weeks and weekdays between dates, or add and subtract time from a date.', 'days between dates date calculator weekdays add days'),
 ]
 assert len({t[0] for t in TOOLS}) == len(TOOLS), 'duplicate tool file'
-FEATURED = ['take-home-pay.html', 'help-repayment.html', 'wam-calculator.html', 'pomodoro.html', 'image-compressor.html', 'heic-to-jpg.html']
+FEATURED = ['car-diagnostics-simulator.html', 'help-repayment.html', 'wam-calculator.html', 'pomodoro.html', 'image-compressor.html', 'heic-to-jpg.html']
+FEATURED = FEATURED[:6]
+# full-screen apps with their own layout: listed everywhere, but no shared nav, footer or theme injected
+STANDALONE = {'car-diagnostics-simulator.html': 'assets/car-sim'}
 PAGES = ['index.html', 'about.html', 'privacy.html', '404.html'] + [c[2] for c in CATS]
-NO_ASIDE = {'wallpaper-preview.html', 'car-diagnostics-simulator.html'}  # big visual tools keep the full width
+NO_ASIDE = {'wallpaper-preview.html'}  # big visual tools keep the full width
 
 
 # Small-print disclaimers. Money tools get the finance wording, health tools the health wording.
@@ -78,9 +82,7 @@ DISCLAIMER_HEALTH = ('General information only, not medical advice. BMI is a rou
 DISCLAIMER_STUDY = ('Estimates only. Grading scales and rules differ between universities and courses, so check your official '
                     'results and handbook. MyToolPad accepts no responsibility for decisions made using this tool.')
 HEALTH = {'bmi.html'}
-CUSTOM_DISCLAIMER = {'car-diagnostics-simulator.html': 'A simplified training simulator. The car, readings and faults are made up for learning and do not match any '
-                     'specific vehicle. On a real car, follow the manufacturer\'s repair information and safety rules. MyToolPad accepts no '
-                     'responsibility for work done on a vehicle.'}
+CUSTOM_DISCLAIMER = {}
 
 
 def disclaimer_for(fname):
@@ -104,7 +106,10 @@ def esc(s):
 
 def asset_hash():
     h = hashlib.sha1()
-    for f in ['assets/site.css', 'assets/site.js', 'assets/tools.js']:
+    files = ['assets/site.css', 'assets/site.js', 'assets/tools.js']
+    for d in STANDALONE.values():
+        files += sorted(d + '/' + n for n in os.listdir(os.path.join(ROOT, d)))
+    for f in files:
         p = os.path.join(ROOT, f)
         if os.path.exists(p):
             h.update(open(p, 'rb').read())
@@ -234,6 +239,10 @@ def wrap_aside(html):
 def process_page(fname, v):
     p = os.path.join(ROOT, fname)
     html = open(p, encoding='utf-8').read()
+    if fname in STANDALONE:  # only bust the cache on its own assets
+        html = re.sub(r'(/%s/[^"\'?]*\?v=)[0-9a-f]+' % STANDALONE[fname], lambda m: m.group(1) + v, html)
+        open(p, 'w', encoding='utf-8').write(html)
+        return
     html = replace_block(html, 'head', head_html(v), lambda h, b: h.replace('</head>', b + '\n</head>', 1))
     html = replace_block(html, 'nav', nav_html(fname),
                          lambda h, b: re.sub(r'<nav class="topnav">.*?</nav>', lambda m: b, h, count=1, flags=re.S))

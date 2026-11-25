@@ -1,0 +1,1501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Car Diagnostics Simulator | Free Engine Fault Finding | MyToolPad</title>
+<meta name="description" content="A free car diagnostics simulator in your browser. Probe a 4-cylinder engine with a multimeter, scope and scan tool, find faults, and road test the fix.">
+<link rel="canonical" href="https://www.mytoolpad.com/car-diagnostics-simulator.html">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#101214">
+<meta property="og:title" content="Car Diagnostics Simulator | MyToolPad">
+<meta property="og:description" content="A free car diagnostics simulator in your browser. Probe a 4-cylinder engine with a multimeter, scope and scan tool, find faults, and road test the fix.">
+<meta property="og:url" content="https://www.mytoolpad.com/car-diagnostics-simulator.html">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://www.mytoolpad.com/og-image.png">
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg">
+<script defer src="/_vercel/insights/script.js"></script>
+<script>if('serviceWorker' in navigator&&location.protocol==='https:')addEventListener('load',()=>navigator.serviceWorker.register('/sw.js'))</script>
+<style>
+:root{
+  --bg:#101214;--panel:#1b1e22;--panel2:#23272c;--line:#30353c;--line2:#454c55;--text:#e8e6e1;--dim:#9aa1a9;
+  --accent:#f5b40f;--accent-ink:#1a1400;--ok:#3ecf6e;--warn:#f59e0b;--err:#ef4444;--red:#e5372f;--blk:#2a2d31;
+  --paper:#f3f0e8;--ink:#1d1f22;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:14px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer}
+.app{display:grid;grid-template-rows:auto 1fr auto;height:100dvh}
+
+/* top bar */
+.top{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--panel);border-bottom:1px solid var(--line);min-width:0}
+.top a.home{color:var(--dim);text-decoration:none;font-size:13px;white-space:nowrap}
+.top a.home:hover{color:var(--text)}
+.jobcard{flex:1;min-width:0;display:flex;align-items:center;gap:10px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;text-align:left}
+.jobcard .no{font:600 12px ui-monospace,Menlo,monospace;color:var(--accent);white-space:nowrap}
+.jobcard .txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text)}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.chip b{font-weight:600}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg button{background:var(--panel2);border:0;padding:6px 10px}
+.seg button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn{background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:6px 12px;white-space:nowrap}
+.btn:hover{border-color:var(--dim)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.btn.small{padding:4px 9px;font-size:13px}
+.btn[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+
+/* workspace */
+.mid{position:relative;display:grid;grid-template-columns:1fr auto;min-height:0}
+.stage{position:relative;overflow:hidden;background:#0b0c0d;touch-action:none;cursor:grab}
+.stage.panning{cursor:grabbing}
+.world{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
+.shake{position:relative;width:2000px;height:1334px}
+.shake img{display:block;width:2000px;height:1334px;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.shake svg{position:absolute;inset:0;width:2000px;height:1334px}
+#engLayer{position:absolute;inset:0;will-change:transform;pointer-events:none}
+#engImg{position:absolute;left:0;top:0}
+#altSpin{position:absolute}#altSpin img{position:absolute;inset:0;width:100%!important;height:100%!important;visibility:hidden}#altSpin img.on{visibility:visible}
+.hs{fill:rgba(245,180,15,0);stroke:rgba(245,180,15,0);stroke-width:4;cursor:pointer;transition:fill .15s,stroke .15s}
+.hs:hover,.hs:focus{fill:rgba(245,180,15,.12);stroke:rgba(245,180,15,.9);outline:none}
+.hs.sel{fill:rgba(245,180,15,.16);stroke:var(--accent)}
+.show-all .hs{stroke:rgba(245,180,15,.55)}
+.badge{pointer-events:none}
+.badge rect{fill:var(--warn)}
+.badge text{font:600 22px system-ui;fill:#1a1100}
+.badge.new rect{fill:var(--ok)}
+.bpin{fill:rgba(255,255,255,.0);stroke:rgba(255,255,255,.0);stroke-width:3;cursor:crosshair}
+.bpin:hover,.probing .bpin{fill:rgba(255,255,255,.12);stroke:#fff}
+.tip{position:absolute;pointer-events:none;background:#000c;color:#fff;border-radius:6px;padding:4px 8px;font-size:13px;white-space:nowrap;transform:translate(-50%,-130%);display:none;z-index:5}
+.zoomctl{position:absolute;left:12px;bottom:12px;display:flex;gap:6px;z-index:4}
+.zoomctl button{width:36px;height:36px;border-radius:8px;background:#000a;border:1px solid var(--line2);font-size:18px}
+.zoomctl button.wide{width:auto;padding:0 10px;font-size:13px}
+.tray{position:absolute;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:6px;align-items:center;background:#000b;border:1px solid var(--line2);border-radius:12px;padding:6px 8px;z-index:4;max-width:calc(100% - 300px);overflow-x:auto}
+.tray .tl{font-size:12px;color:var(--dim);white-space:nowrap;padding:0 4px}
+.tchip{background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:4px 9px;font-size:12.5px;white-space:nowrap}
+.tchip:hover{border-color:var(--accent)}
+.lvl{display:grid;gap:2px;text-align:left;width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:10px 12px;margin-top:8px}
+.lvl:hover{border-color:var(--accent)}.lvl span{font-size:13px;color:var(--dim)}
+.sbl{display:grid;gap:6px;margin:10px 0;font-size:13.5px}.sbl label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}.sbl input{margin-top:3px;accent-color:var(--accent)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.hint{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:#000b;border:1px solid var(--line2);border-radius:10px;padding:8px 14px;font-size:13px;color:#ddd;z-index:4;max-width:min(560px,90%);text-align:center}
+.hint button{background:none;border:0;color:var(--accent);margin-left:8px}
+
+/* tool rail */
+.rail{display:flex;flex-direction:column;gap:4px;padding:8px 6px;background:var(--panel);border-left:1px solid var(--line);overflow:auto}
+.rail button{display:flex;flex-direction:column;align-items:center;gap:3px;width:74px;padding:8px 4px;border-radius:10px;border:1px solid transparent;background:none;color:var(--dim);font-size:11.5px;line-height:1.15;text-align:center}
+.rail button:hover{background:var(--panel2);color:var(--text)}
+.rail button[aria-pressed=true]{background:var(--panel2);border-color:var(--line2);color:var(--text)}
+.rail svg{width:30px;height:30px}
+.rail .sep{height:1px;background:var(--line);margin:4px 6px}
+
+/* dashboard */
+.dash{display:flex;align-items:center;gap:14px;padding:8px 12px;background:linear-gradient(#17191c,#0f1113);border-top:1px solid var(--line);min-width:0}
+.key{display:flex;align-items:center;gap:8px}
+.barrel{width:66px;height:66px;flex:none;touch-action:none;cursor:pointer}
+.keypos{display:flex;flex-direction:column;gap:3px}
+.keypos button{background:var(--panel2);border:1px solid var(--line);border-radius:6px;padding:3px 8px;font-size:12px;text-align:left;min-width:72px}
+.keypos button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+.cluster{display:flex;align-items:center;gap:12px;background:#07080a;border:1px solid #23272c;border-radius:14px;padding:4px 12px}
+.cluster svg.tacho{width:84px;height:76px;display:block}
+.lamps{display:grid;grid-template-columns:repeat(2,auto);gap:6px 10px;align-items:center}
+.lamp{width:28px;height:22px;opacity:.16;transition:opacity .08s}
+.lamp.on{opacity:1}
+.lamp.blink{animation:blink .5s steps(1) infinite}
+@keyframes blink{50%{opacity:.16}}
+.gauges{font:600 13px ui-monospace,Menlo,monospace;color:#cfd6dd;display:grid;gap:2px}
+.gauges span{color:#7d858d;font-weight:400;margin-right:6px}
+.pedal{display:flex;align-items:center;gap:8px;color:var(--dim);font-size:12px}
+.pedal input{width:130px;accent-color:var(--accent)}
+.msg{flex:1;min-width:0;color:#d6d3cc;font-size:13.5px;overflow:hidden;text-overflow:ellipsis}
+.msg b{color:var(--accent);font-weight:600}
+
+/* floating windows */
+.win{position:fixed;z-index:20;background:var(--panel);border:1px solid var(--line2);border-radius:12px;box-shadow:0 18px 50px #000a;display:flex;flex-direction:column;max-height:calc(100dvh - 24px);min-width:0}
+.win[hidden]{display:none}
+.wbar{display:flex;align-items:center;gap:8px;padding:8px 10px 8px 14px;border-bottom:1px solid var(--line);cursor:move;touch-action:none;user-select:none}
+.wbar h2{margin:0;font-size:14px;font-weight:600;flex:1}
+.wbar .x{background:none;border:0;color:var(--dim);font-size:20px;line-height:1;width:28px;height:28px;border-radius:6px}
+.wbar .x:hover{background:var(--panel2);color:var(--text)}
+.win.min .wbody{display:none}.win.min{max-height:none}
+.wbody{padding:12px 14px;overflow:auto}
+.wbody p{margin:0 0 10px;color:#c9c6bf}
+.acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.guide{margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.guide h3{margin:0 0 6px;font-size:13.5px}
+.steps{margin:0 0 8px;padding:0;list-style:none;counter-reset:st;display:grid;gap:4px;font-size:13px;color:#cfccc5}
+.steps li{counter-increment:st;display:flex;gap:8px;align-items:baseline}
+.steps li::before{content:counter(st);flex:none;width:18px;height:18px;border-radius:50%;border:1px solid var(--line2);font:600 11px/16px system-ui;text-align:center;color:var(--dim)}
+.steps li.ok{color:var(--dim)}.steps li.ok::before{content:"✓";background:var(--ok);border-color:var(--ok);color:#06200f}
+.verdict{margin:6px 0 0!important;padding:8px 10px;border-radius:8px;background:#20252b;font-size:13px}
+.verdict.good,.ftbl .good{color:#7ee2a8}.verdict.bad,.ftbl .bad{color:#ff8a80}.verdict.warn,.ftbl .warn{color:#f6c56b}
+.ftbl{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}
+.ftbl th{text-align:left;font-weight:600;color:var(--dim);font-size:12px;padding:3px 0}
+.ftbl td{padding:4px 0;border-top:1px solid var(--line);vertical-align:middle}
+.ftbl td:last-child{text-align:right}
+.ftbl .vrow td{border-top:0;padding:0 0 6px;font-size:12.5px;color:#cfccc5;text-align:left}
+.ftbl.parts{margin-top:10px}.ftbl.parts td:nth-child(2){text-align:right;padding-right:6px}
+.dimv{color:var(--dim)}
+.found{margin-top:10px;background:#2a2410;border:1px solid #5c4a12;color:#f2dc9a;border-radius:8px;padding:8px 10px}
+.small{font-size:12.5px;color:var(--dim)}
+
+/* connector close-up */
+.conns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center}
+.conn{text-align:center}
+.conn svg{display:block}
+.conn .cap{font-size:12px;color:var(--dim);margin-top:4px}
+.cpin{cursor:crosshair}
+.cpin circle.hole{fill:#0d0e10;stroke:#000;stroke-width:1}
+.cpin circle.metal{fill:#c9a24a}
+.cpin circle.ring{fill:none;stroke:transparent;stroke-width:3}
+.cpin:hover circle.ring,.probing .cpin circle.ring{stroke:#fff}
+.cpin text{font:600 11px system-ui;fill:#e6e6e6;pointer-events:none}
+.pinlist{margin:10px 0 0;padding:0;list-style:none;font-size:12.5px;color:#c7c4bd;display:grid;gap:2px}
+.pinlist b{color:var(--text);font-weight:600;display:inline-block;min-width:22px}
+
+/* multimeter */
+#w-meter .wbody{padding:10px}
+#w-meter{width:auto!important;min-width:200px}
+.dmm{width:min(250px,calc((100dvh - 250px)*0.69));min-width:150px;display:block;margin:0 auto;touch-action:none}
+.dmm .pos{cursor:pointer}
+.dmm .pos text{font:700 12px system-ui;fill:#e6e6e6}
+.dmm .pos.on text{fill:var(--accent)}
+.lcdtxt{font:700 46px ui-monospace,"SF Mono",Menlo,monospace;fill:#161a14;letter-spacing:1px}
+.lcdunit{font:700 16px ui-monospace,Menlo,monospace;fill:#161a14}
+.mhint{min-height:2.6em;font-size:12.5px;color:var(--dim);text-align:center;margin-top:6px;max-width:250px}
+.leadinfo{font-size:12px;color:var(--dim);display:grid;gap:2px;margin-top:6px;max-width:250px}
+.leadinfo i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+
+/* scope */
+.scopebox{background:#0a100d;border-radius:8px;padding:6px;border:1px solid #1d2b25}
+#scope{display:block;width:100%;height:auto;border-radius:4px}
+.sctl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.sctl .grp{display:flex;align-items:center;gap:4px;background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:3px 4px 3px 8px;font-size:12.5px}
+.sctl .grp b{font:600 12.5px ui-monospace,Menlo,monospace;min-width:72px;text-align:center}
+.sctl .grp button{width:26px;height:26px;border-radius:6px;border:1px solid var(--line2);background:var(--panel)}
+
+/* scan tool */
+.scan{width:300px;margin:0 auto;background:linear-gradient(#2b3a52,#1c283b);border-radius:22px;padding:16px 16px 18px;border:1px solid #3b4d6b;box-shadow:inset 0 1px 0 #ffffff22}
+.scan .brand{font:700 11px system-ui;letter-spacing:.14em;color:#9fb4d6;text-align:center;margin-bottom:8px}
+.slcd{background:#cfe0c9;color:#13210f;border-radius:6px;height:230px;padding:8px 10px;font:13px/1.35 ui-monospace,Menlo,monospace;overflow:auto;box-shadow:inset 0 2px 6px #0006}
+.slcd .hd{font-weight:700;border-bottom:1px solid #13210f55;margin-bottom:4px;padding-bottom:2px}
+.slcd .it{padding:1px 4px;border-radius:3px;cursor:pointer}
+.slcd .it.on{background:#13210f;color:#cfe0c9}
+.slcd table{width:100%;border-collapse:collapse}
+.slcd td{padding:1px 0}
+.slcd td+td{text-align:right}
+.skeys{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.skeys button{height:38px;border-radius:10px;border:1px solid #0e1622;background:linear-gradient(#41536f,#2c3a52);color:#e6eefb;font-weight:600}
+.skeys button.ok{background:linear-gradient(#e0a21a,#b87f0a);color:#1c1200}
+
+/* wiring diagram */
+#w-diag .wbody{padding:0}
+.ctabs{display:flex;flex-wrap:wrap;gap:4px;padding:8px 10px;border-bottom:1px solid var(--line)}
+.ctabs button{background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:4px 9px;font-size:12.5px}
+.ctabs button[aria-pressed=true]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.paper{background:var(--paper);padding:10px}
+.paper svg{display:block;width:100%;height:auto}
+.paper text{font:12px system-ui;fill:var(--ink)}
+.paper .bt{font-weight:700;font-size:12.5px}
+.paper .blk{fill:#fff;stroke:#1d1f22;stroke-width:1.4}
+.paper .wire{fill:none;stroke-width:3}
+.paper .wire.sel{stroke-width:6}
+.paper .whit{fill:none;stroke:transparent;stroke-width:14;cursor:pointer}
+.paper .dpin{cursor:crosshair}
+.paper .dpin circle{fill:#fff;stroke:#1d1f22;stroke-width:1.6}
+.paper .dpin:hover circle,.probing .paper .dpin circle{fill:#ffd75e}
+.paper .dpin.r circle{fill:var(--red)}
+.paper .dpin.k circle{fill:#222}
+.diagfoot{padding:10px 12px;border-top:1px solid var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:13px}
+
+/* fuel gauge */
+.fgauge{width:220px;display:block;margin:0 auto}
+.drivebar{display:flex;align-items:center;gap:12px;margin-top:10px;flex-wrap:wrap}
+.spd{display:flex;align-items:baseline;gap:4px}.spd b{font:700 34px ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;min-width:66px;text-align:right}.spd span{color:var(--dim);font-size:13px}
+.gear{font-size:13px;color:var(--dim)}.gear b{color:var(--text);font:600 16px ui-monospace,Menlo,monospace}
+.drivebar .btn.primary{margin-left:auto}
+
+/* leads overlay */
+#leads,#cables{position:fixed;inset:0;width:100vw;height:100dvh;pointer-events:none;z-index:50;overflow:visible}
+#cables{z-index:15}
+#leads .probe{pointer-events:auto;cursor:grab;touch-action:none}
+#leads .probe.drag{cursor:grabbing}
+.pop{position:fixed;z-index:55;background:var(--panel);border:1px solid var(--line2);border-radius:10px;padding:8px;box-shadow:0 10px 30px #000a;display:grid;gap:6px;min-width:190px}
+.pop .t{font-size:12.5px;color:var(--dim);padding:0 2px 2px}
+.pop button{text-align:left}
+.pop .r::before,.pop .k::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:-1px}
+.pop .r::before{background:var(--red)}.pop .k::before{background:#111;border:1px solid #777}
+
+/* job / invoice modal */
+.modal{position:fixed;inset:0;background:#000a;z-index:60;display:grid;place-items:center;padding:16px}
+.modal[hidden]{display:none}
+.card{background:var(--panel);border:1px solid var(--line2);border-radius:14px;max-width:520px;width:100%;max-height:90dvh;overflow:auto;padding:18px 20px}
+.card h2{margin:0 0 6px;font-size:18px}
+.card .q{font-size:16px;color:#f0ede6;background:var(--panel2);border-left:3px solid var(--accent);padding:10px 12px;border-radius:6px;margin:10px 0}
+.card table{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:8px}
+.card td{padding:5px 0;border-bottom:1px solid var(--line)}
+.card td+td{text-align:right;font-variant-numeric:tabular-nums}
+.result{border-radius:10px;padding:10px 12px;margin-top:12px}
+.result.ok{background:#12301d;border:1px solid #23663c}
+.result.bad{background:#341616;border:1px solid #6e2626}
+.result ul{margin:6px 0 0;padding-left:18px}
+.card ol{padding-left:20px;color:#cfccc5}
+.card ol li{margin:4px 0}
+
+@media (max-width:1100px){.msg{min-width:220px}}
+@media (max-width:820px){
+  .top{flex-wrap:wrap;gap:6px;padding:6px 8px}
+  .jobcard{order:5;flex-basis:100%}
+  .top .hide-s{display:none}
+  .mid{grid-template-columns:1fr}
+  .rail{position:absolute;right:0;top:0;bottom:0;z-index:6;padding:6px 4px;background:#1b1e22ee}
+  .rail button{width:58px;font-size:11px;padding:6px 2px}
+  .rail svg{width:24px;height:24px}
+  .dash{flex-wrap:wrap;gap:6px 8px;padding:6px 8px}
+  .barrel{display:none}
+  .keypos{flex-direction:row}
+  .keypos button{min-width:0;padding:5px 8px}
+  .cluster{padding:2px 8px;gap:8px}
+  .gauges{display:none}
+  .lamps{grid-template-columns:auto}
+  .lamp{width:22px;height:17px}
+  .msg{flex-basis:100%;order:9;font-size:12.5px;white-space:nowrap}
+  .pedal{flex:1}.pedal input{width:auto;flex:1}
+  .cluster svg.tacho{width:58px;height:52px}
+  #w-meter{z-index:45!important}
+  .top .btn,.top .chip,.seg button{padding:5px 8px;font-size:13px}
+  .top a.home{font-size:12px}
+  .win{left:6px!important;right:6px!important;width:auto!important;bottom:calc(var(--dashH,120px) + 6px)!important;top:auto!important;max-height:calc(100dvh - var(--dashH,120px) - var(--topH,90px) - 20px)}
+  #w-meter{left:6px!important;right:auto!important;top:calc(var(--topH,90px) + 6px)!important;bottom:auto!important;width:150px!important}
+  #w-meter .wbar{padding:4px 6px 4px 10px}#w-meter .wbar h2{font-size:12px}
+  #w-meter .wbody{padding:6px}
+  #w-meter .leadinfo{display:none}
+  #w-meter .mhint{font-size:11px;min-height:0}
+  .dmm{width:130px}
+  #w-comp,#w-scope,#w-scan,#w-diag,#w-fuel,#w-tank{max-height:min(52dvh,calc(100dvh - var(--dashH,120px) - var(--topH,90px) - 20px))}
+  .scan{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <a class="home" href="/">← MyToolPad</a>
+    <button class="jobcard" id="jobBtn" type="button" aria-label="Open the job card"><span class="no" id="woNo">#00000</span><span class="txt" id="woShort">Practice bay</span></button>
+    <div class="seg" role="group" aria-label="Mode"><button type="button" data-mode="practice">Practice</button><button type="button" data-mode="sandbox">Sandbox</button><button type="button" data-mode="challenge">Challenge</button></div>
+    <span class="chip hide-s" title="Time on the job">⏱ <b id="clock">0:00</b></span>
+    <button class="chip hide-s" id="invBtn" type="button" title="Work done so far">Parts used <b id="invTotal">0</b></button>
+    <button class="btn" id="hintBtn" type="button" aria-pressed="true" title="Plain-English explanations of your readings">Hints on</button>
+    <button class="btn" id="soundBtn" type="button" aria-pressed="true">Sound on</button>
+    <button class="btn primary" id="finishBtn" type="button">Hand back car</button>
+  </header>
+
+  <main class="mid">
+    <div class="stage" id="stage" aria-label="Engine bay. Drag to move, scroll or pinch to zoom, click a part to work on it.">
+      <div class="world" id="world"><div class="shake" id="shake">
+        <img id="bayImg" src="/assets/car-sim/bay.webp?v=34876ea3" alt="Open engine bay of a small four-cylinder petrol car, viewed from the front" width="2000" height="1334">
+        <div id="engLayer"><img id="engImg" src="/assets/car-sim/bay-engine.webp?v=34876ea3" alt="" aria-hidden="true" width="2000" height="1334"><div id="altSpin" aria-hidden="true"></div></div>
+        <svg id="hotspots" viewBox="0 0 2000 1334"></svg>
+      </div></div>
+      <div class="tip" id="tip"></div>
+      <div class="hint" id="hint">Turn the key to <b>ON</b> and listen. Click any part to open it, then drag the red probe onto a pin.<button type="button" id="hintX">Got it</button></div>
+      <div class="tray" id="tray" hidden></div>
+      <div class="zoomctl"><button type="button" id="zIn" aria-label="Zoom in">+</button><button type="button" id="zOut" aria-label="Zoom out">−</button><button type="button" class="wide" id="zFit">Fit</button><button type="button" class="wide" id="zShow" aria-pressed="false">Show parts</button></div>
+    </div>
+    <nav class="rail" aria-label="Tools">
+      <button type="button" data-open="w-meter"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="7" y="3" width="18" height="26" rx="3"/><rect x="10" y="6" width="12" height="6" rx="1"/><circle cx="16" cy="19" r="4"/><path d="M16 19l2-3"/></svg>Multimeter</button>
+      <button type="button" data-open="w-scope"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="6" width="26" height="18" rx="2"/><path d="M6 18h4l2-8 3 12 2-6h2l1 2h4"/></svg>Scope</button>
+      <button type="button" data-open="w-scan"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="8" y="2" width="16" height="28" rx="4"/><rect x="11" y="6" width="10" height="9" rx="1"/><circle cx="13" cy="21" r="1.3"/><circle cx="19" cy="21" r="1.3"/><circle cx="16" cy="25" r="1.3"/></svg>Scan tool</button>
+      <button type="button" data-open="w-diag"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="8" height="22" rx="1"/><rect x="21" y="5" width="8" height="8" rx="1"/><rect x="21" y="19" width="8" height="8" rx="1"/><path d="M11 9h10M11 23h10M11 15h5v-6"/></svg>Wiring diagram</button>
+      <div class="sep"></div>
+      <button type="button" data-open="w-fuel"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="16" cy="17" r="11"/><path d="M16 17l6-5"/><path d="M9 22h14"/></svg>Fuel pressure</button>
+      <button type="button" data-open="w-tank"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 28V6a2 2 0 012-2h10a2 2 0 012 2v22z"/><path d="M10 8h8v6h-8zM21 12l4 3v9a2 2 0 01-4 0"/></svg>Fuel tank</button>
+      <button type="button" data-open="w-drive"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="16" cy="16" r="12"/><circle cx="16" cy="16" r="3"/><path d="M4.5 13.5h23M16 19v9M13.5 17.5 6 25M18.5 17.5 26 25"/></svg>Road test</button>
+      <button type="button" id="jumpBtn" aria-pressed="false"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="9" width="22" height="17" rx="2"/><path d="M10 9V6M22 9V6M17 12l-4 7h5l-3 6"/></svg>Jump pack</button>
+      <div class="sep"></div>
+      <button type="button" id="helpBtn"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="16" cy="16" r="12"/><path d="M12.5 12.5a3.5 3.5 0 117 0c0 2.5-3.5 2.5-3.5 5.5"/><circle cx="16" cy="22.5" r=".8" fill="currentColor"/></svg>How to</button>
+    </nav>
+  </main>
+
+  <footer class="dash">
+    <div class="key">
+      <svg class="barrel" id="barrel" viewBox="0 0 70 70" aria-hidden="true">
+        <circle cx="35" cy="35" r="33" fill="#1c1f23" stroke="#3a4048"/>
+        <circle cx="35" cy="35" r="24" fill="url(#chrome)" stroke="#111"/>
+        <text x="11" y="18" font-size="7" fill="#8a929b">OFF</text><text x="47" y="16" font-size="7" fill="#8a929b">ON</text><text x="55" y="42" font-size="6.5" fill="#8a929b">ST</text>
+        <g id="keyRot" style="transition:transform .18s"><rect x="31.5" y="14" width="7" height="42" rx="3" fill="#2a2e33" stroke="#0c0d0f"/><rect x="33.5" y="16" width="3" height="12" rx="1.5" fill="#f5b40f"/></g>
+        <defs><radialGradient id="chrome" cx=".4" cy=".35"><stop offset="0" stop-color="#d8dde2"/><stop offset="1" stop-color="#5f666e"/></radialGradient></defs>
+      </svg>
+      <div class="keypos" role="group" aria-label="Ignition key">
+        <button type="button" data-key="off">OFF</button>
+        <button type="button" data-key="on">ON</button>
+        <button type="button" id="startBtn">START (hold)</button>
+      </div>
+    </div>
+    <div class="cluster">
+      <svg class="tacho" viewBox="0 0 120 108" aria-label="Rev counter">
+        <circle cx="60" cy="54" r="52" fill="#0b0d0f" stroke="#2a2f35" stroke-width="1.5"/>
+        <path id="tArc" fill="none" stroke="#2a3038" stroke-width="5"/>
+        <path id="tRed" fill="none" stroke="#a3241c" stroke-width="5"/>
+        <g id="ticks"></g>
+        <line id="needle" x1="60" y1="54" x2="60" y2="20" stroke="#ff5a2a" stroke-width="2.4" stroke-linecap="round"/>
+        <circle cx="60" cy="54" r="4.5" fill="#2a2e33" stroke="#444b53"/>
+        <text x="60" y="94" text-anchor="middle" font-size="11" fill="#9aa3ac" id="rpmTxt">0 rpm</text>
+      </svg>
+      <div class="lamps">
+        <svg class="lamp" id="mil" viewBox="0 0 28 22" aria-label="Check engine light"><path fill="#f59e0b" d="M7 6h3V4h6v2h3l2 3h3v-2h2v9h-2v-2h-3l-2 3H9l-2-3H4v3H2V8h2v2h3z"/></svg>
+        <svg class="lamp" id="batl" viewBox="0 0 28 22" aria-label="Charging light"><rect x="3" y="6" width="22" height="13" rx="1.5" fill="#ef4444"/><rect x="6" y="3" width="4" height="3" fill="#ef4444"/><rect x="18" y="3" width="4" height="3" fill="#ef4444"/><path d="M8 12.5h4M10 10.5v4M17 12.5h4" stroke="#000" stroke-width="1.6"/></svg>
+      </div>
+      <div class="gauges"><div><span>Temp</span><b id="tempTxt">--</b></div><div><span>Batt</span><b id="voltTxt">--</b></div></div>
+    </div>
+    <label class="pedal">Throttle <input type="range" id="pedal" min="0" max="100" value="0" aria-label="Accelerator pedal"><b id="pedalV">0%</b></label>
+    <div class="msg" id="msg" aria-live="polite">Key is off.</div>
+  </footer>
+</div>
+
+<!-- component window -->
+<section class="win" id="w-comp" hidden style="left:16px;top:70px;width:420px">
+  <header class="wbar"><h2 id="compTitle">Part</h2><button class="x" type="button" data-close aria-label="Close">×</button></header>
+  <div class="wbody" id="compBody"></div>
+</section>
+
+<!-- multimeter -->
+<section class="win" id="w-meter" hidden style="right:96px;top:70px;width:280px">
+  <header class="wbar"><h2>Multimeter</h2><button class="x" type="button" data-close aria-label="Close">×</button></header>
+  <div class="wbody">
+    <svg class="dmm" id="dmm" viewBox="0 0 250 360">
+      <rect x="2" y="2" width="246" height="356" rx="26" fill="#e2a514"/>
+      <rect x="14" y="14" width="222" height="332" rx="16" fill="#26292d"/>
+      <rect x="28" y="28" width="194" height="82" rx="6" fill="#9fb09a" stroke="#111" stroke-width="2"/>
+      <text class="lcdtxt" id="lcd" x="206" y="88" text-anchor="end">OFF</text>
+      <text class="lcdunit" id="lcdU" x="210" y="104" text-anchor="end"></text>
+      <circle cx="125" cy="200" r="54" fill="#1a1c1f" stroke="#3b4047" stroke-width="2"/>
+      <g id="knob" style="transition:transform .15s;transform-origin:125px 200px"><circle cx="125" cy="200" r="38" fill="#3a3e44" stroke="#0c0d0f" stroke-width="2"/><rect x="121" y="164" width="8" height="40" rx="4" fill="#e7e7e7"/></g>
+      <g class="pos" data-mm="off"><circle cx="64" cy="160" r="15" fill="transparent"/><text x="64" y="164" text-anchor="middle">OFF</text></g>
+      <g class="pos" data-mm="vdc"><circle cx="125" cy="128" r="15" fill="transparent"/><text x="125" y="132" text-anchor="middle">V⎓</text></g>
+      <g class="pos" data-mm="vac"><circle cx="186" cy="160" r="15" fill="transparent"/><text x="186" y="164" text-anchor="middle">V~</text></g>
+      <g class="pos" data-mm="ohm"><circle cx="196" cy="226" r="15" fill="transparent"/><text x="196" y="230" text-anchor="middle">Ω</text></g>
+      <circle id="jackK" cx="80" cy="312" r="13" fill="#111" stroke="#555" stroke-width="2"/><text x="80" y="342" text-anchor="middle" font-size="12" fill="#bbb" font-weight="700">COM</text>
+      <circle id="jackR" cx="170" cy="312" r="13" fill="#5a1010" stroke="#c33" stroke-width="2"/><text x="170" y="342" text-anchor="middle" font-size="12" fill="#bbb" font-weight="700">VΩ</text>
+    </svg>
+    <div class="mhint" id="mHint"></div>
+    <div class="leadinfo"><div><i style="background:var(--red)"></i><span id="pRed">Red: not connected</span></div><div><i style="background:#111;border:1px solid #777"></i><span id="pBlack">Black: not connected</span></div></div>
+  </div>
+</section>
+
+<!-- scope -->
+<section class="win" id="w-scope" hidden style="left:120px;top:90px;width:560px">
+  <header class="wbar"><h2>Oscilloscope</h2><span class="small" id="scopeOwn"></span><button class="x" type="button" data-close aria-label="Close">×</button></header>
+  <div class="wbody">
+    <div class="scopebox"><canvas id="scope" width="1040" height="560"></canvas></div>
+    <div class="sctl">
+      <div class="grp">Volts/div <button type="button" data-sv="-1">−</button><b id="svTxt">5 V</b><button type="button" data-sv="1">+</button></div>
+      <div class="grp">Time/div <button type="button" data-st="-1">−</button><b id="stTxt">5 ms</b><button type="button" data-st="1">+</button></div>
+      <button class="btn small" type="button" id="sAuto">Auto set</button>
+      <button class="btn small" type="button" id="sHold" aria-pressed="false">Hold</button>
+      <div class="jack-s" style="display:flex;gap:10px;margin-left:auto;align-items:center"><svg width="70" height="30" viewBox="0 0 70 30"><circle id="sjackR" cx="18" cy="15" r="9" fill="#5a1010" stroke="#c33" stroke-width="2"/><circle id="sjackK" cx="52" cy="15" r="9" fill="#111" stroke="#555" stroke-width="2"/></svg></div>
+    </div>
+    <p class="small" style="margin:8px 0 0">Red probe is channel A, black is ground. Leads move here while the scope is open.</p>
+  </div>
+</section>
+
+<!-- scan tool -->
+<section class="win" id="w-scan" hidden style="right:96px;top:90px;width:340px">
+  <header class="wbar"><h2>Scan tool</h2><button class="x" type="button" data-close aria-label="Close">×</button></header>
+  <div class="wbody">
+    <div class="scan">
+      <div class="brand">OBD DIAGNOSTIC TESTER</div>
+      <div class="slcd" id="slcd"></div>
+      <div class="skeys"><button type="button" data-sk="back">◀</button><button type="button" data-sk="up">▲</button><button type="button" data-sk="down">▼</button><button type="button" class="ok" data-sk="ok">OK</button></div>
+    </div>
+  </div>
+</section>
+
+<!-- wiring diagram -->
+<section class="win" id="w-diag" hidden style="left:60px;top:80px;width:640px">
+  <header class="wbar"><h2>Wiring diagram</h2><button class="x" type="button" data-close aria-label="Close">×</button></header>
+  <div class="wbody">
+    <div class="ctabs" id="ctabs"></div>
+    <div class="paper" id="paper"></div>
+    <div class="diagfoot" id="diagFoot"><span class="small">Click a wire to select it. Drag a probe onto any pin, or click a pin.</span></div>
+  </div>
+</section>
+
+<!-- road test -->
+<section class="win" id="w-drive" hidden style="left:30%;top:80px;width:520px">
+  <header class="wbar"><h2>Road test</h2><button class="x" type="button" data-close aria-label="Close">×</button></header>
+  <div class="wbody">
+    <canvas id="road" width="1000" height="420" style="width:100%;height:auto;border-radius:8px;display:block;background:#1a2230"></canvas>
+    <div class="drivebar"><div class="spd"><b id="spdTxt">0</b><span>km/h</span></div><div class="gear">Gear <b id="gearTxt">1</b></div><div class="gear"><b id="drpm">0</b> rpm</div>
+      <button class="btn" type="button" id="brakeBtn">Brake (hold)</button><button class="btn primary" type="button" id="driveBtn">Drive off</button></div>
+    <p class="small" id="driveMsg" style="margin:8px 0 0">Start the engine, then drive off. Use the throttle slider at the bottom. Faults that only show under load will appear here.</p>
+  </div>
+</section>
+
+<!-- fuel pressure -->
+<section class="win" id="w-fuel" hidden style="left:40%;top:90px;width:280px">
+  <header class="wbar"><h2>Fuel pressure gauge</h2><button class="x" type="button" data-close aria-label="Close">×</button></header>
+  <div class="wbody">
+    <svg class="fgauge" viewBox="0 0 220 170">
+      <circle cx="110" cy="110" r="96" fill="#e9e6de" stroke="#333" stroke-width="6"/>
+      <g id="fTicks"></g>
+      <text x="110" y="150" text-anchor="middle" font-size="13" font-weight="700" fill="#222">bar</text>
+      <line id="fNeedle" x1="110" y1="110" x2="40" y2="110" stroke="#c0261f" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="110" cy="110" r="7" fill="#222"/>
+    </svg>
+    <p class="small" style="text-align:center;margin:6px 0 10px" id="fRead">Not connected</p>
+    <button class="btn" type="button" id="fuelFit" style="width:100%">Connect to fuel rail test port</button>
+    <p class="small" style="margin-top:8px">Spec: 2.8 to 3.2 bar with the pump running.</p>
+  </div>
+</section>
+
+<!-- fuel tank -->
+<section class="win" id="w-tank" hidden style="left:30%;top:120px;width:470px">
+  <header class="wbar"><h2>Fuel tank, under the rear seat</h2><button class="x" type="button" data-close aria-label="Close">×</button></header>
+  <div class="wbody">
+    <div style="position:relative">
+      <img src="/assets/car-sim/tank.webp?v=34876ea3" alt="Fuel pump module on top of the fuel tank" style="display:block;width:100%;border-radius:8px" width="900" height="640">
+      <button type="button" id="pumpHs" aria-label="Fuel pump" style="position:absolute;left:30%;top:30%;width:44%;height:52%;border-radius:50%;background:transparent;border:2px dashed transparent"></button>
+    </div>
+    <p class="small" style="margin-top:8px">Click the pump module to work on it.</p>
+  </div>
+</section>
+
+<svg id="cables" aria-hidden="true"></svg><svg id="leads" aria-hidden="true"></svg>
+<div class="pop" id="pop" hidden></div>
+
+<div class="modal" id="modal" hidden><div class="card" id="modalCard" role="dialog" aria-modal="true"></div></div>
+
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>'$'+Math.round(n).toLocaleString('en-AU');
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const INF=Infinity;
+
+/* ================= vehicle model ================= */
+const C={
+  bat:{name:'Battery',desc:'12 V lead-acid battery. Its negative terminal is the ground reference for most measurements.',price:189,mins:15,pins:{pos:'+ terminal',neg:'− terminal'},noPlug:true},
+  fuse:{name:'Fuse and relay box',desc:'Battery feed comes in, then the EFI fuse powers the engine control module. The main relay feeds the injectors and coils, and the fuel pump relay feeds the pump.',
+        pins:{in:'EFI fuse, battery side',efi:'EFI fuse, output side',main:'Main relay output',fp:'Fuel pump relay output'},noPlug:true,
+        parts:{efi:['EFI fuse (15 A)',3,5],main:['Main relay',38,10],fp:['Fuel pump relay',32,10]}},
+  ecu:{name:'Engine control module (ECM)',desc:'Reads the sensors and switches the injectors, coils and relays to ground. Unplug it to measure wiring resistance from this end.',price:950,mins:45,
+       pins:{E1:'E1 power in',E2:'E2 ground',E10:'E10 crank sensor +',E11:'E11 crank sensor −',E20:'E20 coolant temp signal',E21:'E21 sensor ground',E22:'E22 5 V reference',E23:'E23 MAP signal',E24:'E24 throttle signal',
+             E31:'E31 injector 1',E32:'E32 injector 2',E33:'E33 injector 3',E34:'E34 injector 4',E41:'E41 coil 1',E42:'E42 coil 2',E43:'E43 coil 3',E44:'E44 coil 4',E50:'E50 pump relay control',E51:'E51 main relay control'}},
+  ckp:{name:'Crankshaft position sensor',desc:'Inductive sensor reading a 60-2 tooth wheel. It makes its own AC voltage while the engine turns. No signal, no start.',price:64,mins:30,pins:{a:'1 signal +',b:'2 signal −'},ohms:820},
+  ect:{name:'Coolant temperature sensor',desc:'NTC thermistor: resistance falls as the engine warms up. The ECM feeds it 5 V through a resistor and reads the voltage.',price:38,mins:20,pins:{sig:'1 signal',gnd:'2 sensor ground'}},
+  map:{name:'MAP sensor',desc:'Measures intake manifold pressure. About 4 V with the engine off, about 1.5 V at idle.',price:92,mins:10,pins:{ref:'1 5 V reference',sig:'2 signal',gnd:'3 sensor ground'}},
+  tps:{name:'Throttle position sensor',desc:'Potentiometer on the throttle body. About 0.5 V closed, about 4.4 V wide open.',price:84,mins:20,pins:{ref:'1 5 V reference',sig:'2 signal',gnd:'3 sensor ground'}},
+  pump:{name:'Fuel pump',desc:'Fed by the fuel pump relay. Runs for 2 seconds at key on, then only while cranking or running. You can hear it prime. The fuel filter sits on the line next to it.',price:265,mins:60,pins:{pos:'1 supply',neg:'2 ground'},ohms:1.8},
+  alt:{name:'Alternator',desc:'Belt-driven generator that charges the battery while the engine runs. With the engine running, its output terminal should read 13.8 to 14.8 V.',price:420,mins:50,pins:{out:'B+ output terminal'},noPlug:true},
+  tstat:{name:'Thermostat housing',desc:'The thermostat stays shut until the coolant reaches about 85 °C, so the engine warms up quickly. Stuck open, the engine runs cold.',price:45,mins:40,pins:{},noPlug:true},
+  hose:{name:'Intake air duct and hoses',desc:'Carries filtered air to the throttle body. A split or loose clamp after the airflow measurement lets in air the engine computer does not know about, so it runs lean.',price:60,mins:15,pins:{},noPlug:true}
+};
+for(let n=1;n<=4;n++){
+  C['inj'+n]={name:'Injector '+n,desc:'Pin 1 gets 12 V from the main relay. The ECM opens the injector by switching pin 2 to ground for a few milliseconds.',price:118,mins:25,pins:{sup:'1 supply',ctl:'2 ECM control'},ohms:13.2};
+  C['coil'+n]={name:'Ignition coil '+n,desc:'Coil-on-plug. Pin 1 gets 12 V from the main relay; the ECM switches pin 2 to ground to charge the coil and fire the plug. Unplug it to lift it out and reach the spark plug.',price:96,mins:10,pins:{sup:'1 supply',ctl:'2 ECM control'},ohms:0.6};
+  C['plug'+n]={name:'Spark plug '+n,price:16,mins:12,pins:{},noPlug:true,hidden:true};
+}
+const W=[{id:'w_bat',a:'bat.pos',b:'fuse.in',c:'#d42a22',n:'RD'},{id:'w_efi',a:'fuse.efi',b:'ecu.E1',c:'#d42a22',n:'RD/WH'},{id:'w_gnd',a:'ecu.E2',b:'bat.neg',c:'#6b4b2e',n:'BN'}];
+for(let n=1;n<=4;n++){W.push({id:'w_si'+n,a:'fuse.main',b:'inj'+n+'.sup',c:'#e8731a',n:'OG'},{id:'w_ci'+n,a:'ecu.E3'+n,b:'inj'+n+'.ctl',c:'#2563eb',n:'BU'},{id:'w_sc'+n,a:'fuse.main',b:'coil'+n+'.sup',c:'#e8731a',n:'OG'},{id:'w_cc'+n,a:'ecu.E4'+n,b:'coil'+n+'.ctl',c:'#9333ea',n:'VT'})}
+W.push({id:'w_ckpa',a:'ecu.E10',b:'ckp.a',c:'#16a34a',n:'GN'},{id:'w_ckpb',a:'ecu.E11',b:'ckp.b',c:'#9ca3af',n:'GY'},
+  {id:'w_ects',a:'ecu.E20',b:'ect.sig',c:'#ca8a04',n:'YE'},{id:'w_ectg',a:'ecu.E21',b:'ect.gnd',c:'#6b4b2e',n:'BN'},
+  {id:'w_mapr',a:'ecu.E22',b:'map.ref',c:'#db2777',n:'PK'},{id:'w_maps',a:'ecu.E23',b:'map.sig',c:'#0d9488',n:'TQ'},{id:'w_mapg',a:'ecu.E21',b:'map.gnd',c:'#6b4b2e',n:'BN'},
+  {id:'w_tpsr',a:'ecu.E22',b:'tps.ref',c:'#db2777',n:'PK'},{id:'w_tpss',a:'ecu.E24',b:'tps.sig',c:'#0891b2',n:'LB'},{id:'w_tpsg',a:'ecu.E21',b:'tps.gnd',c:'#6b4b2e',n:'BN'},
+  {id:'w_fp',a:'fuse.fp',b:'pump.pos',c:'#d42a22',n:'RD/BK'},{id:'w_fpg',a:'pump.neg',b:'bat.neg',c:'#6b4b2e',n:'BN'});
+const isPart=p=>p.endsWith('~p'), base=p=>p.replace('~p','');
+const pinName=p=>{const [c,k]=base(p).split('.');const nm=c==='fuse'?'Fuse box:':c==='bat'?'Battery':C[c].name.replace(' (ECM)','');return nm+(c==='ecu'||C[c].noPlug?' ':' pin ')+C[c].pins[k]+(isPart(p)?' (part side)':'')};
+const wireColor=p=>{p=base(p);const w=W.find(x=>x.a===p||x.b===p);return w?w.c:'#888'};
+
+const FAULTS=[
+  {id:'ckp',title:'Crankshaft position sensor has an open winding',fix:'Replace the crankshaft position sensor.',text:'It was driving fine, then cut out on the motorway. Now it turns over but won’t start.',set:s=>s.cf.ckp='open'},
+  {id:'ect',title:'Open circuit in the coolant sensor signal wire (ECM E20 to sensor pin 1)',fix:'Repair the coolant sensor signal wire.',text:'Hard to start once it’s warm, smells of fuel and the exhaust is black. Using a lot more petrol than usual.',set:s=>{s.wf.w_ects='open';s.temp=88}},
+  {id:'inj3',title:'Injector 3 has an open coil',fix:'Replace injector 3.',text:'The engine shakes at idle and the check engine light came on.',set:s=>s.cf.inj3='open'},
+  {id:'coil2',title:'Ignition coil 2 has an open primary winding',fix:'Replace ignition coil 2.',text:'Feels like it’s missing, and the engine light flashes when I accelerate.',set:s=>s.cf.coil2='open'},
+  {id:'fp',title:'Fuel pump relay has failed (contacts do not close)',fix:'Replace the fuel pump relay.',text:'Won’t start. It cranks normally. No strange lights.',set:s=>s.pf.fp='dead'},
+  {id:'mapref',title:'Open circuit in the MAP sensor 5 V reference wire',fix:'Repair the MAP sensor reference wire.',text:'Hesitates when I accelerate, the idle goes up and down, and the check engine light is on.',set:s=>s.wf.w_mapr='open'},
+  {id:'plug4',title:'Spark plug 4 is worn out (gap 1.6 mm, spec 0.8 mm)',fix:'Replace spark plug 4.',text:'A slight shake at idle that gets worse when I put my foot down. Engine light on.',set:s=>s.cf.plug4='worn'},
+  {id:'bat',title:'Battery is worn out and cannot hold its charge',fix:'Replace the battery.',text:'Cranks really slowly in the morning, then won’t start at all.',set:s=>s.cf.bat='weak'},
+  {id:'inj1w',title:'Corroded injector 1 supply wire (about 8 Ω)',fix:'Repair the injector 1 supply wire.',text:'Rough running that comes and goes. Check engine light on.',set:s=>s.wf.w_si1=8},
+  {id:'efi',title:'EFI fuse is blown, so the ECM has no power',fix:'Replace the EFI fuse.',text:'Turns over but won’t start, and the engine light doesn’t even come on with the key.',set:s=>s.pf.efi='blown'},
+  {id:'vac',title:'Split intake duct letting in unmetered air (vacuum leak)',fix:'Replace the intake air duct.',text:'Idles high and the revs hunt up and down. Engine light on.',set:s=>s.cf.hose='leak'},
+  {id:'filter',title:'Clogged fuel filter',fix:'Replace the fuel filter (fuel tank window).',text:'Fine around town, but it stutters and bogs down when I floor it or go up hills.',set:s=>s.cf.filter='clogged'},
+  {id:'alt',title:'Alternator is not charging',fix:'Replace the alternator.',text:'The battery light stays on while I drive, and it’s getting harder to start.',set:s=>s.cf.alt='dead'},
+  {id:'gnd',title:'Corroded engine computer ground wire (about 4 Ω)',fix:'Repair the ECM ground wire (power and ground circuit).',text:'Idles fast and a bit rough even when it’s warm. No engine light.',set:s=>s.wf.w_gnd=4},
+  {id:'tstat',title:'Thermostat stuck open',fix:'Replace the thermostat.',text:'The heater blows cold on the motorway and the temperature gauge sits really low. Engine light came on.',set:s=>s.cf.tstat='open'}
+];
+const FSYS={ckp:'start',efi:'start',fp:'start',bat:'start',coil2:'ign',plug4:'ign',inj3:'fuel',inj1w:'fuel',filter:'fuel',ect:'sensor',mapref:'sensor',gnd:'sensor',tstat:'cool',vac:'air',alt:'charge'};
+const NOSTART=['ckp','efi','fp','bat'];
+const EASY=['efi','fp','bat','coil2','inj3','alt','tstat'];
+const DTC={P0107:'MAP sensor circuit low',P0117:'Coolant temp sensor circuit low',P0118:'Coolant temp sensor circuit high',P0122:'Throttle sensor circuit low',P0123:'Throttle sensor circuit high',
+  P0201:'Injector 1 circuit open',P0202:'Injector 2 circuit open',P0203:'Injector 3 circuit open',P0204:'Injector 4 circuit open',P0300:'Random or multiple misfire',
+  P0301:'Misfire, cylinder 1',P0302:'Misfire, cylinder 2',P0303:'Misfire, cylinder 3',P0304:'Misfire, cylinder 4',P0335:'Crankshaft sensor circuit',
+  P0351:'Coil 1 primary circuit',P0352:'Coil 2 primary circuit',P0353:'Coil 3 primary circuit',P0354:'Coil 4 primary circuit',P0562:'System voltage low',P0171:'System too lean',P0128:'Coolant temperature below thermostat temperature'};
+
+let S;
+function fresh(mode){
+  return {mode,fault:null,cf:{},pf:{},wf:{},unplug:{},lifted:{},key:'off',holdStart:false,crankSince:0,primeUntil:0,rpm:0,thr:0,temp:22,pres:0,
+    codes:new Set(),mis:[0,0,0,0],misNow:[0,0,0,0],jump:false,flood:0,t0:Date.now(),parts:[],labour:[],newParts:new Set(),
+    probe:{red:null,black:'bat.neg'},mm:'vdc',sel:null,selWire:null,leads:'meter',gauge:false,crankNoSig:0,done:false,woNo:Math.floor(rnd(41000,49999)),found:{},act:null,flog:{},faults:[],level:0,drain:0,leanT:0,coldT:0,speed:0,gear:1,drive:false,tray:[],sandbox:new Set()};
+}
+
+/* ================= electrics ================= */
+const wireR=id=>{const f=S.wf[id];return f===undefined?0.1:f==='open'?INF:f};
+const wireOk=id=>wireR(id)!==INF;
+const running=()=>S.key==='run', cranking=()=>S.key==='crank';
+function vbat(){const weak=S.cf.bat==='weak';
+  if(running())return S.cf.alt?Math.max(10.6,(weak?11.9:12.3)-S.drain):14.1; if(cranking())return S.jump?11.2:weak?7.6:(S.drain>1.2?8.4:10.1-S.drain*0.5); if(S.key==='on')return S.jump?12.9:(weak?11.9:12.4)-S.drain*0.6; return S.jump?13.0:(weak?12.1:12.6)-S.drain*0.6}
+const efiOut=()=>S.pf.efi?0:vbat();
+const ecuOn=()=>S.key!=='off'&&!S.unplug.ecu&&wireOk('w_efi')&&wireOk('w_gnd')&&efiOut()>7;
+const mainOut=()=>ecuOn()&&!S.pf.main?vbat()-0.1:0;
+const pumpCmd=()=>ecuOn()&&(running()||cranking()||Date.now()<S.primeUntil);
+const fpOut=()=>pumpCmd()&&!S.pf.fp?vbat()-0.1:0;
+const pumping=()=>fpOut()>8&&wireOk('w_fp')&&wireOk('w_fpg')&&!S.unplug.pump&&!S.cf.pump;
+const injDuty=()=>running()?0.035+S.thr*0.0012:cranking()?0.05:0;
+const coilDuty=()=>running()?0.08+S.rpm/6000*0.2:cranking()?0.05:0;
+function ectR(){const T=S.temp;return 2500*Math.exp(3500*(1/(T+273.15)-1/293.15))}
+function ectEcuV(){if(!ecuOn())return 0;if(!wireOk('w_ects')||!wireOk('w_ectg')||S.unplug.ect||S.cf.ect)return 5;const R=ectR();return 5*R/(R+2490)}
+function ectSensorV(){if(!wireOk('w_ects'))return 0;return ectEcuV()}
+const refV=w=>ecuOn()&&wireOk(w)?5:0;
+const gndDrop=()=>S.key==='off'?0:wireR('w_gnd')>1&&wireR('w_gnd')!==INF?0.85:0.02;
+function kpa(){return running()?Math.min(98,33+S.thr*0.65+(S.cf.hose?16*(1-S.thr/100):0)):cranking()?88:101}
+function trim(){if(!running())return 0;let t=0;if(S.cf.hose)t+=22*(1-S.thr/100);if(S.cf.filter&&S.pres<2.7)t+=(2.9-S.pres)*30;if(wireR('w_gnd')>1&&wireR('w_gnd')!==INF)t-=8;return Math.max(-25,Math.min(25,t))}
+function mapSensorV(){if(S.unplug.map||S.cf.map||refV('w_mapr')<4||!wireOk('w_mapg'))return 0;return 0.4+kpa()*0.036}
+const mapEcuV=()=>wireOk('w_maps')?mapSensorV():0;
+function tpsSensorV(){if(S.unplug.tps||S.cf.tps||refV('w_tpsr')<4||!wireOk('w_tpsg'))return 0;return 0.55+S.thr*0.039}
+const tpsEcuV=()=>wireOk('w_tpss')?tpsSensorV():0;
+function ckpAmp(){if(S.cf.ckp)return 0;if(cranking())return S.cf.bat==='weak'&&!S.jump?0.5:1.4;if(running())return 0.6+S.rpm/1000*1.6;return 0}
+const ckpAtEcu=()=>!S.unplug.ckp&&wireOk('w_ckpa')&&wireOk('w_ckpb')?ckpAmp():0;
+function supV(kind,n){const m=mainOut(),w=(kind==='inj'?'w_si':'w_sc')+n,r=wireR(w);if(r===INF)return 0;
+  if(kind==='inj'&&running()&&!S.unplug['inj'+n]&&!S.cf['inj'+n]){const loaded=m*13.2/(13.2+r);return m-(m-loaded)*injDuty()}
+  return m}
+function supLoaded(kind,n){const m=mainOut(),r=wireR((kind==='inj'?'w_si':'w_sc')+n);if(r===INF)return 0;return kind==='inj'?m*13.2/(13.2+r):m*0.6/(0.6+r)}
+function ctlBase(kind,n){const id=kind+n;if(S.unplug[id]||S.cf[id])return 0;return supV(kind,n)}
+function ctlV(kind,n,side){const wire=(kind==='inj'?'w_ci':'w_cc')+n;if(side==='ecu'&&!wireOk(wire))return 0;
+  const b=ctlBase(kind,n);if(b<1)return 0;const d=kind==='inj'?injDuty():coilDuty();return ecuOn()&&wireOk(wire)?b*(1-d):b}
+function pinV(p){
+  if(isPart(p))return 0;
+  const [c,k]=p.split('.');let m;
+  if(p==='bat.pos')return vbat(); if(p==='bat.neg')return 0;
+  if(p==='fuse.in')return vbat(); if(p==='fuse.efi')return efiOut(); if(p==='fuse.main')return mainOut(); if(p==='fuse.fp')return fpOut();
+  if(c==='ecu'){
+    if(k==='E1')return wireOk('w_efi')?efiOut():0; if(k==='E2'||k==='E21')return S.key==='off'?0:gndDrop();
+    if(k==='E22')return ecuOn()?5:0; if(k==='E20')return ectEcuV(); if(k==='E23')return mapEcuV(); if(k==='E24')return tpsEcuV();
+    if(k==='E10'||k==='E11')return 0;
+    if(k==='E50')return S.key==='off'?0:pumpCmd()?0.3:vbat();
+    if(k==='E51')return S.key==='off'?0:ecuOn()?0.3:vbat();
+    if((m=k.match(/^E3(\d)$/)))return ctlV('inj',+m[1],'ecu');
+    if((m=k.match(/^E4(\d)$/)))return ctlV('coil',+m[1],'ecu');
+  }
+  if((m=c.match(/^(inj|coil)(\d)$/)))return k==='sup'?supV(m[1],+m[2]):ctlV(m[1],+m[2],'comp');
+  if(c==='ect')return k==='sig'?ectSensorV():gndDrop();
+  if(c==='alt')return running()&&!S.cf.alt?14.1:vbat();
+  if(c==='map')return k==='ref'?refV('w_mapr'):k==='sig'?(S.unplug.map?mapEcuV():mapSensorV()):0.02;
+  if(c==='tps')return k==='ref'?refV('w_tpsr'):k==='sig'?(S.unplug.tps?tpsEcuV():tpsSensorV()):0.02;
+  if(c==='pump')return k==='pos'?(wireOk('w_fp')?fpOut():0):0;
+  return 0;
+}
+function pinAC(p){
+  if(p==='ckp.a~p'||p==='ckp.b~p')return ckpAmp()*0.71;
+  if(isPart(p))return 0;
+  if(p==='ckp.a'||p==='ckp.b')return S.unplug.ckp?0:ckpAmp()*0.71;
+  if(p==='ecu.E10'||p==='ecu.E11')return ckpAtEcu()*0.71;
+  if(p==='bat.pos'&&running())return 0.06;
+  if(/(inj|coil)\d\.ctl|ecu\.E[34]\d/.test(p)&&running())return pinV(p)>1?(/coil|E4/.test(p)?4.2:1.1):0;
+  return 0;
+}
+function partOhms(c,ka,kb){
+  if(/^(inj|coil)\d$/.test(c))return S.cf[c]?INF:C[c].ohms*rnd(0.98,1.03);
+  if(c==='ckp')return S.cf.ckp?INF:820*rnd(0.98,1.02);
+  if(c==='pump')return 1.8;
+  if(c==='ect')return S.cf.ect?INF:ectR();
+  const pr=[ka,kb].sort().join();
+  if(c==='map')return pr==='gnd,ref'?6500:pr==='gnd,sig'?4100:3300;
+  if(c==='tps')return pr==='gnd,ref'?4800:pr==='gnd,sig'?600+S.thr*40:4200-S.thr*40;
+  return INF;
+}
+function ohms(a,b){
+  if(a===b)return {v:0.1};
+  const A=base(a),Bp=base(b),[ca,ka]=A.split('.'),[cb,kb]=Bp.split('.');
+  if(isPart(a)||isPart(b)){if(!(isPart(a)&&isPart(b)&&ca===cb))return {v:INF};return {v:partOhms(ca,ka,kb)}}
+  if(ca==='bat'&&cb==='bat')return {msg:'Never measure resistance across a battery.'};
+  if(ca===cb&&!C[ca].noPlug&&ca!=='ecu'){
+    if(!S.unplug[ca])return {msg:'Unplug the connector first. Measure resistance with the part disconnected, on the part side.'};
+    return {v:INF};
+  }
+  const ends=[ca,cb];
+  const isolated=x=>x==='bat'||x==='fuse'?S.key==='off':!!S.unplug[x];
+  if(!ends.every(isolated))return {msg:'Disconnect both ends first (and turn the key off for fuse box or battery circuits) to measure a wire.'};
+  const wire=W.find(w=>(w.a===A&&w.b===Bp)||(w.a===Bp&&w.b===A));
+  if(!wire){
+    const shared=W.filter(w=>w.a===A||w.b===A).map(w=>w.a===A?w.b:w.a).filter(x=>W.some(w=>(w.a===x&&w.b===Bp)||(w.b===x&&w.a===Bp)));
+    if(shared.length){const via=shared[0];return {v:wireR(W.find(w=>(w.a===A&&w.b===via)||(w.b===A&&w.a===via)).id)+wireR(W.find(w=>(w.a===via&&w.b===Bp)||(w.b===via&&w.a===Bp)).id)}}
+    return {v:INF};
+  }
+  return {v:wireR(wire.id)};
+}
+
+/* ================= engine behaviour ================= */
+function cylFires(n,forStart){
+  if(!ecuOn())return 0;
+  const coil=!S.cf['coil'+n]&&!S.unplug['coil'+n]&&supV('coil',n)>8&&wireOk('w_cc'+n);
+  const inj=!S.cf['inj'+n]&&!S.unplug['inj'+n]&&supV('inj',n)>8&&wireOk('w_ci'+n)&&(running()?S.pres>=1.2:S.pres>=2.3);
+  if(!coil||!inj)return 0;
+  let p=1;
+  if(S.cf['plug'+n]==='worn')p=S.thr>25?0.35:0.75;
+  if(wireR('w_si'+n)>2&&wireR('w_si'+n)!==INF)p=S.thr>25?0.45:0.6;
+  if(running()&&S.pres<2.4)p*=S.pres<1.8?0.45:0.7;
+  if(running()&&gndDrop()>0.5)p*=0.93;
+  if(running()&&vbat()<11)p*=0.6;
+  return forStart?(p>0.5?1:0.5):p;
+}
+let crankMsg='';
+function tryStart(){
+  if(vbat()<9){S.codes.add('P0562');crankMsg='The engine cranks very slowly and won’t catch.';return false}
+  if(!ecuOn()||ckpAtEcu()<0.3||S.pres<2.3){crankMsg='It cranks normally but never fires.';return false}
+  let firing=0;for(let n=1;n<=4;n++)firing+=cylFires(n,true);
+  if(firing<2){crankMsg='It cranks and coughs but won’t start.';return false}
+  if(!wireOk('w_ects')&&S.temp>60&&S.flood<1){S.flood++;crankMsg='It almost catches, then dies. You can smell fuel.';return false}
+  S.key='run';S.rpm=950;S.holdStart=false;say('The engine started.');return true;
+}
+function say(t){$('msg').innerHTML=t}
+function ecuEctC(){const v=ectEcuV();if(v>4.9)return -40;if(v<0.1)return 140;const R=2490*v/(5-v);return Math.round(1/(Math.log(R/2500)/3500+1/293.15)-273.15)-(gndDrop()>0.5?18:0)}
+
+let lastTick=Date.now();
+function tick(){
+  const now=Date.now(),dt=Math.min(0.5,(now-lastTick)/1000);lastTick=now;
+  if(cranking()){
+    const need=wireOk('w_ects')?1.3:2.0;
+    if((now-S.crankSince)/1000>need){if(!tryStart()){S.crankSince=now-400;say('Cranking… '+crankMsg)}}
+  }
+  if(pumping())S.pres+=(3.0-(S.cf.filter?0.35+S.thr/100*1.5:0)+rnd(-0.03,0.03)-S.pres)*Math.min(1,dt*4);else S.pres=Math.max(0,S.pres-(running()?dt*1.2:dt*0.01));
+  if(running()){
+    let fire=0;for(let n=1;n<=4;n++){const p=cylFires(n);fire+=p;S.misNow[n-1]=Math.random()>p?1:0;if(S.misNow[n-1])S.mis[n-1]+=1}
+    if(fire<1.6||!ecuOn()||ckpAtEcu()<0.3){S.key='on';S.rpm=0;say('The engine stalled.');sfx('stall')}
+    else{
+      const mapBad=mapEcuV()<0.25,fast=Math.max(0,Math.min(1,(70-ecuEctC())/50));
+      let target=800+fast*380+S.thr*50;
+      if(mapBad)target+=Math.sin(now/700)*180+(S.thr>5?-S.thr*15:0);
+      if(S.cf.hose)target+=(240+Math.sin(now/850)*150)*(1-S.thr/100);
+      const misN=S.misNow.reduce((a,b)=>a+b,0);
+      target-=misN*90;
+      if(S.drive)target=driveTarget(target,dt,misN);
+      S.rpm+=(target-S.rpm)*Math.min(1,dt*(S.drive?5:3))+rnd(-15,15)*(1+misN*3);
+      const tmax=S.cf.tstat?57:90;S.temp=S.temp<tmax?Math.min(tmax,S.temp+dt*(S.temp<60?1.1:0.6)):S.temp-dt*0.3;
+      if(S.cf.alt)S.drain=Math.min(1.7,S.drain+dt*0.012);else S.drain=Math.max(0,S.drain-dt*0.02);
+      if(trim()>15)S.leanT+=dt;if(S.leanT>8)S.codes.add('P0171');
+      if(S.temp<65)S.coldT+=dt;if(S.coldT>45&&S.cf.tstat)S.codes.add('P0128');
+      if(S.cf.alt&&vbat()<11.9)S.codes.add('P0562');
+      if(ecuEctC()<-30&&S.temp>50&&!S.smoke){S.smoke=true;say('It runs, but black smoke is coming out of the exhaust.')}
+    }
+  }
+  if(S.drive&&!running()){S.speed=Math.max(0,S.speed-dt*(DRV.brake?30:6))}
+  if(!running()){S.rpm=cranking()?rnd(190,230)*(vbat()<9?0.45:1):Math.max(0,S.rpm-dt*2500);S.misNow=[0,0,0,0];if(S.temp>22)S.temp-=dt*0.02}
+  detectCodes(cranking()?dt:0);
+  render();
+}
+function detectCodes(crankDt){
+  if(!ecuOn())return;
+  const v=ectEcuV();if(v>4.9)S.codes.add('P0118');if(v<0.1)S.codes.add('P0117');
+  if(mapEcuV()<0.25)S.codes.add('P0107');
+  const t=tpsEcuV();if(t<0.25)S.codes.add('P0122');if(t>4.8)S.codes.add('P0123');
+  for(let n=1;n<=4;n++){if(ctlV('inj',n,'ecu')<1)S.codes.add('P020'+n);if(ctlV('coil',n,'ecu')<1)S.codes.add('P035'+n)}
+  if(crankDt&&ckpAtEcu()<0.3){S.crankNoSig+=crankDt;if(S.crankNoSig>1)S.codes.add('P0335')}
+  if(running()){let many=0;for(let n=0;n<4;n++)if(S.mis[n]>25){S.codes.add('P030'+(n+1));many++}if(many>1)S.codes.add('P0300')}
+}
+
+/* ================= sound (Web Audio, generated live) ================= */
+const A={ctx:null,on:true,master:null,noise:null,bed:null,bedF:null,bedG:null,starter:null,starterG:null,pump:null,pumpG:null,next:0,cyl:0,lastKey:'off'};
+function audioInit(){
+  if(A.ctx||!window.AudioContext&&!window.webkitAudioContext)return;
+  const ctx=A.ctx=new (window.AudioContext||window.webkitAudioContext)();
+  A.master=ctx.createGain();A.master.gain.value=A.on?0.7:0;
+  const comp=ctx.createDynamicsCompressor();A.master.connect(comp);comp.connect(ctx.destination);
+  const len=ctx.sampleRate*2,buf=ctx.createBuffer(1,len,ctx.sampleRate),d=buf.getChannelData(0);
+  let last=0;for(let i=0;i<len;i++){const w=Math.random()*2-1;last=(last+0.02*w)/1.02;d[i]=last*3.5}
+  A.noise=buf;
+  const wbuf=ctx.createBuffer(1,len,ctx.sampleRate),wd=wbuf.getChannelData(0);for(let i=0;i<len;i++)wd[i]=Math.random()*2-1;A.white=wbuf;
+  // exhaust / intake bed
+  const src=ctx.createBufferSource();src.buffer=A.noise;src.loop=true;
+  A.bedF=ctx.createBiquadFilter();A.bedF.type='lowpass';A.bedF.frequency.value=300;A.bedG=ctx.createGain();A.bedG.gain.value=0;
+  src.connect(A.bedF);A.bedF.connect(A.bedG);A.bedG.connect(A.master);src.start();
+  // starter motor
+  const so=ctx.createOscillator();so.type='sawtooth';so.frequency.value=150;
+  const sf=ctx.createBiquadFilter();sf.type='bandpass';sf.frequency.value=900;sf.Q.value=0.8;
+  A.starterG=ctx.createGain();A.starterG.gain.value=0;so.connect(sf);sf.connect(A.starterG);A.starterG.connect(A.master);so.start();A.starter=so;
+  // fuel pump whine
+  const po=ctx.createOscillator();po.type='sawtooth';po.frequency.value=260;
+  const pn=ctx.createBufferSource();pn.buffer=A.white;pn.loop=true;const ph=ctx.createBiquadFilter();ph.type='bandpass';ph.frequency.value=2400;ph.Q.value=2;
+  const pf=ctx.createBiquadFilter();pf.type='lowpass';pf.frequency.value=1600;
+  A.pumpG=ctx.createGain();A.pumpG.gain.value=0;po.connect(pf);pf.connect(A.pumpG);pn.connect(ph);ph.connect(A.pumpG);A.pumpG.connect(A.master);po.start();pn.start();
+  // vacuum hiss, radiator fan, road/wind noise
+  const mkNoise=(type,f,q)=>{const n=ctx.createBufferSource();n.buffer=A.white;n.loop=true;const fl=ctx.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;const g=ctx.createGain();g.gain.value=0;n.connect(fl);fl.connect(g);g.connect(A.master);n.start();return {g,fl}};
+  A.hiss=mkNoise('bandpass',5200,4);A.fan=mkNoise('bandpass',700,0.6);A.road=mkNoise('lowpass',400,0.5);
+  A.next=ctx.currentTime;
+}
+function thump(t,rpm,thr,cyl){
+  const ctx=A.ctx,s=ctx.createBufferSource();s.buffer=A.noise;
+  const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=220+rpm*0.12+thr*6+cyl*12;f.Q.value=1.2;
+  const g=ctx.createGain();const amp=0.55+thr*0.006;
+  g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(amp,t+0.004);g.gain.exponentialRampToValueAtTime(0.0001,t+0.05+400/Math.max(rpm,400)*0.02);
+  s.connect(f);f.connect(g);g.connect(A.master);s.start(t,Math.random()*1.5,0.12);
+  const o=ctx.createOscillator();o.type='sine';o.frequency.setValueAtTime(95+rpm*0.01,t);o.frequency.exponentialRampToValueAtTime(42,t+0.06);
+  const og=ctx.createGain();og.gain.setValueAtTime(0.0001,t);og.gain.exponentialRampToValueAtTime(0.5,t+0.003);og.gain.exponentialRampToValueAtTime(0.0001,t+0.07);
+  o.connect(og);og.connect(A.master);o.start(t);o.stop(t+0.09);
+}
+function click(t,vol=0.4,freq=3500,len=0.012){
+  if(!A.ctx)return;const ctx=A.ctx;t=t||ctx.currentTime;
+  const s=ctx.createBufferSource();s.buffer=A.white;const f=ctx.createBiquadFilter();f.type='bandpass';f.frequency.value=freq;f.Q.value=3;
+  const g=ctx.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(0.0001,t+len);s.connect(f);f.connect(g);g.connect(A.master);s.start(t,Math.random(),len+0.02);
+}
+function beep(freq=1800,len=0.07){if(!A.ctx)return;const ctx=A.ctx,t=ctx.currentTime,o=ctx.createOscillator(),g=ctx.createGain();o.type='square';o.frequency.value=freq;g.gain.setValueAtTime(0.06,t);g.gain.setValueAtTime(0.0001,t+len);o.connect(g);g.connect(A.master);o.start(t);o.stop(t+len+0.02)}
+function sfx(kind){
+  if(!A.ctx)return;const t=A.ctx.currentTime;
+  if(kind==='relay'){click(t,0.5,2600,0.01);click(t+0.008,0.25,1800,0.01)}
+  if(kind==='unplug'){click(t,0.6,1200,0.02);click(t+0.05,0.3,2200,0.015)}
+  if(kind==='plug'){click(t,0.35,2000,0.012);click(t+0.03,0.8,1400,0.02)}
+  if(kind==='probe')click(t,0.25,5200,0.008);
+  if(kind==='knob')click(t,0.3,3000,0.01);
+  if(kind==='stall'){}
+}
+const FIRING=[1,3,4,2];
+function audioLoop(){
+  if(!A.ctx)return;const ctx=A.ctx,now=ctx.currentTime,ahead=0.12;
+  const run=running(),crank=cranking();
+  // bed
+  const bedTarget=run?0.05+S.rpm/7000*0.25+S.thr*0.0015:crank?0.02:0;
+  A.bedG.gain.setTargetAtTime(bedTarget,now,0.08);A.bedF.frequency.setTargetAtTime(run?180+S.rpm*0.18+S.thr*8:150,now,0.1);
+  // starter
+  const weak=vbat()<9;
+  A.starterG.gain.setTargetAtTime(crank?0.16:0,now,crank?0.02:0.06);
+  A.starter.frequency.setTargetAtTime(crank?(weak?70:140)+Math.sin(now*(weak?14:42))*(weak?10:22):60,now,0.02);
+  // pump
+  A.pumpG.gain.setTargetAtTime(pumping()?(run?0.012:0.05):0,now,0.05);
+  A.hiss.g.gain.setTargetAtTime(run&&S.cf.hose?0.035*(1-S.thr/100)+0.01:0,now,0.1);
+  const fanOn=S.key!=='off'&&S.temp>=86&&!S.cf.tstat;A.fan.g.gain.setTargetAtTime(fanOn?0.05:0,now,fanOn?0.6:0.4);
+  A.road.g.gain.setTargetAtTime(S.drive?Math.min(0.25,S.speed/400):0,now,0.2);A.road.fl.frequency.setTargetAtTime(250+S.speed*6,now,0.2);
+  // combustion events
+  if(A.next<now)A.next=now;
+  while(A.next<now+ahead){
+    const rpm=run?Math.max(S.rpm,300):crank?S.rpm:0;
+    if(!rpm){A.next=now+ahead;break}
+    const gap=60/(rpm*2);const n=FIRING[A.cyl%4];A.cyl++;
+    if(run){if(!S.misNow[n-1])thump(A.next,rpm,S.thr,n)}
+    else if(crank){
+      // compression chug while cranking
+      const g=A.starterG.gain;g.setValueAtTime(0.2,A.next);g.linearRampToValueAtTime(0.08,A.next+gap*0.6);
+      if(cylFires(n)&&ckpAtEcu()>0.3&&S.pres>2.3&&Math.random()<0.25)thump(A.next,300,0,n);
+    }
+    A.next+=gap;
+  }
+}
+let HINTS=true;
+function setHints(on){HINTS=on;$('hintBtn').setAttribute('aria-pressed',on);$('hintBtn').textContent=on?'Hints on':'Hints off';try{localStorage.setItem('cds-hints',on?'1':'0')}catch(e){}if(typeof drawGuide==='function'&&S)drawGuide()}
+function setSound(on){A.on=on;if(A.master)A.master.gain.setTargetAtTime(on?0.7:0,A.ctx.currentTime,0.05);$('soundBtn').setAttribute('aria-pressed',on);$('soundBtn').textContent=on?'Sound on':'Sound off';try{localStorage.setItem('cds-sound',on?'1':'0')}catch(e){}}
+
+/* ================= bay view: pan, zoom, hotspots ================= */
+let BAY=null;const V={s:1,x:0,y:0};
+const stage=$('stage'),world=$('world');
+function applyV(){world.style.transform='translate('+V.x+'px,'+V.y+'px) scale('+V.s+')'}
+function fit(){const r=stage.getBoundingClientRect();V.s=Math.max(r.width/2000,r.height/1334)*0.98;if(r.width<820)V.s=Math.max(r.height/1334,r.width/2000);V.x=(r.width-2000*V.s)/2;V.y=(r.height-1334*V.s)/2;clampV();applyV()}
+function clampV(){const r=stage.getBoundingClientRect();const w=2000*V.s,h=1334*V.s;
+  V.x=w<=r.width?(r.width-w)/2:Math.min(0,Math.max(r.width-w,V.x));V.y=h<=r.height?(r.height-h)/2:Math.min(0,Math.max(r.height-h,V.y))}
+function zoomAt(f,cx,cy){const r=stage.getBoundingClientRect();const fitS=Math.min(r.width/2000,r.height/1334);const ns=Math.min(4,Math.max(fitS,V.s*f));
+  const px=cx-r.left,py=cy-r.top;V.x=px-(px-V.x)*ns/V.s;V.y=py-(py-V.y)*ns/V.s;V.s=ns;clampV();applyV()}
+stage.addEventListener('wheel',e=>{e.preventDefault();zoomAt(Math.exp(-e.deltaY*0.0015),e.clientX,e.clientY)},{passive:false});
+const ptrs=new Map();let panStart=null,moved=0,pinch=null;
+stage.addEventListener('pointerdown',e=>{if(e.target.closest('.zoomctl,.hint,.tray'))return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});stage.setPointerCapture(e.pointerId);moved=0;
+  if(ptrs.size===1)panStart={x:e.clientX,y:e.clientY,vx:V.x,vy:V.y,target:e.target};
+  if(ptrs.size===2){const [a,b]=[...ptrs.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y),s:V.s}}});
+stage.addEventListener('pointermove',e=>{
+  if(!ptrs.has(e.pointerId)){hover(e);return}
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(ptrs.size===2&&pinch){const [a,b]=[...ptrs.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);zoomAt(pinch.s*d/pinch.d/V.s,(a.x+b.x)/2,(a.y+b.y)/2);moved=99;return}
+  if(panStart){const dx=e.clientX-panStart.x,dy=e.clientY-panStart.y;moved=Math.max(moved,Math.hypot(dx,dy));if(moved>5){stage.classList.add('panning');V.x=panStart.vx+dx;V.y=panStart.vy+dy;clampV();applyV()}}
+});
+function endPtr(e){if(!ptrs.has(e.pointerId))return;ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;
+  if(ptrs.size===0){stage.classList.remove('panning');
+    if(panStart&&moved<=5){const el=document.elementFromPoint(e.clientX,e.clientY);const pp=el&&el.closest('[data-pp]');const hs=el&&el.closest('[data-comp]');
+      if(pp)pinTap(pp.dataset.pp,e.clientX,e.clientY);else if(hs)openComp(hs.dataset.comp)}
+    panStart=null}}
+stage.addEventListener('pointerup',endPtr);stage.addEventListener('pointercancel',endPtr);
+function hover(e){const el=e.target.closest&&e.target.closest('[data-comp],[data-pp]');const tip=$('tip');
+  if(!el){tip.style.display='none';return}const r=stage.getBoundingClientRect();tip.style.display='block';tip.style.left=(e.clientX-r.left)+'px';tip.style.top=(e.clientY-r.top)+'px';
+  tip.textContent=el.dataset.pp?pinName(el.dataset.pp):C[el.dataset.comp].name}
+stage.addEventListener('pointerleave',()=>$('tip').style.display='none');
+$('zIn').onclick=()=>{const r=stage.getBoundingClientRect();zoomAt(1.35,r.left+r.width/2,r.top+r.height/2)};
+$('zOut').onclick=()=>{const r=stage.getBoundingClientRect();zoomAt(1/1.35,r.left+r.width/2,r.top+r.height/2)};
+$('zFit').onclick=fit;
+$('zShow').onclick=()=>{const on=$('zShow').getAttribute('aria-pressed')!=='true';$('zShow').setAttribute('aria-pressed',on);stage.classList.toggle('show-all',on)};
+addEventListener('resize',()=>{fit();placeWins();setBars()});
+function setBars(){const r=document.documentElement.style;r.setProperty('--dashH',document.querySelector('.dash').offsetHeight+'px');r.setProperty('--topH',document.querySelector('.top').offsetHeight+'px')}
+
+function drawHotspots(){
+  if(!BAY)return;let s='';
+  for(const id in BAY.comps){const c=BAY.comps[id];s+='<polygon class="hs'+(S.sel===id?' sel':'')+'" data-comp="'+id+'" tabindex="0" role="button" aria-label="'+esc(C[id].name)+'" points="'+c.poly.map(p=>p.join(',')).join(' ')+'"/>'}
+  for(const p in BAY.pins){const [x,y]=BAY.pins[p];s+='<circle class="bpin" data-pp="'+p+'" cx="'+x+'" cy="'+y+'" r="16"/>'}
+  for(const id in BAY.comps){const c=BAY.comps[id];
+    if(S.unplug[id]){s+='<g class="badge"><rect x="'+(c.box[2]-10)+'" y="'+(c.box[1]-26)+'" width="118" height="30" rx="8"/><text x="'+(c.box[2]+49)+'" y="'+(c.box[1]-5)+'" text-anchor="middle">unplugged</text></g>'}
+    else if(S.newParts.has(id)){s+='<g class="badge new"><rect x="'+(c.box[2]-10)+'" y="'+(c.box[1]-26)+'" width="64" height="30" rx="8"/><text x="'+(c.box[2]+22)+'" y="'+(c.box[1]-5)+'" text-anchor="middle">new</text></g>'}}
+  $('hotspots').innerHTML=s;
+}
+$('hotspots').addEventListener('keydown',e=>{const g=e.target.closest('[data-comp]');if(g&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openComp(g.dataset.comp)}});
+
+/* ================= windows ================= */
+let zTop=20;
+function front(w){if(zTop>44){const ws=[...document.querySelectorAll('.win')].sort((a,b)=>(+a.style.zIndex||0)-(+b.style.zIndex||0));zTop=20;ws.forEach(x=>x.style.zIndex=++zTop)}w.style.zIndex=++zTop}
+function autoPlace(w,avoid){
+  if(innerWidth<=820||w.dataset.moved)return;
+  const st=$('stage').getBoundingClientRect(),ww=w.offsetWidth,wh=w.offsetHeight;
+  const others=[...document.querySelectorAll('.win:not([hidden])')].filter(o=>o!==w).map(o=>o.getBoundingClientRect());if(avoid)others.push(avoid);
+  const xs=[st.right-ww-10,st.left+10,st.right-ww-10-(others[0]?others[0].width+12:300),st.left+(st.width-ww)/2];
+  const ys=[st.top+10,st.top+60,st.top+110];
+  const hit=(x,y)=>others.reduce((a,o)=>a+Math.max(0,Math.min(x+ww,o.right)-Math.max(x,o.left))*Math.max(0,Math.min(y+wh,o.bottom)-Math.max(y,o.top)),0);
+  let best=null;for(const y of ys)for(const x of xs){if(x<st.left-1)continue;const h=hit(x,y);if(!best||h<best.h)best={x,y,h};if(h===0)break}
+  w.style.left=best.x+'px';w.style.top=best.y+'px';w.style.right='auto';
+}
+function openWin(id,avoid){const w=$(id);const was=w.hidden;w.hidden=false;front(w);if(was||avoid)autoPlace(w,avoid);keepOnScreen(w);
+  if(id==='w-scope')S.leads='scope';if(id==='w-meter')S.leads='meter';
+  syncRail();if(id==='w-scan')drawScan();if(id==='w-diag')drawDiag();if(id==='w-fuel')drawFuel();}
+function closeWin(id){$(id).hidden=true;if(id==='w-scope'&&!$('w-meter').hidden)S.leads='meter';if(id==='w-meter'&&!$('w-scope').hidden)S.leads='scope';syncRail()}
+function syncRail(){document.querySelectorAll('[data-open]').forEach(b=>b.setAttribute('aria-pressed',!$(b.dataset.open).hidden))}
+function keepOnScreen(w){if(innerWidth<=820)return;const r=w.getBoundingClientRect();let x=r.left,y=r.top;x=Math.max(6,Math.min(innerWidth-r.width-6,x));y=Math.max(6,Math.min(innerHeight-60,y));w.style.left=x+'px';w.style.top=y+'px';w.style.right='auto'}
+function placeWins(){document.querySelectorAll('.win:not([hidden])').forEach(keepOnScreen)}
+document.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{const w=$(b.dataset.open);w.hidden?openWin(b.dataset.open):closeWin(b.dataset.open)});
+document.querySelectorAll('.win').forEach(w=>{
+  const xb=w.querySelector('[data-close]'),mb=document.createElement('button');mb.className='x';mb.type='button';mb.dataset.min='';mb.setAttribute('aria-label','Minimise');mb.textContent='–';xb.before(mb);
+  mb.onclick=()=>{w.classList.toggle('min');mb.textContent=w.classList.contains('min')?'+':'–';mb.setAttribute('aria-label',w.classList.contains('min')?'Restore':'Minimise');render(true)};
+  w.addEventListener('pointerdown',()=>front(w),true);
+  w.querySelector('[data-close]').onclick=()=>closeWin(w.id);
+  const bar=w.querySelector('.wbar');let d=null;
+  bar.addEventListener('pointerdown',e=>{if(e.target.closest('button')||innerWidth<=820)return;const r=w.getBoundingClientRect();d={dx:e.clientX-r.left,dy:e.clientY-r.top};w.dataset.moved=1;bar.setPointerCapture(e.pointerId)});
+  bar.addEventListener('pointermove',e=>{if(!d)return;w.style.left=Math.max(-w.offsetWidth+80,Math.min(innerWidth-80,e.clientX-d.dx))+'px';w.style.top=Math.max(0,Math.min(innerHeight-40,e.clientY-d.dy))+'px';w.style.right='auto'});
+  bar.addEventListener('pointerup',()=>d=null);
+});
+
+/* ================= component window ================= */
+function openComp(id){S.sel=id;S.selWire=null;drawHotspots();drawComp();const hs=document.querySelector('#hotspots [data-comp="'+id+'"]');const r=hs&&hs.getBoundingClientRect();const cw=$('w-comp');if(r&&!cw.dataset.moved){const o=cw.getBoundingClientRect();if(cw.hidden||!(o.right<r.left||o.left>r.right||o.bottom<r.top||o.top>r.bottom))openWin('w-comp',{left:r.left-20,right:r.right+20,top:r.top-20,bottom:r.bottom+20});else openWin('w-comp')}else openWin('w-comp');if($('w-meter').hidden&&$('w-scope').hidden)openWin('w-meter');hideHint()}
+const HOUSING={inj:'#5a3418',coil:'#6b6e73',ckp:'#6b6e73',ect:'#6b6e73',map:'#6b6e73',tps:'#6b6e73',pump:'#6b6e73',ecu:'#202226'};
+function connSVG(id,side){
+  const keys=Object.keys(C[id].pins),n=keys.length,kind=id.replace(/\d$/,'');
+  const pw=58,W2=Math.max(150,n*pw+40),H2=130,col=HOUSING[kind]||'#6b6e73';
+  let s='<svg width="'+W2+'" height="'+H2+'" viewBox="0 0 '+W2+' '+H2+'">';
+  if(side==='harness'){keys.forEach((k,i)=>{const x=20+pw/2+i*pw+(W2-40-n*pw)/2;s+='<path d="M'+x+' 128 C'+x+' 112 '+x+' 108 '+x+' 96" stroke="'+wireColor(id+'.'+k)+'" stroke-width="9" fill="none"/>'})}
+  s+='<rect x="10" y="22" width="'+(W2-20)+'" height="76" rx="12" fill="'+col+'" stroke="#000" stroke-width="2"/>';
+  s+='<rect x="'+(W2/2-22)+'" y="8" width="44" height="18" rx="4" fill="'+(side==='part'?'#333':'#1e7a3b')+'" stroke="#000"/>';
+  keys.forEach((k,i)=>{const x=20+pw/2+i*pw+(W2-40-n*pw)/2,p=id+'.'+k+(side==='part'?'~p':'');
+    s+='<g class="cpin" data-pp="'+p+'"><circle class="hole" cx="'+x+'" cy="60" r="17"/><circle class="metal" cx="'+x+'" cy="60" r="'+(side==='part'?7:5)+'"/><circle class="ring" cx="'+x+'" cy="60" r="20"/><text x="'+x+'" y="36" text-anchor="middle">'+(i+1)+'</text><title>'+esc(pinName(p))+'</title></g>'});
+  return s+'</svg>';
+}
+function ecuSVG(){
+  const keys=Object.keys(C.ecu.pins),cols=10,pw=40;let s='<svg width="'+(cols*pw+30)+'" height="140" viewBox="0 0 '+(cols*pw+30)+' 140">';
+  s+='<rect x="6" y="10" width="'+(cols*pw+18)+'" height="120" rx="10" fill="#202226" stroke="#000" stroke-width="2"/>';
+  keys.forEach((k,i)=>{const r=i<cols?0:1,c=i%cols,x=30+c*pw+(r?pw/2:0),y=50+r*50,p='ecu.'+k;
+    s+='<g class="cpin" data-pp="'+p+'"><circle class="hole" cx="'+x+'" cy="'+y+'" r="13"/><circle class="metal" cx="'+x+'" cy="'+y+'" r="4.5"/><circle class="ring" cx="'+x+'" cy="'+y+'" r="16"/><text x="'+x+'" y="'+(y-18)+'" text-anchor="middle" style="font-size:11px">'+k+'</text><title>'+esc(pinName(p))+'</title></g>'});
+  return s+'</svg>';
+}
+function tpPin(p,x,y,r){return '<g class="cpin" data-pp="'+p+'"><circle class="hole" cx="'+x+'" cy="'+y+'" r="'+(r+4)+'"/><circle class="metal" cx="'+x+'" cy="'+y+'" r="'+r+'"/><circle class="ring" cx="'+x+'" cy="'+y+'" r="'+(r+8)+'"/><title>'+esc(pinName(p))+'</title></g>'}
+function fuseSVG(){
+  const blown=S.found.fuse&&S.found.fuse.includes('Blown');
+  const lab=(x,y,t,c)=>'<text x="'+x+'" y="'+y+'" text-anchor="middle" style="font:600 11.5px system-ui;fill:'+(c||'#d9d6cf')+'">'+t+'</text>';
+  let s='<svg width="392" height="204" viewBox="0 0 392 204" role="group" aria-label="Fuse and relay box, lid off">';
+  s+='<rect x="3" y="3" width="386" height="198" rx="16" fill="#141518" stroke="#000" stroke-width="2"/><rect x="12" y="12" width="368" height="180" rx="10" fill="#1d1f23"/>';
+  // decorative fuses, dimmed
+  [['#c9372c','10','Horn'],['#d9b21a','20','Fan'],['#8a5a2b','7.5','Lights']].forEach((f,i)=>{const x=26+i*40;s+='<g opacity=".38"><rect x="'+x+'" y="132" width="28" height="40" rx="4" fill="'+f[0]+'"/>'+lab(x+14,157,f[1],'#fff')+lab(x+14,190,f[2],'#9aa1a9')+'</g>'});
+  // EFI fuse, big
+  s+='<rect x="34" y="28" width="62" height="82" rx="7" fill="#2f6fd6" stroke="#174a9b" stroke-width="2"/>'+lab(65,78,'15 A','#fff');
+  if(blown)s+='<path d="M50 88 l8 -6 l6 8 l8 -6 l6 6" stroke="#0b1d3d" stroke-width="3" fill="none"/>';
+  s+=tpPin('fuse.in',48,42,5)+tpPin('fuse.efi',82,42,5)+lab(48,22,'in')+lab(82,22,'out')+lab(65,126,'EFI fuse','#fff');
+  // relays
+  const relay=(x,title,sub,pin)=>{let r='<rect x="'+x+'" y="28" width="96" height="96" rx="8" fill="#26292e" stroke="#000" stroke-width="1.5"/><rect x="'+(x+8)+'" y="36" width="80" height="22" rx="3" fill="#33373d"/>'+lab(x+48,51,title,'#fff')+lab(x+48,74,sub,'#9aa1a9');
+    r+=tpPin(pin,x+48,100,5)+lab(x+48,142,'output','#d9d6cf');return r};
+  s+=relay(146,'MAIN','relay','fuse.main')+relay(262,'FUEL PUMP','relay','fuse.fp');
+  return s+'</svg>';
+}
+function batSVG(){
+  const term=(p,x,col,sign)=>'<g class="cpin" data-pp="'+p+'"><circle cx="'+x+'" cy="52" r="24" fill="'+col+'" stroke="#000" stroke-width="2"/><circle class="metal" cx="'+x+'" cy="52" r="11"/><circle class="ring" cx="'+x+'" cy="52" r="29"/><title>'+esc(pinName(p))+'</title></g><text x="'+x+'" y="104" text-anchor="middle" style="font:700 22px system-ui;fill:#fff">'+sign+'</text>';
+  return '<svg width="320" height="160" viewBox="0 0 320 160" role="group" aria-label="Battery, top view"><rect x="8" y="18" width="304" height="136" rx="12" fill="#1c1d20" stroke="#000" stroke-width="2"/><rect x="104" y="112" width="112" height="28" rx="5" fill="#e1b41c"/><text x="160" y="131" text-anchor="middle" style="font:700 13px system-ui;fill:#222">12 V 45 Ah</text>'+term('bat.neg',64,'#2b2d31','−')+term('bat.pos',256,'#b3221b','+')+'</svg>';
+}
+const GROUNDS=['bat.neg','ecu.E2','pump.neg'];
+const leadsOnMeter=()=>!$('w-meter').hidden&&S.leads==='meter';
+function stepList(steps){return '<ol class="steps">'+steps.map(([ok,t])=>'<li class="'+(ok?'ok':'')+'">'+t+'</li>').join('')+'</ol>'}
+function meterReady(){return leadsOnMeter()&&S.mm==='vdc'&&GROUNDS.includes(S.probe.black)}
+function batGuide(){
+  const steps=[[!$('w-meter').hidden&&S.leads==='meter','Open the multimeter'],[S.mm==='vdc','Turn its dial to <b>V⎓</b>'],[S.probe.black==='bat.neg','Black probe on the <b>−</b> terminal'],[S.probe.red==='bat.pos','Red probe on the <b>+</b> terminal']];
+  let h='<div class="guide"><h3>Test the battery</h3>'+stepList(steps);
+  if(steps.every(x=>x[0])){const v=vbat();let t,cls='';
+    if(running()){t=v.toFixed(1)+' V with the engine running: the alternator is charging it. Normal is 13.8 to 14.8 V.';cls='good'}
+    else if(cranking()){if(v<9.6){t=v.toFixed(1)+' V while cranking. It should stay above 9.6 V, so this battery can’t hold up under load.';cls='bad'}else{t=v.toFixed(1)+' V while cranking. Above 9.6 V, so the battery is fine.';cls='good'}}
+    else{t=v.toFixed(1)+' V at rest. '+(v>=12.4?'A charged battery reads 12.4 to 12.7 V. ':'Below 12.4 V, so it’s not fully charged. ')+'Now hold <b>START</b> and watch the reading: that’s the real test.';cls=v>=12.4?'':'warn'}
+    if(!HINTS){t=v.toFixed(2)+' V. Hints are off, so judging it is up to you.';cls=''}
+    h+='<p class="verdict '+cls+'">'+t+'</p>'}
+  else h+='<button class="btn small" type="button" data-act="autoprobe" data-red="bat.pos" data-black="bat.neg">Put the probes on for me</button>';
+  return h+'</div>';
+}
+function logFuse(){
+  if(!meterReady()||!S.probe.red||!S.probe.red.startsWith('fuse.'))return;
+  const k=S.probe.red.slice(5),v=pinV(S.probe.red),e=S.flog[k]||(S.flog[k]={});e.v=v;e.key=S.key;
+  if(k==='fp'&&pumpCmd()){if(v>11)e.on=true;else e.dead=true}
+  if(k==='main'&&S.key!=='off'){if(v>11)e.on=true;else e.zero=true}
+  if((k==='in'||k==='efi')&&S.key!=='off'){e.measured=true}
+}
+function fuseGuide(){
+  const L=S.flog,f=v=>v===undefined?'<span class="dimv">not measured</span>':'<b>'+v.toFixed(1)+' V</b>';
+  const ready=meterReady();
+  const steps=[[!$('w-meter').hidden&&S.leads==='meter'&&S.mm==='vdc','Multimeter on <b>V⎓</b>'],[GROUNDS.includes(S.probe.black),'Black probe on a good ground (battery −)'],[S.key!=='off','Key <b>ON</b>'],[!!(L.in||L.efi||L.main||L.fp),'Click or drag the red probe onto each test point. Results fill in below.']];
+  let h='<div class="guide"><h3>Find the power problem</h3>'+stepList(steps);
+  if(!ready)h+='<button class="btn small" type="button" data-act="autoprobe" data-black="bat.neg">Set up the meter for me</button>';
+  let ev='';const i=L.in&&L.in.v,o=L.efi&&L.efi.v;
+  if(i!==undefined&&o!==undefined&&L.in.key!=='off'&&L.efi.key!=='off')ev=i>11&&o>11?'<span class="good">Power in and out: the fuse is good.</span>':i>11&&o<1?'<span class="bad">Power in, nothing out: the fuse is blown.</span>':i<1?'<span class="warn">No power in. Check the battery feed.</span>':'';
+  else if(i!==undefined||o!==undefined)ev='Now probe the other side of the fuse to compare.';
+  let mv='';if(L.main){mv=L.main.on?'<span class="good">12 V with the key on: the main relay works.</span>':L.main.zero?'<span class="warn">0 V with the key on. The ECM switches this relay, so check the EFI fuse first.</span>':'Turn the key ON while probing it.'}
+  let pv='';if(L.fp){pv=L.fp.on?'<span class="good">12 V while the pump should run: the relay works.</span>':L.fp.dead?'<span class="bad">The pump should be running but there’s no output: the relay has failed.</span>':'Only on for 2 s after key ON, or while cranking. Leave the probe on and turn the key OFF then ON.'}
+  if(!HINTS){ev=mv=pv=''}
+  const P_=S.pf,btn=(k)=>'<button class="btn small" type="button" data-act="inspect" data-part="'+k+'">Pull</button> <button class="btn small" type="button" data-act="replacepart" data-part="'+k+'">Replace</button>';
+  const row=(name,cells,verdict,k)=>'<tr><td>'+name+'</td><td>'+cells+'</td><td>'+btn(k)+'</td></tr>'+(verdict?'<tr class="vrow"><td colspan="3">'+verdict+'</td></tr>':'');
+  h+='<table class="ftbl"><tr><th>Part</th><th>Reading</th><th></th></tr>'+
+    row('EFI fuse','in '+f(L.in&&L.in.v)+'<br>out '+f(L.efi&&L.efi.v),ev,'efi')+
+    row('Main relay','out '+f(L.main&&L.main.v),mv,'main')+row('Pump relay','out '+f(L.fp&&L.fp.v),pv,'fp')+'</table>';
+  return h+'</div>';
+}
+function drawGuide(){const g=$('compGuide');if(!g)return;if(S.sel==='fuse')logFuse();const h=S.sel==='bat'?batGuide():S.sel==='fuse'?fuseGuide():'';if(g.dataset.h!==h){g.innerHTML=h;g.dataset.h=h}}
+function pinList(id,side){const c=C[id];return '<ul class="pinlist">'+Object.keys(c.pins).map((k,i)=>'<li><b>'+(id==='ecu'||c.noPlug?'':(i+1))+'</b>'+esc(id==='ecu'?c.pins[k]:c.pins[k].replace(/^\d /,''))+'</li>').join('')+'</ul>'}
+function drawComp(){
+  const id=S.sel;if(!id)return;const c=C[id];$('compTitle').textContent=c.name;
+  let h='<p>'+esc(c.desc)+'</p>';
+  if(id==='bat')h+='<div class="conns"><div class="conn">'+batSVG()+'</div></div><div id="compGuide"></div>';
+  else if(id==='fuse')h+='<div class="conns"><div class="conn">'+fuseSVG()+'</div></div><div id="compGuide"></div>';
+  else if(id==='alt')h+='<div class="conns"><div class="conn"><svg width="240" height="120" viewBox="0 0 240 120" role="group" aria-label="Alternator, back view"><circle cx="120" cy="60" r="54" fill="#8c9197" stroke="#2b2e33" stroke-width="3"/>'+[0,1,2,3,4,5,6,7].map(i=>{const a=i*Math.PI/4;return '<rect x="'+(116+Math.cos(a)*30)+'" y="'+(56+Math.sin(a)*30)+'" width="8" height="8" rx="2" fill="#4a4f55" transform="rotate('+(i*45)+' '+(120+Math.cos(a)*30)+' '+(60+Math.sin(a)*30)+')"/>'}).join('')+'<rect x="150" y="22" width="44" height="26" rx="5" fill="#1c1d20"/>'+tpPin('alt.out',172,35,7)+'<text x="172" y="66" text-anchor="middle" style="font:700 13px system-ui;fill:#fff">B+</text></svg><div class="cap">Black on battery −, red on B+. Compare engine off and engine running.</div></div></div>';
+  else if(id==='tstat'||id==='hose'){}
+  else if(id==='ecu')h+='<div class="conns"><div class="conn">'+ecuSVG()+'<div class="cap">'+(S.unplug.ecu?'Harness connector, unplugged from the ECM':'Plugged in. Probe from the back of the connector.')+'</div></div></div>';
+  else{
+    h+='<div class="conns"><div class="conn">'+connSVG(id,'harness')+'<div class="cap">'+(S.unplug[id]?'Harness side (unplugged)':'Plugged in. Back-probe the pins.')+'</div></div>';
+    if(S.unplug[id])h+='<div class="conn">'+connSVG(id,'part')+'<div class="cap">Part side: measure the part’s resistance here</div></div>';
+    h+='</div>'+pinList(id);
+  }
+  h+='<div class="acts">';
+  if(!c.noPlug)h+='<button class="btn" type="button" data-act="plug">'+(S.unplug[id]?'Plug back in':'Unplug connector')+'</button>';
+  if(id==='bat')h+='<button class="btn" type="button" data-act="jump">'+(S.jump?'Remove jump pack':'Clamp on jump pack')+'</button><button class="btn" type="button" data-act="replace">Replace battery</button>';
+  else if(c.price)h+='<button class="btn" type="button" data-act="replace">Replace part</button>';
+  if(id==='tstat')h+='<button class="btn" type="button" data-act="feelhose">Feel the top radiator hose</button>';
+  if(id==='hose')h+='<button class="btn" type="button" data-act="spray">Spray around the duct while it idles</button>';
+  if(id==='pump')h+='<button class="btn" type="button" data-act="filter">Replace fuel filter</button>';
+  if(/^coil\d$/.test(id)){const n=id.slice(4);h+='</div><div class="acts"><button class="btn small" type="button" data-act="inspectplug" data-n="'+n+'">Remove and check spark plug '+n+'</button><button class="btn small" type="button" data-act="replaceplug" data-n="'+n+'">Fit a new spark plug</button>'}
+  h+='</div>';
+  if(S.found[id])h+='<div class="found">'+esc(S.found[id])+'</div>';
+  $('compBody').innerHTML=h;drawGuide();
+}
+$('pumpHs').onclick=()=>openComp('pump');
+
+/* ================= probes and leads ================= */
+const P={red:{x:0,y:0,parked:true},black:{x:0,y:0,parked:true}};let dragP=null;
+function jackXY(which){
+  const own=S.leads==='scope'&&!$('w-scope').hidden?'s':(!$('w-meter').hidden?'m':(!$('w-scope').hidden?'s':null));
+  if(!own)return null;const el=$((own==='s'?'sjack':'jack')+(which==='red'?'R':'K'));const r=el.getBoundingClientRect();if(!r.width)return null;return {x:r.left+r.width/2,y:r.top+r.height/2,own};
+}
+function pinEl(p,which){
+  const pref=which&&P[which].el;if(pref&&pref.isConnected&&pref.dataset.pp===p&&!pref.closest('[hidden]')&&pref.getBoundingClientRect().width)return pref;
+  const list=[...document.querySelectorAll('[data-pp="'+p+'"]')].filter(el=>!el.closest('[hidden]')&&el.getBoundingClientRect().width);
+  if(list.length<2)return list[0]||null;
+  for(const el of list){const c=elCenter(el);const top=document.elementsFromPoint(c.x,c.y).find(x=>!x.closest('#leads'));if(top&&(el===top||el.contains(top)))return el}
+  return list[list.length-1];
+}
+function elCenter(el){const t=el.querySelector('.metal')||el;const r=t.getBoundingClientRect();return {x:r.left+r.width/2,y:r.top+r.height/2}}
+const LE={};
+function buildLeads(){
+  const svg=$('leads'),csv=$('cables'),NS='http://www.w3.org/2000/svg';svg.innerHTML='';csv.innerHTML='';
+  for(const which of ['black','red']){
+    const col=which==='red'?'#d8302a':'#2a2c30',edge=which==='red'?'#7a1410':'#b9c0c8';
+    const mk=(tag,attrs,parent)=>{const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);(parent||svg).appendChild(e);return e};
+    const e1=mk('path',{fill:'none',stroke:which==='red'?edge:'#6f767e','stroke-width':7,'stroke-linecap':'round',opacity:.9},csv);
+    const e2=mk('path',{fill:'none',stroke:col,'stroke-width':4.5,'stroke-linecap':'round'},csv);
+    const g=mk('g',{class:'probe','data-probe':which});
+    mk('rect',{x:-16,y:-92,width:32,height:96,rx:10,fill:'rgba(0,0,0,0.001)'},g);
+    mk('path',{d:'M0 0 L-2 -16 L2 -16 Z',fill:'#d9d9d9'},g);mk('rect',{x:-2,y:-30,width:4,height:16,fill:'#cfcfcf'},g);
+    mk('rect',{x:-7,y:-78,width:14,height:50,rx:5,fill:col,stroke:edge,'stroke-width':1.5},g);mk('rect',{x:-9,y:-36,width:18,height:6,rx:2,fill:col,stroke:edge},g);
+    const t=mk('text',{style:'font:600 11px system-ui;fill:#fff;paint-order:stroke;stroke:#000;stroke-width:3px'});
+    LE[which]={e1,e2,g,t};
+  }
+}
+function drawLeads(){
+  if(!LE.red)buildLeads();
+  let parkL=null;const mw=$('w-meter'),sw=$('w-scope');
+  const ownWin=S.leads==='scope'&&!sw.hidden?sw:!mw.hidden?mw:!sw.hidden?sw:null;
+  if(ownWin)parkL=ownWin.getBoundingClientRect();
+  for(const which of ['black','red']){
+    const j=jackXY(which),L=LE[which];
+    if(!j){L.e1.style.display=L.e2.style.display=L.g.style.display=L.t.style.display='none';continue}
+    L.e1.style.display=L.e2.style.display=L.g.style.display='';
+    const pr=P[which],p=S.probe[which];
+    if(!dragP||dragP.which!==which){
+      const el=p?pinEl(p,which):null;
+      if(el){const c=elCenter(el);pr.x=c.x;pr.y=c.y;pr.lost=false}
+      else{pr.lost=!!p;if(innerWidth<=820||!parkL){pr.x=j.x+(which==='red'?46:-46);pr.y=j.y-20}else{pr.x=parkL.left+(which==='red'?parkL.width*0.68:parkL.width*0.3);pr.y=parkL.bottom+70}}
+    }
+    const bx=pr.x+34,by=pr.y-58,sag=Math.min(260,Math.hypot(j.x-bx,j.y-by)*0.45+40);
+    const d='M'+j.x+' '+j.y+' C'+j.x+' '+(j.y+sag)+' '+(bx+40)+' '+(by+sag*0.6)+' '+(bx+12)+' '+(by-14);
+    L.e1.setAttribute('d',d);L.e2.setAttribute('d',d);
+    L.g.setAttribute('transform','translate('+pr.x+' '+pr.y+') rotate(30)');L.g.classList.toggle('drag',!!(dragP&&dragP.which===which));
+    if(pr.lost&&p){L.t.style.display='';const rt=pr.x>innerWidth-280;L.t.setAttribute('text-anchor',rt?'end':'start');L.t.setAttribute('x',rt?pr.x-10:pr.x+14);L.t.setAttribute('y',pr.y+(which==='red'?16:34));L.t.textContent='still on '+pinName(p)}else L.t.style.display='none';
+  }
+}
+function nearestPin(x,y){
+  let best=null,bd=34;
+  document.querySelectorAll('[data-pp]').forEach(el=>{if(el.closest('[hidden]'))return;const r=el.getBoundingClientRect();if(!r.width)return;const c=elCenter(el);const d=Math.hypot(c.x-x,c.y-y);if(d<bd){bd=d;best=el}});
+  return best;
+}
+$('leads').addEventListener('pointerdown',e=>{const g=e.target.closest('[data-probe]');if(!g)return;e.preventDefault();audioInit();
+  const which=g.dataset.probe;dragP={which,ox:P[which].x-e.clientX,oy:P[which].y-e.clientY,id:e.pointerId};document.body.classList.add('probing')});
+addEventListener('pointermove',e=>{if(!dragP||dragP.id!==e.pointerId)return;P[dragP.which].x=e.clientX+dragP.ox;P[dragP.which].y=e.clientY+dragP.oy});
+function dropProbe(e){if(!dragP||dragP.id!==e.pointerId)return;const w=dragP.which,pr=P[w];const el=nearestPin(pr.x,pr.y);
+  S.probe[w]=el?el.dataset.pp:null;P[w].el=el;if(el)sfx('probe');dragP=null;document.body.classList.remove('probing');refreshPins();render(true)}
+addEventListener('pointerup',dropProbe);addEventListener('pointercancel',dropProbe);
+function setProbe(which,p){S.probe[which]=p;P[which].el=null;sfx('probe');refreshPins();render(true)}
+function refreshPins(){if(!$('w-diag').hidden)drawDiag()}
+function pinTap(p,x,y){audioInit();const pop=$('pop');pop.innerHTML='<div class="t">'+esc(pinName(p))+'</div><button class="btn small r" type="button" data-put="red">Put red probe here</button><button class="btn small k" type="button" data-put="black">Put black probe here</button>';
+  pop.hidden=false;pop.style.left=Math.min(innerWidth-210,x+8)+'px';pop.style.top=Math.min(innerHeight-120,y+8)+'px';pop.dataset.p=p;
+  if($('w-meter').hidden&&$('w-scope').hidden)openWin('w-meter')}
+$('pop').addEventListener('click',e=>{const b=e.target.closest('[data-put]');if(!b)return;setProbe(b.dataset.put,$('pop').dataset.p);$('pop').hidden=true});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('#pop'))$('pop').hidden=true},true);
+document.addEventListener('click',e=>{
+  if(e.target.closest('#stage'))return;
+  const pp=e.target.closest('.win [data-pp]');if(pp){pinTap(pp.dataset.pp,e.clientX,e.clientY);return}
+  const a=e.target.closest('[data-act]');if(a){act(a.dataset.act,a);return}
+});
+
+/* ================= multimeter ================= */
+function meterRead(){
+  if(S.mm==='off')return ['','','Turn the dial to a range.'];
+  if(S.leads==='scope'&&!$('w-scope').hidden)return ['----','','The leads are plugged into the scope. Close the scope to use the meter.'];
+  const a=S.probe.red,b=S.probe.black;
+  if(!a||!b)return ['----','',!a?'Drag the red probe onto a pin.':'Connect the black probe too (battery − is a good ground).'];
+  if(S.mm==='ohm'){const r=ohms(a,b);if(r.msg)return ['----','Ω',r.msg];if(r.v===INF)return ['O.L','Ω','Open circuit: no continuity.'];
+    if(r.v>=1000)return [(r.v/1000).toFixed(2),'kΩ',''];return [r.v.toFixed(r.v<10?2:1),'Ω','']}
+  if(S.mm==='vac'){const v=Math.max(pinAC(a),pinAC(b));return [v.toFixed(2),'V AC','']}
+  let v=pinV(a)-pinV(b);v=Math.abs(v)<0.01?0:v+rnd(-0.004,0.004);return [(Math.abs(v)<0.005?0:v).toFixed(2),'V DC','']
+}
+const KNOB={off:-50,vdc:0,vac:50,ohm:105};
+document.querySelectorAll('.dmm .pos').forEach(g=>g.addEventListener('click',()=>{audioInit();S.mm=g.dataset.mm;sfx('knob');$('knob').style.transform='rotate('+KNOB[S.mm]+'deg)';render(true)}));
+
+/* ================= oscilloscope ================= */
+const SV=[0.1,0.2,0.5,1,2,5,10,20,50,100],ST=[0.0002,0.0005,0.001,0.002,0.005,0.01,0.02,0.05,0.1,0.2,0.5];
+const SC={vi:5,ti:4,hold:false,frame:null};
+const fmtT=t=>t>=0.001?(t*1000)+' ms':(t*1e6)+' µs';
+function wave(p,t){
+  if(isPart(p)){if(/^ckp\.[ab]~p$/.test(p)){const rpm=Math.max(S.rpm,1),f=rpm,tooth=Math.floor(t*f)%60;return tooth>=58?0:ckpAmp()*1.4*Math.sin(t*f*2*Math.PI)*(p.startsWith('ckp.b')?-1:1)}return 0}
+  const rpm=Math.max(S.rpm,1),per=120/rpm;
+  if(p==='ckp.a'||p==='ecu.E10'||p==='ckp.b'||p==='ecu.E11'){const amp=(p.startsWith('ecu')?ckpAtEcu():(S.unplug.ckp?0:ckpAmp()))*(p.endsWith('b')||p.endsWith('E11')?-1:1);
+    const f=rpm,tooth=Math.floor(t*f)%60;return tooth>=58?0:amp*1.4*Math.sin(t*f*2*Math.PI)}
+  const m=p.match(/^(?:(inj|coil)(\d)\.(sup|ctl)|ecu\.E([34])(\d))$/);
+  if(m&&(running()||cranking())){
+    const kind=m[1]||(m[4]==='3'?'inj':'coil'),n=+(m[2]||m[5]),pin=m[3]||'ctl',side=m[1]?'comp':'ecu';
+    const off={1:0,3:.25,4:.5,2:.75}[n]*per,ph=((t-off)%per+per)%per;
+    const pw=kind==='inj'?(0.0025+S.thr*0.00008):0.003;
+    const inPulse=ph<pw,after=ph-pw;
+    if(pin==='sup'){const b=supV(kind,n);return inPulse&&!S.unplug[kind+n]&&!S.cf[kind+n]?supLoaded(kind,n):b}
+    const b=ctlBase(kind,n);if(b<1||(side==='ecu'&&!wireOk((kind==='inj'?'w_ci':'w_cc')+n)))return 0;
+    if(inPulse)return 0.3;
+    if(after<0.0012)return b+(kind==='inj'?58:330)*Math.exp(-after/(kind==='inj'?0.0002:0.00008))*(kind==='coil'?Math.cos(after*30000):1);
+    return b;
+  }
+  const v=pinV(p);return v+(running()&&/bat|fuse|sup/.test(p)?Math.sin(t*2000)*0.05:0)+rnd(-0.01,0.01);
+}
+function scopeSig(t){const a=S.probe.red,b=S.probe.black;if(!a||!b)return null;return wave(a,t)-(isPart(b)?0:pinV(b))}
+function autoSet(){
+  const a=S.probe.red;if(!a||!S.probe.black)return;
+  const isCkp=/ckp|E1[01]/.test(a),isPulse=/(inj|coil)\d\.(ctl|sup)|ecu\.E[34]\d/.test(a);
+  SC.ti=ST.indexOf(isCkp?0.002:isPulse&&(running()||cranking())?(/coil|E4/.test(a)?0.001:0.002):0.02);
+  let mx=0.1;const t0=performance.now()/1000;for(let i=0;i<6000;i++){const v=scopeSig(t0+i*0.00005);if(v!==null)mx=Math.max(mx,Math.abs(v))}
+  SC.vi=SV.findIndex(s=>s*4>=mx*1.05);if(SC.vi<0)SC.vi=SV.length-1;drawScopeCtl();
+}
+function drawScopeCtl(){$('svTxt').textContent=SV[SC.vi]+' V';$('stTxt').textContent=fmtT(ST[SC.ti])}
+document.querySelectorAll('[data-sv]').forEach(b=>b.onclick=()=>{SC.vi=Math.max(0,Math.min(SV.length-1,SC.vi+ +b.dataset.sv));drawScopeCtl()});
+document.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{SC.ti=Math.max(0,Math.min(ST.length-1,SC.ti+ +b.dataset.st));drawScopeCtl()});
+$('sAuto').onclick=autoSet;
+$('sHold').onclick=()=>{SC.hold=!SC.hold;$('sHold').setAttribute('aria-pressed',SC.hold)};
+function drawScope(){
+  const cv=$('scope'),x=cv.getContext('2d'),w=cv.width,h=cv.height;
+  x.fillStyle='#07100b';x.fillRect(0,0,w,h);
+  x.strokeStyle='#17291f';x.lineWidth=1.5;
+  for(let i=1;i<10;i++){x.beginPath();x.moveTo(i*w/10,0);x.lineTo(i*w/10,h);x.stroke()}
+  for(let i=1;i<8;i++){x.beginPath();x.moveTo(0,i*h/8);x.lineTo(w,i*h/8);x.stroke()}
+  x.strokeStyle='#2a4a37';x.beginPath();x.moveTo(0,h/2);x.lineTo(w,h/2);x.moveTo(w/2,0);x.lineTo(w/2,h);x.stroke();
+  x.font='600 24px ui-monospace,Menlo,monospace';x.fillStyle='#7ee2a8';
+  const own=S.leads==='scope';
+  if(!own){x.fillText('Leads are on the multimeter',24,44);return}
+  if(!S.probe.red||!S.probe.black){x.fillText(!S.probe.red?'Connect the red probe (channel A)':'Connect the black probe to ground',24,44);return}
+  const span=ST[SC.ti]*10,vd=SV[SC.vi],N=1040;
+  if(!SC.hold||!SC.frame){
+    const now=performance.now()/1000,look=Math.max(span*3,0.3),step=Math.min(span/200,look/1500);
+    let mn=INF,mx=-INF;for(let t=now;t<now+look;t+=look/600){const v=scopeSig(t);mn=Math.min(mn,v);mx=Math.max(mx,v)}
+    let t0=null;
+    if(mx-mn>0.3){let sum=0,k=0;for(let t=now;t<now+look;t+=look/300){sum+=scopeSig(t);k++}const mean=sum/k,lvl=Math.min(mn+(mx-mn)*0.5,mean>0.5*(mn+mx)?mean*0.5:mn+(mx-mn)*0.5),fall=mean>lvl;
+      let prev=scopeSig(now);for(let t=now+step;t<now+look;t+=step){const v=scopeSig(t);if(fall?(prev>lvl&&v<=lvl):(prev<lvl&&v>=lvl)){t0=t-span*0.15;break}prev=v}}
+    else t0=now;
+    if(t0!==null||!SC.frame||now-(SC.lastTrig||0)>0.6){if(t0===null)t0=now;SC.lastTrig=now;
+      const pts=new Float32Array(N);for(let i=0;i<N;i++)pts[i]=scopeSig(t0+i/N*span);SC.frame=pts}
+  }
+  const zero=h/2+(SC.zero||0);
+  x.strokeStyle='#ffd23f';x.lineWidth=3;x.shadowColor='#ffd23f';x.shadowBlur=6;x.beginPath();
+  for(let i=0;i<N;i++){const px=i/N*w,py=Math.max(-10,Math.min(h+10,zero-SC.frame[i]/vd*(h/8)));i?x.lineTo(px,py):x.moveTo(px,py)}
+  x.stroke();x.shadowBlur=0;
+  x.fillStyle='#ffd23f';x.fillText('A',12,zero-8);
+  x.fillStyle='#7ee2a8';x.font='600 20px ui-monospace,Menlo,monospace';
+  x.fillText(pinName(S.probe.red),20,32);x.fillText(vd+' V/div   '+fmtT(ST[SC.ti])+'/div'+(SC.hold?'   HOLD':''),20,h-16);
+  let mx=-INF,mn=INF;for(const v of SC.frame){if(v>mx)mx=v;if(v<mn)mn=v}
+  x.textAlign='right';x.fillText('max '+mx.toFixed(1)+' V  min '+mn.toFixed(1)+' V',w-20,32);x.textAlign='left';
+}
+
+/* ================= scan tool ================= */
+const SCAN={scr:'off',sel:0};
+const MENU=[['codes','Read fault codes'],['clear','Clear fault codes'],['live','Live data'],['act','Actuator tests']];
+const ACTS=[['pump','Run fuel pump (5 s)'],['inj1','Click injector 1'],['inj2','Click injector 2'],['inj3','Click injector 3'],['inj4','Click injector 4']];
+function liveRows(){return [['Engine speed',Math.round(S.rpm)+' rpm'],['Coolant temp',ecuEctC()+' °C'],['MAP',mapEcuV()<0.25?'60 kPa*':Math.round((mapEcuV()-0.4)/0.036)+' kPa'],['Throttle',Math.max(0,Math.round((tpsEcuV()-0.55)/0.039))+' %'],
+  ['Inj. time',running()?(2.6+S.thr*0.09+(ecuEctC()<20?2.2:0)).toFixed(1)+' ms':'0.0 ms'],['Battery',vbat().toFixed(1)+' V'],['Fuel trim',(trim()>=0?'+':'')+trim().toFixed(0)+' %'],['Fuel pump',pumpCmd()?'ON':'OFF'],['Misfires 1-4',S.mis.map(v=>Math.min(999,v)).join('/')]]}
+function drawScan(){
+  const L=$('slcd');let h='';
+  if(SCAN.scr!=='off'&&(S.key==='off'||!ecuOn()))SCAN.scr=S.key==='off'?'nokey':'nocomm';
+  switch(SCAN.scr){
+    case 'off':h='<div class="hd">OBD tester</div><div>Plugged into the OBD port under the dash.</div><br><div class="it on" data-si="0">▶ Connect to vehicle</div>';break;
+    case 'nokey':h='<div class="hd">No connection</div><div>Turn the ignition ON, then press OK to try again.</div>';break;
+    case 'nocomm':h='<div class="hd">No communication</div><div>The ECM does not answer. Check its power supply, ground and connector.</div><br><div>Press OK to retry.</div>';break;
+    case 'menu':h='<div class="hd">Training car 1.6 petrol</div>'+MENU.map((m,i)=>'<div class="it'+(i===SCAN.sel?' on':'')+'" data-si="'+i+'">'+(i+1)+' '+m[1]+'</div>').join('');break;
+    case 'codes':h='<div class="hd">Fault codes ('+S.codes.size+')</div>'+(S.codes.size?[...S.codes].sort().map(c=>'<div><b>'+c+'</b> '+esc(DTC[c]||'')+'</div>').join(''):'<div>No fault codes stored.</div>');break;
+    case 'cleared':h='<div class="hd">Clear fault codes</div><div>Codes cleared.</div><br><div>If a fault is still there, its code will come back.</div>';break;
+    case 'live':h='<div class="hd">Live data</div><table>'+liveRows().map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+'</table>';break;
+    case 'act':h='<div class="hd">Actuator tests</div>'+(running()?'<div>Switch the engine off (key ON) to run tests.</div>':ACTS.map((m,i)=>'<div class="it'+(i===SCAN.sel?' on':'')+'" data-si="'+i+'">'+m[1]+'</div>').join(''))+(S.act?'<br><div><b>'+esc(S.act.label)+'</b> running… listen.</div>':'');break;
+  }
+  L.innerHTML=h;
+}
+function scanKey(k){
+  audioInit();beep(k==='ok'?2000:1600,0.04);
+  if(k==='back'){SCAN.scr=SCAN.scr==='off'?'off':'menu';SCAN.sel=0;if(S.key==='off'||!ecuOn())SCAN.scr='off';drawScan();return}
+  if(['off','nokey','nocomm'].includes(SCAN.scr)){if(k==='ok'){if(S.key==='off')SCAN.scr='nokey';else if(!ecuOn())SCAN.scr='nocomm';else{SCAN.scr='menu';SCAN.sel=0;setTimeout(()=>beep(2400,0.08),120)}}drawScan();return}
+  const list=SCAN.scr==='menu'?MENU:SCAN.scr==='act'?ACTS:null;
+  if(list&&(k==='up'||k==='down')){SCAN.sel=(SCAN.sel+(k==='up'?-1:1)+list.length)%list.length;drawScan();return}
+  if(k==='ok'){
+    if(SCAN.scr==='menu'){const m=MENU[SCAN.sel][0];if(m==='clear'){S.codes.clear();S.mis=[0,0,0,0];SCAN.scr='cleared'}else{SCAN.scr=m;SCAN.sel=0}}
+    else if(SCAN.scr==='act'&&!running())runAct(ACTS[SCAN.sel]);
+  }
+  drawScan();
+}
+function runAct([id,label]){
+  if(!ecuOn())return;S.act={id,label,until:Date.now()+(id==='pump'?5000:2500)};
+  if(id==='pump'){S.primeUntil=Date.now()+5000;sfx('relay')}
+  else{const n=+id.slice(3);const ok=!S.cf[id]&&!S.unplug[id]&&supV('inj',n)>8&&wireOk('w_ci'+n);
+    if(ok&&A.ctx){const t=A.ctx.currentTime;for(let i=0;i<20;i++)click(t+i*0.12,0.5,4200,0.006)}}
+  setTimeout(()=>{S.act=null;if(!$('w-scan').hidden)drawScan()},id==='pump'?5000:2500);
+}
+document.querySelectorAll('[data-sk]').forEach(b=>b.onclick=()=>scanKey(b.dataset.sk));
+$('slcd').addEventListener('click',e=>{const it=e.target.closest('[data-si]');if(!it)return;SCAN.sel=+it.dataset.si;scanKey('ok')});
+
+/* ================= wiring diagram (one circuit at a time) ================= */
+const CIRCUITS={
+  power:{name:'Power and ground',src:[['bat',['pos','neg']],['fuse',['in','efi']]],dst:[['ecu',['E1','E2']]],wires:['w_bat','w_efi','w_gnd']},
+  pump:{name:'Fuel pump',src:[['fuse',['fp']],['ecu',['E50']],['bat',['neg']]],dst:[['pump',['pos','neg']]],wires:['w_fp','w_fpg'],note:'E50 switches the fuel pump relay coil to ground.'},
+  inj:{name:'Injectors',src:[['fuse',['main']],['ecu',['E31','E32','E33','E34']]],dst:[['inj1',['sup','ctl']],['inj2',['sup','ctl']],['inj3',['sup','ctl']],['inj4',['sup','ctl']]],wires:['w_si1','w_si2','w_si3','w_si4','w_ci1','w_ci2','w_ci3','w_ci4']},
+  ign:{name:'Ignition coils',src:[['fuse',['main']],['ecu',['E41','E42','E43','E44']]],dst:[['coil1',['sup','ctl']],['coil2',['sup','ctl']],['coil3',['sup','ctl']],['coil4',['sup','ctl']]],wires:['w_sc1','w_sc2','w_sc3','w_sc4','w_cc1','w_cc2','w_cc3','w_cc4']},
+  ckp:{name:'Crank sensor',src:[['ecu',['E10','E11']]],dst:[['ckp',['a','b']]],wires:['w_ckpa','w_ckpb']},
+  ect:{name:'Coolant sensor',src:[['ecu',['E20','E21']]],dst:[['ect',['sig','gnd']]],wires:['w_ects','w_ectg']},
+  sens:{name:'MAP and throttle',src:[['ecu',['E22','E23','E24','E21']]],dst:[['map',['ref','sig','gnd']],['tps',['ref','sig','gnd']]],wires:['w_mapr','w_maps','w_mapg','w_tpsr','w_tpss','w_tpsg']}
+};
+let curCirc='power';
+$('ctabs').innerHTML=Object.entries(CIRCUITS).map(([k,c])=>'<button type="button" data-circ="'+k+'">'+esc(c.name)+'</button>').join('');
+$('ctabs').addEventListener('click',e=>{const b=e.target.closest('[data-circ]');if(!b)return;curCirc=b.dataset.circ;S.selWire=null;drawDiag()});
+function drawDiag(){
+  document.querySelectorAll('[data-circ]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.circ===curCirc));
+  const cc=CIRCUITS[curCirc],XY={};let s='';const lx=16,lw=170,rx=430,rw=170,rowH=26;
+  const short=c=>C[c].name.replace(' (ECM)','').replace('Crankshaft position sensor','Crank sensor').replace('Coolant temperature sensor','Coolant temp sensor').replace('Throttle position sensor','Throttle sensor').replace('Fuse and relay box','Fuse / relay box');
+  const block=(c,pins,x,y,w,right)=>{const h=30+pins.length*rowH;s+='<rect class="blk" x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6"/><text class="bt" x="'+(x+10)+'" y="'+(y+18)+'">'+esc(short(c))+(S.unplug[c]?' (unplugged)':'')+'</text>';
+    pins.forEach((k,i)=>{const py=y+40+i*rowH;const px=right?x:x+w;XY[c+'.'+k]=[px,py];
+      const lab=c==='ecu'?k+' '+C.ecu.pins[k].replace(/^E\d+ /,''):C[c].pins[k];
+      s+='<text x="'+(right?x+14:x+w-14)+'" y="'+(py+4)+'" text-anchor="'+(right?'start':'end')+'">'+esc(lab)+'</text>'});return h};
+  let y=10;for(const [c,pins] of cc.src){y+=block(c,pins,lx,y,lw,false)+14}
+  let y2=10;for(const [c,pins] of cc.dst){y2+=block(c,pins,rx,y2,rw,true)+10}
+  const H=Math.max(y,y2)+(cc.note?26:6);
+  let wires='',dots='';
+  const L=cc.wires.map(wid=>{const w=W.find(x=>x.id===wid);let a=XY[w.a],b=XY[w.b];if(!a||!b)return null;if(a[0]>b[0])[a,b]=[b,a];return {wid,w,a,b,src:a[0]<rx?(a===XY[w.a]?w.a:w.b):w.a}}).filter(Boolean);
+  const groups={};L.forEach(o=>{const k=o.a.join(',');(groups[k]=groups[k]||[]).push(o)});
+  const gl=Object.values(groups).sort((g1,g2)=>g1[0].a[1]-g2[0].a[1]);
+  const x0=lx+lw+28,x1=rx-28,n=gl.length,gap=n>1?Math.min(46,(x1-x0)/(n-1)):0;
+  gl.forEach((g,i)=>{const down=g[0].b[1]>=g[0].a[1];const lane=g.length>1?x0:(down?x0+(n-1-i)*gap:x0+i*gap)+(gl.some(h=>h.length>1)&&g.length===1?gap*0.6:0);
+    g.forEach(o=>{const d='M'+o.a[0]+' '+o.a[1]+' H'+lane+' V'+o.b[1]+' H'+o.b[0];
+      wires+='<path class="whit" data-wire="'+o.wid+'" d="'+d+'"/><path class="wire'+(S.selWire===o.wid?' sel':'')+'" d="'+d+'" stroke="'+o.w.c+'"/>'});
+    if(g.length>1)g.forEach(o=>{dots+='<circle cx="'+lane+'" cy="'+o.b[1]+'" r="4" fill="'+o.w.c+'"/>'});
+    const o=g[0],my=(o.a[1]+(g.length>1?g[g.length-1].b[1]:o.b[1]))/2;
+    wires+='<rect x="'+(lane-14)+'" y="'+(my-8)+'" width="28" height="15" rx="3" fill="#f3f0e8"/><text x="'+lane+'" y="'+(my+4)+'" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#444">'+o.w.n+'</text>'});
+  wires+=dots;
+  let pins='';for(const p in XY){const [px,py]=XY[p];pins+='<g class="dpin'+(S.probe.red===p?' r':'')+(S.probe.black===p?' k':'')+'" data-pp="'+p+'"><circle cx="'+px+'" cy="'+py+'" r="6.5"/><title>'+esc(pinName(p))+'</title></g>'}
+  const note=cc.note?'<text x="'+lx+'" y="'+(H-8)+'" style="font-size:11.5px;fill:#555">'+esc(cc.note)+'</text>':'';
+  $('paper').innerHTML='<svg viewBox="0 0 '+(rx+rw+16)+' '+H+'" role="group" aria-label="'+esc(cc.name)+' circuit">'+s+wires+pins+note+'</svg>';
+  const f=$('diagFoot');
+  if(S.selWire){const w=W.find(x=>x.id===S.selWire);f.innerHTML='<span><b>'+esc(w.n)+'</b> wire from '+esc(pinName(w.a))+' to '+esc(pinName(w.b))+'. A good wire reads under 0.5 Ω end to end.</span><button class="btn small" type="button" data-act="repairwire">Repair this wire</button>'}
+  else f.innerHTML='<span class="small">Click a wire to select it. Drag a probe onto any pin, or click a pin.</span>';
+}
+$('paper').addEventListener('click',e=>{const w=e.target.closest('[data-wire]');if(w){S.selWire=w.dataset.wire;drawDiag()}});
+
+/* ================= road test ================= */
+const RATIO=[0,118,68,47,36,29],DRV={brake:false,off:0,lastMsg:0};
+function driveTarget(idleTarget,dt,misN){
+  const fire=(4-misN)/4,lowPres=S.pres<2.3?0.55:1;
+  const P=(S.thr/100)*fire*lowPres*(S.rpm>1300?1:0.7);
+  const acc=P*15*[0,1.7,1.2,0.9,0.68,0.52][S.gear]-0.00032*S.speed*S.speed-0.35-(DRV.brake?28:0);
+  S.speed=Math.max(0,Math.min(190,S.speed+acc*dt));
+  let t=Math.max(S.speed*RATIO[S.gear],idleTarget+(S.speed<12?S.thr*28:0));
+  const up=S.thr>60?5200:2700;
+  if(S.speed*RATIO[S.gear]>up&&S.gear<5)S.gear++;else if(S.speed*RATIO[S.gear]<1250&&S.gear>1)S.gear--;
+  if(t>6300)t=6300-Math.random()*400;
+  const now=Date.now();if(misN&&S.thr>35&&now-DRV.lastMsg>2500){DRV.lastMsg=now;$('driveMsg').textContent='It stutters and jerks under load.'}
+  else if(S.thr>35&&S.pres<2.3&&now-DRV.lastMsg>2500){DRV.lastMsg=now;$('driveMsg').textContent='It bogs down and won’t pull properly.'}
+  return t;
+}
+function endDrive(){S.drive=false;S.speed=0;S.gear=1;if($('driveBtn'))$('driveBtn').textContent='Drive off'}
+$('driveBtn').onclick=()=>{audioInit();if(S.drive){if(S.speed>5){$('driveMsg').textContent='Slow down to a stop first (hold the brake).';return}endDrive();$('driveMsg').textContent='Parked. Road test finished.';return}
+  if(!running()){$('driveMsg').textContent='Start the engine first.';return}S.drive=true;S.gear=1;$('driveBtn').textContent='Pull over';$('driveMsg').textContent='Driving. Push the throttle slider up to accelerate.'};
+const bk=$('brakeBtn');bk.addEventListener('pointerdown',e=>{e.preventDefault();DRV.brake=true});addEventListener('pointerup',()=>DRV.brake=false);addEventListener('pointercancel',()=>DRV.brake=false);
+const PUFFS=[];
+function drawRoad(dt){
+  const cv=$('road'),x=cv.getContext('2d'),w=cv.width,h=cv.height,hz=h*0.42;
+  let g=x.createLinearGradient(0,0,0,hz);g.addColorStop(0,'#26405e');g.addColorStop(1,'#8aa6bf');x.fillStyle=g;x.fillRect(0,0,w,hz);
+  x.fillStyle='#4b6b3a';x.fillRect(0,hz,w,h-hz);
+  x.fillStyle='#3a3d42';x.beginPath();x.moveTo(w*0.47,hz);x.lineTo(w*0.53,hz);x.lineTo(w*0.98,h);x.lineTo(w*0.02,h);x.fill();
+  DRV.off=(DRV.off+S.speed*dt*0.06)%1;
+  for(let i=0;i<14;i++){const z=((i+DRV.off)/14);const zz=z*z;const y=hz+(h-hz)*zz,y2=hz+(h-hz)*Math.min(1,((i+DRV.off+0.45)/14)**2);if(i%2)continue;const ww=2+zz*14;x.fillStyle='#e8e2cf';x.fillRect(w/2-ww/2,y,ww,y2-y)}
+  for(let i=0;i<10;i++){const z=((i+DRV.off*1.4)%10)/10,zz=z*z,y=hz+(h-hz)*zz;for(const side of [-1,1]){const px=w/2+side*(w*0.03+zz*w*0.56);x.fillStyle='#ddd';x.fillRect(px-1-zz*3,y-6-zz*40,2+zz*6,6+zz*40)}}
+  // exhaust: white vapour when cold, black smoke when very rich
+  const run=running(),rich=run&&ecuEctC()<-20,cold=run&&S.temp<45;
+  if((rich||cold)&&Math.random()<0.5)PUFFS.push({x:w*0.86,y:h*0.93,r:10,a:rich?0.55:0.28,c:rich?'30,30,32':'235,238,242',vx:-(30+S.speed*1.5),vy:-8});
+  for(let i=PUFFS.length-1;i>=0;i--){const p=PUFFS[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.r+=24*dt;p.a-=0.35*dt;if(p.a<=0){PUFFS.splice(i,1);continue}x.fillStyle='rgba('+p.c+','+p.a+')';x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fill()}
+  // bonnet
+  x.fillStyle='#0f2340';x.beginPath();x.moveTo(0,h);x.quadraticCurveTo(w/2,h*0.8,w,h);x.fill();
+  $('spdTxt').textContent=Math.round(S.speed);$('gearTxt').textContent=S.drive?S.gear:'P';$('drpm').textContent=Math.round(S.rpm/10)*10;
+}
+
+/* ================= fuel gauge ================= */
+(function(){let s='';for(let i=0;i<=6;i++){const a=Math.PI*(1.15-i/6*1.3);const c=Math.cos(a),sn=Math.sin(a);s+='<line x1="'+(110+c*80)+'" y1="'+(110-sn*80)+'" x2="'+(110+c*92)+'" y2="'+(110-sn*92)+'" stroke="#222" stroke-width="3"/><text x="'+(110+c*66)+'" y="'+(115-sn*66)+'" text-anchor="middle" font-size="14" font-weight="700" fill="#222">'+i+'</text>'}
+  $('fTicks').innerHTML=s+'<path d="'+arc(2.8,3.2)+'" stroke="#2e9e4f" stroke-width="8" fill="none"/>';
+  function arc(a0,a1){const p=v=>{const a=Math.PI*(1.15-v/6*1.3);return [110+Math.cos(a)*86,110-Math.sin(a)*86]};const [x0,y0]=p(a0),[x1,y1]=p(a1);return 'M'+x0+' '+y0+' A86 86 0 0 1 '+x1+' '+y1}})();
+function drawFuel(){const v=S.gauge?S.pres:0;const a=Math.PI*(1.15-Math.min(6,v)/6*1.3);$('fNeedle').setAttribute('x2',110+Math.cos(a)*78);$('fNeedle').setAttribute('y2',110-Math.sin(a)*78);
+  $('fRead').textContent=S.gauge?v.toFixed(1)+' bar':'Not connected';$('fuelFit').textContent=S.gauge?'Disconnect gauge':'Connect to fuel rail test port'}
+$('fuelFit').onclick=()=>{S.gauge=!S.gauge;addWork(S.gauge?'Fit fuel pressure gauge':'',S.gauge?5:0);drawFuel()};
+
+/* ================= job, invoice, actions ================= */
+const elapsedMin=()=>(Date.now()-S.t0)/60000;
+function invoice(){const rows=[['Diagnosis ('+Math.max(1,Math.round(elapsedMin()))+' min at $140/h)',Math.max(0.25,elapsedMin()/60)*140]];
+  S.labour.filter(l=>l[0]).forEach(l=>rows.push([l[0]+' ('+l[1]+' min)',l[1]/60*140]));S.parts.forEach(p=>rows.push([p[0],p[1]]));return rows}
+function addWork(task,mins,part,price){if(!task)return;S.labour.push([task,mins]);if(part)S.parts.push([part,price])}
+function faultOn(f){const t={cf:{},pf:{},wf:{}};f.set(t);return ['cf','pf','wf'].every(k=>Object.keys(t[k]).every(x=>S[k][x]!==undefined))}
+const BENCH={inj:['The coil reads O.L (spec about 13 Ω). This one was faulty.','The coil reads 13.2 Ω, in spec. This one was fine.'],
+  coil:['The primary reads O.L (spec about 0.6 Ω). This one was faulty.','The primary reads 0.6 Ω, in spec. This one was fine.'],
+  ckp:['The winding reads O.L (spec about 820 Ω). This one was faulty.','The winding reads 820 Ω, in spec. This one was fine.'],
+  plug:['Electrode worn away, gap 1.6 mm. This one was faulty.','Tan coloured, gap 0.8 mm. This one was fine.'],
+  bat:['Load test: drops to 7.6 V. Worn out.','Load test: holds 10.1 V. This one was fine.'],
+  efi:['The element is melted through. Blown.','The element is intact. This one was fine.'],
+  main:['It doesn’t switch when powered on the bench. Faulty.','Clicks and switches on the bench. This one was fine.'],
+  fp:['It doesn’t switch when powered on the bench. Faulty.','Clicks and switches on the bench. This one was fine.'],
+  alt:['Spun up on the bench, it puts out nothing. Faulty.','Charges at 14.1 V on the bench. This one was fine.'],
+  tstat:['In hot water it stays wide open. Faulty.','Opens at 85 °C in hot water. This one was fine.'],
+  hose:['There’s a split along the underside. That was the leak.','No splits or cracks. This one was fine.'],
+  filter:['Fuel barely trickles through. Blocked.','Fuel flows freely. This one was fine.'],
+  other:['It tests out of spec. Faulty.','It tests in spec. This one was fine.']};
+function toTray(kind,name,bad){S.tray.push({kind,name,bad});drawTray()}
+function drawTray(){const t=$('tray');if(!S.tray.length){t.hidden=true;return}t.hidden=false;
+  t.innerHTML='<span class="tl">Old parts</span>'+S.tray.map((x,i)=>'<button type="button" class="tchip" data-tray="'+i+'">'+esc(x.name)+'</button>').join('')}
+$('tray').addEventListener('click',e=>{const b=e.target.closest('[data-tray]');if(!b)return;const x=S.tray[+b.dataset.tray],note=(BENCH[x.kind]||BENCH.other)[x.bad?0:1];
+  modal('<h2>Old part: '+esc(x.name)+'</h2><div class="result '+(x.bad?'ok':'bad')+'">'+esc(note)+'</div><p class="small" style="margin-top:10px">'+(x.bad?'Good call.':'Measure before you replace: a part that tests fine is rarely the problem.')+'</p><div class="acts"><button class="btn" type="button" data-closemodal>Close</button></div>')});
+function replaceComp(id){
+  const c=C[id];
+  if(!c.noPlug&&!S.unplug[id])return say('Unplug the '+c.name.toLowerCase()+' before removing it.');
+  if(['ecu','bat','alt','tstat','hose'].includes(id)&&S.key!=='off')return say('Turn the key off first.');
+  const bad=!!S.cf[id];delete S.cf[id];S.newParts.add(id);addWork('Replace '+c.name.toLowerCase(),c.mins,c.name,c.price);
+  toTray(id.replace(/\d$/,''),c.name,bad);
+  if(id==='bat'){S.jump=false;S.drain=0;syncJump()}
+  say(c.name+' replaced.');S.found[id]=null;sfx('plug');
+}
+function act(a,el){
+  audioInit();const id=S.sel;
+  if(a==='autoprobe'){S.mm='vdc';$('knob').style.transform='rotate(0deg)';const inWin=pp=>$('compBody').querySelector('[data-pp="'+pp+'"]');if(el.dataset.black){S.probe.black=el.dataset.black;P.black.el=inWin(el.dataset.black)}if(el.dataset.red){S.probe.red=el.dataset.red;P.red.el=inWin(el.dataset.red)}if($('w-meter').hidden)openWin('w-meter');S.leads='meter';sfx('probe');render(true);drawGuide();return}
+  if(a==='jump'){$('jumpBtn').click();drawComp();return}
+  if(a==='plug'){S.unplug[id]=!S.unplug[id];if(!S.unplug[id])for(const w of ['red','black'])if(S.probe[w]&&isPart(S.probe[w])&&S.probe[w].startsWith(id+'.'))S.probe[w]=null;sfx(S.unplug[id]?'unplug':'plug');say(C[id].name+(S.unplug[id]?' unplugged.':' plugged back in.'))}
+  if(a==='replace')replaceComp(id);
+  if(a==='replacepart'){const k=el.dataset.part,p=C.fuse.parts[k];if(S.key!=='off')return say('Turn the key off before swapping fuses or relays.');const bad=!!S.pf[k];delete S.pf[k];S.flog={};addWork('Replace '+p[0],p[2],p[0],p[1]);toTray(k,p[0],bad);say(p[0]+' replaced.');S.found.fuse=null;sfx('plug')}
+  if(a==='inspect'){const k=el.dataset.part,p=C.fuse.parts[k];addWork('Check '+p[0],2);sfx('unplug');
+    S.found.fuse=k==='efi'?(S.pf.efi?'EFI fuse: the element is melted through. Blown.':'EFI fuse: element intact. Good.'):p[0]+': no visible damage. A relay can look fine and still fail, so test its output with the meter while it should be on.'}
+  if(a==='inspectplug'||a==='replaceplug'){const n=el.dataset.n;if(!S.unplug['coil'+n])return say('Unplug and lift ignition coil '+n+' first.');
+    if(a==='inspectplug'){addWork('Remove and check spark plug '+n,8);S.found['coil'+n]=S.cf['plug'+n]==='worn'?'Spark plug '+n+': electrode badly worn, gap about 1.6 mm (spec 0.8 mm).':'Spark plug '+n+': light tan colour, gap 0.8 mm. Good.'}
+    else{const bad=!!S.cf['plug'+n];delete S.cf['plug'+n];S.newParts.add('coil'+n);addWork('Replace spark plug '+n,12,'Spark plug '+n,16);toTray('plug','Spark plug '+n,bad);say('Spark plug '+n+' replaced.');S.found['coil'+n]=null}}
+  if(a==='filter'){if(S.key!=='off')return say('Turn the key off first.');const bad=!!S.cf.filter;delete S.cf.filter;addWork('Replace fuel filter',25,'Fuel filter',30);toTray('filter','Fuel filter',bad);say('Fuel filter replaced.');sfx('plug')}
+  if(a==='feelhose'){addWork('Feel top radiator hose',1);const T=Math.round(S.temp);
+    S.found.tstat=!running()?'The engine is off. Start it and let it warm up, then feel the hose.':S.cf.tstat&&T<70?'The top hose is already warm, but the engine is only '+T+' °C.'+(HINTS?' Coolant is flowing through the radiator too early: the thermostat is stuck open.':''):T<80?'The top hose is still cold at '+T+' °C.'+(HINTS?' The thermostat is shut while the engine warms up. That’s normal.':''):'The top hose is hot.'+(HINTS?' The thermostat has opened at full temperature. Normal.':'')}
+  if(a==='spray'){addWork('Spray test around intake',3);
+    S.found.hose=!running()?'Start the engine first. You listen for the idle to change while you spray.':S.cf.hose?'The idle jumps when you spray near the clamp on the duct.'+(HINTS?' There’s a split there: that’s the leak.':''):'The idle doesn’t change.'+(HINTS?' No leak here.':'');if(running()&&S.cf.hose)S.rpm+=250}
+  if(a==='repairwire'){const w=S.selWire;const bad=S.wf[w]!==undefined;delete S.wf[w];addWork('Repair '+W.find(x=>x.id===w).n+' wire, '+pinName(W.find(x=>x.id===w).b).split(' pin')[0],20,'Wire repair kit',12);if(!bad)S.badRepairs=(S.badRepairs||0)+1;say('Wire repaired.');drawDiag()}
+  if(S.mode==='sandbox')syncSandbox();
+  drawHotspots();drawComp();render(true);
+}
+function modal(html){$('modalCard').innerHTML=html;$('modal').hidden=false}
+$('modal').addEventListener('click',e=>{if(e.target.id==='modal'||e.target.closest('[data-closemodal]'))$('modal').hidden=true;
+  const n=e.target.closest('[data-newjob]');if(n){$('modal').hidden=true;const [m,l]=n.dataset.newjob.split(':');newJob(m,+l||0)}
+  if(e.target.closest('[data-answer]')){$('ans').innerHTML='<div class="result bad">'+S.faults.map(id=>{const f=FAULTS.find(x=>x.id===id);return '<b>The fault:</b> '+esc(f.title)+'.<br><b>Fix:</b> '+esc(f.fix)}).join('<br><br>')+'</div>'}});
+$('modal').addEventListener('change',e=>{const c=e.target.closest('[data-sbf]');if(!c)return;c.checked?S.sandbox.add(c.dataset.sbf):S.sandbox.delete(c.dataset.sbf);applySandbox()});
+const LEVELS={1:['Level 1: Apprentice','One fault from the easier set. Hints stay on.'],2:['Level 2: Technician','Any one fault. Hints are your choice.'],3:['Level 3: Master','Two faults in different systems at once. Hints are off.']};
+function levelPicker(){modal('<h2>Pick a level</h2>'+[1,2,3].map(l=>'<button class="lvl" type="button" data-newjob="challenge:'+l+'"><b>'+LEVELS[l][0]+'</b><span>'+LEVELS[l][1]+'</span></button>').join('')+'<div class="acts"><button class="btn" type="button" data-closemodal>Cancel</button></div>')}
+function sandboxPicker(){
+  modal('<h2>Sandbox: pick faults</h2><p class="small">Tick any faults, as many as you like. They apply straight away, so you can watch the readings change. Fixing a part unticks it.</p><div class="sbl">'+
+    FAULTS.map(f=>'<label><input type="checkbox" data-sbf="'+f.id+'"'+(S.sandbox.has(f.id)?' checked':'')+'> '+esc(f.title)+'</label>').join('')+'</div><div class="acts"><button class="btn primary" type="button" data-closemodal>Done</button></div>')}
+function applySandbox(){const T=S.temp;S.cf={};S.pf={};S.wf={};for(const id of S.sandbox)FAULTS.find(f=>f.id===id).set(S);S.temp=T;S.faults=[...S.sandbox];S.codes.clear();S.mis=[0,0,0,0];S.drain=0;
+  $('woShort').textContent=S.sandbox.size?'Sandbox: '+S.sandbox.size+' fault'+(S.sandbox.size>1?'s':'')+' on. Click to change.':'Sandbox: no faults on. Click to pick some.';drawHotspots();if(S.sel)drawComp();render(true)}
+function syncSandbox(){for(const id of [...S.sandbox]){if(!faultOn(FAULTS.find(f=>f.id===id)))S.sandbox.delete(id)}S.faults=[...S.sandbox];$('woShort').textContent=S.sandbox.size?'Sandbox: '+S.sandbox.size+' fault'+(S.sandbox.size>1?'s':'')+' on. Click to change.':'Sandbox: no faults on. Click to pick some.'}
+function jobCard(){
+  if(S.mode==='sandbox')return sandboxPicker();
+  const fs=S.faults.map(id=>FAULTS.find(x=>x.id===id));
+  modal('<h2>Job card '+'#'+S.woNo+(S.level?' · '+LEVELS[S.level][0]:'')+'</h2>'+(S.mode==='practice'?'<p>Practice bay. This car has no faults. Measure everything and learn what good readings look like. Try Sandbox to switch faults on yourself, or Challenge for a real job.</p>':
+    '<p class="small">Small 4-cylinder petrol, port injection. Customer says:</p>'+fs.map(f=>'<div class="q">“'+esc(f.text)+'”</div>').join('')+'<p class="small">Find '+(fs.length>1?'both faults':'the fault')+' and fix '+(fs.length>1?'them':'it')+' with as few parts as possible. A road test helps with faults that only show under load. Clear the codes, plug everything back in, key off, then hand the car back.</p>')+
+    '<div class="acts"><button class="btn primary" type="button" data-closemodal>Start work</button>'+(S.mode==='challenge'?'<button class="btn" type="button" data-answer>Show the answer</button>':'')+'</div><div id="ans"></div><p class="small" style="margin-top:12px">Made-up car for learning. Not repair advice for a real vehicle.</p>');
+}
+$('jobBtn').onclick=jobCard;
+$('invBtn').onclick=()=>{const done=S.labour.filter(l=>l[0]);
+  modal('<h2>Work done</h2>'+(done.length?'<table>'+done.map(l=>'<tr><td>'+esc(l[0])+'</td><td>'+l[1]+' min</td></tr>').join('')+'</table>':'<p>Nothing yet.</p>')+'<p class="small">Parts replaced: '+S.parts.length+'. Old parts go in the tray at the bottom of the bay: click one to bench-test it.</p><div class="acts"><button class="btn" type="button" data-closemodal>Close</button></div>')};
+function finishJob(){
+  if(S.mode!=='challenge'){modal('<h2>'+(S.mode==='sandbox'?'Sandbox':'Practice bay')+'</h2><p>There is nothing to hand back here. Challenge gives you a car with a fault and grades the job.</p><div class="acts"><button class="btn primary" type="button" data-newjob="challenge:1">Start a level 1 challenge</button><button class="btn" type="button" data-closemodal>Keep going</button></div>');return}
+  const left=[],still=S.faults.filter(id=>faultOn(FAULTS.find(f=>f.id===id)));
+  if(still.length)left.push(S.faults.length>1&&still.length<S.faults.length?'You fixed one fault, but there’s still another. Start the engine and road test it.':'The fault is still there. Start the engine and check.');
+  if(Object.values(S.unplug).some(Boolean))left.push('A connector is still unplugged.');
+  if(S.codes.size)left.push('Fault codes are still stored. Clear them with the scan tool.');
+  if(S.jump)left.push('The jump pack is still connected.');
+  if(S.gauge)left.push('The fuel pressure gauge is still fitted.');
+  if(S.drive)left.push('Finish the road test first.');
+  if(S.key!=='off')left.push('Turn the key off.');
+  if(left.length){modal('<h2>Not ready yet</h2><div class="result bad"><ul>'+left.map(l=>'<li>'+esc(l)+'</li>').join('')+'</ul></div><div class="acts"><button class="btn" type="button" data-closemodal>Back to work</button></div>');return}
+  const wrong=S.tray.filter(x=>!x.bad).length+(S.badRepairs||0),mins=Math.round(elapsedMin()),tgt={1:10,2:12,3:20}[S.level]||12;
+  const grade=wrong===0&&mins<=tgt?'A':wrong<=1&&mins<=tgt*2?'B':wrong<=3?'C':'D';
+  try{const k='cds-best-'+S.level,b=localStorage.getItem(k);if(!b||grade<b)localStorage.setItem(k,grade)}catch(e){}
+  modal('<h2>Job done. Grade '+grade+'</h2><div class="result ok">'+S.faults.map(id=>'Fault: '+esc(FAULTS.find(f=>f.id===id).title)+'.').join('<br>')+'<br>Time '+mins+' min (target '+tgt+'). '+(wrong?wrong+' part'+(wrong>1?'s':'')+' or repair'+(wrong>1?'s':'')+' that weren’t needed.':'Nothing replaced that wasn’t needed.')+'</div><div class="acts"><button class="btn primary" type="button" data-newjob="challenge:'+S.level+'">Next car, same level</button>'+(S.level<3?'<button class="btn" type="button" data-newjob="challenge:'+(S.level+1)+'">Try level '+(S.level+1)+'</button>':'')+'<button class="btn" type="button" data-newjob="practice">Practice bay</button></div>');
+}
+$('finishBtn').onclick=finishJob;
+function pickFaults(level){
+  const any=()=>FAULTS[Math.floor(Math.random()*FAULTS.length)];
+  if(level===1){const id=EASY[Math.floor(Math.random()*EASY.length)];return [id]}
+  if(level===3){for(let i=0;i<200;i++){const a=any(),b=any();if(a.id!==b.id&&FSYS[a.id]!==FSYS[b.id]&&!(NOSTART.includes(a.id)&&NOSTART.includes(b.id)))return [a.id,b.id]}}
+  return [any().id];
+}
+let hintsBefore=null;
+function newJob(mode,level){
+  if(S&&S.drive)endDrive();
+  S=fresh(mode);S.level=mode==='challenge'?(level||2):0;
+  if(mode==='challenge'){S.faults=pickFaults(S.level);for(const id of S.faults)FAULTS.find(f=>f.id===id).set(S);S.fault=S.faults[0]}
+  // hints by level
+  const hb=$('hintBtn');if(hintsBefore!==null&&!(mode==='challenge'&&S.level!==2)){setHints(hintsBefore);hintsBefore=null}
+  if(mode==='challenge'&&S.level!==2){if(hintsBefore===null)hintsBefore=HINTS;setHints(S.level===1)}
+  hb.disabled=mode==='challenge'&&S.level!==2;hb.title=hb.disabled?'Set by the level':'Plain-English explanations of your readings';
+  $('woNo').textContent='#'+S.woNo;
+  $('woShort').textContent=mode==='practice'?'Practice bay: no faults. Learn the good readings.':mode==='sandbox'?'Sandbox: no faults on. Click to pick some.':(S.level?'L'+S.level+' · ':'')+S.faults.map(id=>'“'+FAULTS.find(f=>f.id===id).text+'”').join(' + ');
+  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===mode));
+  $('pedal').value=0;$('pedalV').textContent='0%';say('Key is off.');SCAN.scr='off';SCAN.sel=0;SC.frame=null;
+  $('knob').style.transform='rotate(0deg)';syncJump();drawTray();
+  document.querySelectorAll('.win').forEach(w=>{if(w.id==='w-comp'||w.id==='w-drive')w.hidden=true});syncRail();
+  drawHotspots();drawScan();drawFuel();if(!$('w-diag').hidden)drawDiag();render(true);
+  if(mode==='challenge'||mode==='sandbox')jobCard();
+}
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{const m=b.dataset.mode;if(m==='challenge')levelPicker();else newJob(m)});
+
+/* ================= key, pedal, jump ================= */
+function keyOn(){if(S.key!=='off')return;S.key='on';if(ecuOn()){S.primeUntil=Date.now()+2000;sfx('relay');say('Ignition on. '+(pumping()?'You hear the fuel pump run for 2 seconds.':'You hear the relay click, but no fuel pump.'))}else say('Ignition on. Nothing clicks.');S.flood=Math.min(S.flood,1)}
+function setKey(k){audioInit();hideHint();
+  if(k==='off'){if(S.key!=='off'){S.key='off';S.rpm=Math.min(S.rpm,800);say('Key is off.');click(0,0.3,1500,0.02)}}
+  else keyOn();
+  if(!$('w-scan').hidden)drawScan();render(true)}
+document.querySelectorAll('[data-key]').forEach(b=>b.onclick=()=>setKey(b.dataset.key));
+function startDown(e){e&&e.preventDefault();audioInit();hideHint();if(running())return;if(S.key==='off')keyOn();S.key='crank';S.crankSince=Date.now();S.crankNoSig=0;S.holdStart=true;say('Cranking…');render(true)}
+function startUp(){if(!S.holdStart)return;S.holdStart=false;if(cranking()){S.key='on';say(crankMsg?'Released the key. '+crankMsg:'Released the key.')}render(true)}
+$('startBtn').addEventListener('pointerdown',startDown);
+addEventListener('pointerup',startUp);addEventListener('pointercancel',startUp);
+$('startBtn').addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat)startDown(e)});
+$('startBtn').addEventListener('keyup',e=>{if(e.key==='Enter'||e.key===' ')startUp()});
+$('barrel').addEventListener('pointerdown',e=>{const r=$('barrel').getBoundingClientRect();if(e.clientX>r.left+r.width*0.7&&e.clientY>r.top+r.height*0.45){startDown(e)}else setKey(S.key==='off'?'on':'off')});
+$('pedal').oninput=()=>{S.thr=+$('pedal').value;$('pedalV').textContent=S.thr+'%'};
+function syncJump(){$('jumpBtn').setAttribute('aria-pressed',S.jump)}
+$('jumpBtn').onclick=()=>{S.jump=!S.jump;syncJump();sfx(S.jump?'plug':'unplug');say(S.jump?'Jump pack clamped onto the battery.':'Jump pack removed.');render(true)};
+$('soundBtn').onclick=()=>{audioInit();setSound(!A.on)};
+$('hintBtn').onclick=()=>setHints(!HINTS);
+function hideHint(){$('hint').hidden=true;try{localStorage.setItem('cds-hint','1')}catch(e){}}
+$('hintX').onclick=hideHint;
+$('helpBtn').onclick=()=>modal('<h2>How it works</h2><ol><li><b>Practice</b> is a healthy car. <b>Sandbox</b> lets you switch any faults on and watch what changes. <b>Challenge</b> has three levels, from one easy fault with hints to two faults with hints off.</li><li>Read the job card at the top. Turn the key to ON and listen, then hold START to crank.</li><li>Use the scan tool for fault codes, live data and fuel trim. The road test shows faults that only appear under load.</li><li>Click a part in the engine bay to open it. Drag the red and black probe tips onto pins, or click a pin.</li><li>Volts: black on battery −. Resistance: unplug first and measure the part side, or unplug both ends to test a wire.</li><li>Replaced parts go in the Old parts tray. Click one to bench-test it and see if it really was faulty.</li><li>Fix it, clear the codes, plug everything back in, key off, then hand the car back.</li></ol><p class="small">Drag to move around the bay, scroll or pinch to zoom. The – button on a window minimises it.</p><p class="small">A simplified simulator. The car, readings and faults are made up and don’t match any specific vehicle. On a real car, follow the manufacturer’s repair information and safety rules. MyToolPad accepts no responsibility for work done on a vehicle.</p><div class="acts"><button class="btn primary" type="button" data-closemodal>OK</button></div>');
+
+/* ================= render loop ================= */
+const TC={x:60,y:54,R:44};
+const tAng=r=>(210-Math.min(7000,Math.max(0,r))/7000*240)*Math.PI/180;
+const tPt=(r,R)=>{const a=tAng(r);return [TC.x+Math.cos(a)*R,TC.y-Math.sin(a)*R]};
+const tArc=(r0,r1,R)=>{const [x0,y0]=tPt(r0,R),[x1,y1]=tPt(r1,R);return 'M'+x0.toFixed(2)+' '+y0.toFixed(2)+' A'+R+' '+R+' 0 '+((r1-r0)/7000*240>180?1:0)+' 1 '+x1.toFixed(2)+' '+y1.toFixed(2)};
+(function(){$('tArc').setAttribute('d',tArc(0,7000,TC.R));$('tRed').setAttribute('d',tArc(6000,7000,TC.R));
+  let s='';for(let i=0;i<=14;i++){const r=i*500,big=i%2===0,[x0,y0]=tPt(r,TC.R-(big?8:5)),[x1,y1]=tPt(r,TC.R-2);
+    s+='<line x1="'+x0.toFixed(2)+'" y1="'+y0.toFixed(2)+'" x2="'+x1.toFixed(2)+'" y2="'+y1.toFixed(2)+'" stroke="'+(r>=6000?'#ff6b5e':'#cfd6dd')+'" stroke-width="'+(big?1.8:1)+'"/>';
+    if(big){const [tx,ty]=tPt(r,TC.R-16);s+='<text x="'+tx.toFixed(1)+'" y="'+(ty+3.5).toFixed(1)+'" text-anchor="middle" font-size="10" font-weight="600" fill="'+(r>=6000?'#ff6b5e':'#cfd6dd')+'">'+(r/1000)+'</text>'}}
+  $('ticks').innerHTML=s+'<text x="60" y="72" text-anchor="middle" font-size="7.5" fill="#6d757e" aria-hidden="true">x1000</text>'})();
+let lastSlow=0;
+function render(force){
+  document.querySelectorAll('[data-key]').forEach(b=>b.setAttribute('aria-pressed',S.key===b.dataset.key||(b.dataset.key==='on'&&(S.key==='run'))));
+  $('startBtn').setAttribute('aria-pressed',cranking());
+  $('keyRot').style.transform='rotate('+(S.key==='off'?-40:cranking()?70:30)+'deg)';$('keyRot').style.transformOrigin='35px 35px';
+  $('tempTxt').textContent=S.key==='off'?'--':(ecuOn()?ecuEctC()+' °C':'--');$('voltTxt').textContent=S.key==='off'?'--':vbat().toFixed(1)+' V';
+  const milOn=S.key!=='off'&&ecuOn()&&(!running()||S.codes.size>0);$('mil').classList.toggle('on',milOn);
+  $('mil').classList.toggle('blink',running()&&S.misNow.some(Boolean)&&S.codes.size>0);
+  $('batl').classList.toggle('on',S.key!=='off'&&(!running()||!!S.cf.alt));
+  const [rd,un,hint]=meterRead();{const mt=$('w-meter').querySelector('h2');mt.textContent=$('w-meter').classList.contains('min')?'Meter '+(S.mm==='off'?'off':rd+' '+un):'Multimeter'}$('lcd').textContent=S.mm==='off'?'':rd;$('lcdU').textContent=un;$('mHint').textContent=hint;
+  $('pRed').textContent='Red: '+(S.probe.red?pinName(S.probe.red):'not connected');$('pBlack').textContent='Black: '+(S.probe.black?pinName(S.probe.black):'not connected');
+  $('scopeOwn').textContent=S.leads==='scope'?'Leads connected':'';
+  if(!$('w-comp').hidden&&(S.sel==='bat'||S.sel==='fuse'))drawGuide();
+  if(!$('w-fuel').hidden)drawFuel();
+  const now=Date.now();
+  if(force||now-lastSlow>500){lastSlow=now;
+    const sec=Math.floor((now-S.t0)/1000);$('clock').textContent=Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');
+    $('invTotal').textContent=S.parts.length;
+    if(SCAN.scr==='live'&&!$('w-scan').hidden)drawScan();
+    if((S.key==='off'||!ecuOn())&&['menu','live','codes','act','cleared'].includes(SCAN.scr)&&!$('w-scan').hidden)drawScan();
+  }
+}
+let shownRpm=0;const SH={t:0,lastKick:0,ph:0,on:true,lastKey:'off',e:{x:0,y:0,vx:0,vy:0},ex:0,ey:0};
+const REDUCED=matchMedia('(prefers-reduced-motion: reduce)').matches;
+function frame(t){
+  shownRpm+=(S.rpm-shownRpm)*0.25;const r=Math.max(0,Math.min(7000,shownRpm));
+  const [nx,ny]=tPt(r,TC.R-6);$('needle').setAttribute('x2',nx.toFixed(2));$('needle').setAttribute('y2',ny.toFixed(2));$('rpmTxt').textContent=(Math.round(r/10)*10)+' rpm';
+  // engine rocks on its mounts (separate layer); the car body stays almost still. Units: screen pixels.
+  const dt=Math.min(0.05,(t-(SH.t||t))/1000);SH.t=t;const E=SH.e;
+  let bx=0,by=0;
+  if(!REDUCED&&SH.on&&dt>0){
+    const run=running(),crank=cranking();
+    if(SH.lastKey!==S.key){if(SH.lastKey==='crank'&&run){E.vy-=34;E.vx+=rnd(-8,8)}else if(SH.lastKey==='run'&&!run){E.vy+=26;E.vx+=rnd(-10,10)}SH.lastKey=S.key}
+    let ty=0,tx=0;
+    if(run){ty=-(S.thr/100)*2.6-Math.max(0,S.rpm-800)/6000*0.8;
+      const misN=S.misNow.reduce((x,y)=>x+y,0);
+      if(misN&&t-SH.lastKick>130+Math.random()*120){E.vy+=(Math.random()<0.5?-1:1)*(10+8*misN);E.vx+=rnd(-6,6)*misN;SH.lastKick=t}}
+    else if(crank){const hz=(S.rpm/60)*2;SH.ph+=dt*hz*Math.PI*2;ty=Math.sin(SH.ph)*(vbat()<9?2.0:2.8);tx=Math.sin(SH.ph*0.5)*0.6}
+    E.vy+=(-260*(E.y-ty)-11*E.vy)*dt;E.y+=E.vy*dt;E.vx+=(-200*(E.x-tx)-10*E.vx)*dt;E.x+=E.vx*dt;
+    let buzz=run?(Math.sin(t*0.057)*0.38+Math.sin(t*0.031)*0.2)*(1+Math.max(0,S.rpm-800)/3000):0;
+    E.y=Math.max(-5,Math.min(5,E.y));E.x=Math.max(-4,Math.min(4,E.x));
+    SH.ex=E.x;SH.ey=E.y+buzz;by=(E.y*0.08)+(crank?Math.sin(SH.ph)*0.15:0);bx=E.x*0.06;
+  }else{SH.ex=SH.ey=0}
+  const eng=$('engLayer');if(eng)eng.style.transform='translate('+(SH.ex/V.s).toFixed(2)+'px,'+(SH.ey/V.s).toFixed(2)+'px) rotate('+(SH.ey*0.05).toFixed(3)+'deg)';
+  $('shake').style.transform='translate('+(bx/V.s).toFixed(2)+'px,'+(by/V.s).toFixed(2)+'px)';
+  // spinning alternator: frame rate follows engine speed
+  {const imgs=$('altSpin').children;if(imgs.length&&(running()||cranking())&&!REDUCED){SH.alt=(SH.alt||0)+(dt||0.016)*Math.min(42,8+S.rpm/60);const k=Math.floor(SH.alt)%imgs.length;if(k!==SH.altK){if(imgs[SH.altK])imgs[SH.altK].classList.remove('on');imgs[k].classList.add('on');SH.altK=k}}}
+  if(!$('w-scope').hidden&&!document.hidden)drawScope();
+  if(!$('w-drive').hidden&&!document.hidden)drawRoad(dt||0.016);
+  drawLeads();audioLoop();
+  requestAnimationFrame(frame);
+}
+
+/* ================= boot ================= */
+try{if(localStorage.getItem('cds-sound')==='0')A.on=false;if(localStorage.getItem('cds-hint'))$('hint').hidden=true}catch(e){}
+setSound(A.on);
+S=fresh('practice');
+try{setHints(localStorage.getItem('cds-hints')!=='0')}catch(e){setHints(true)}
+fetch('/assets/car-sim/bay.json?v=34876ea3').then(r=>r.json()).then(j=>{BAY=j;if(j.acc){const b=j.acc.box,a=$('altSpin');a.style.left=b[0]+'px';a.style.top=b[1]+'px';a.style.width=(b[2]-b[0])+'px';a.style.height=(b[3]-b[1])+'px';a.innerHTML=[...Array(j.acc.frames)].map((_,i)=>'<img src="/assets/car-sim/alt_'+i+'.webp'+new URL($('bayImg').src).search+'" alt=""'+(i?'':' class="on"')+'>').join('')}
+  if(j.engine){const e=j.engine;$('engLayer').style.transformOrigin=((e[0]+e[2])/2)+'px '+(e[1]+(e[3]-e[1])*0.72)+'px'}drawHotspots()}).catch(()=>say('Could not load the engine bay map. Open this page through a web server.'));
+$('bayImg').addEventListener('load',fit);if($('bayImg').complete)fit();
+setBars();newJob('practice');openWin('w-meter');drawScopeCtl();
+setInterval(tick,100);requestAnimationFrame(frame);
+</script>
+</body>
+</html>
