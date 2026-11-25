@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Car Diagnostics Simulator: Free Engine Fault-Finding Practice | MyToolPad</title>
+<meta name="description" content="A free car diagnostics simulator. Use a multimeter, oscilloscope, scan tool and wiring diagram to find and fix engine management faults. Practice and challenge modes."/>
+<link rel="canonical" href="https://www.mytoolpad.com/car-diagnostics-simulator.html"/>
+<meta name="robots" content="index, follow, max-image-preview:large"/>
+<meta name="theme-color" content="#0f0f0f"/>
+<meta property="og:title" content="Car Diagnostics Simulator: Free Engine Fault-Finding Practice | MyToolPad"/>
+<meta property="og:description" content="A free car diagnostics simulator. Use a multimeter, oscilloscope, scan tool and wiring diagram to find and fix engine management faults. Practice and challenge modes."/>
+<meta property="og:url" content="https://www.mytoolpad.com/car-diagnostics-simulator.html"/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="MyToolPad"/>
+<meta property="og:image" content="https://www.mytoolpad.com/og-image.png"/>
+<meta property="og:image:alt" content="MyToolPad logo"/>
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Car Diagnostics Simulator: Free Engine Fault-Finding Practice | MyToolPad"/>
+<meta name="twitter:description" content="A free car diagnostics simulator. Use a multimeter, oscilloscope, scan tool and wiring diagram to find and fix engine management faults. Practice and challenge modes."/>
+<link rel="icon" type="image/svg+xml" href="/icons/icon.svg"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0f0f0f;--surface:#181818;--surface2:#212121;--border:#2a2a2a;--accent:#c8f135;--accent-dim:rgba(200,241,53,.08);--text:#f0ede6;--muted:#5a5a5a;--mid:#888}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;padding-top:52px}
+body::before{content:'';position:fixed;inset:0;opacity:.025;pointer-events:none;z-index:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+[hidden]{display:none!important}
+.page{max-width:900px;margin:0 auto;padding:50px 24px 80px;position:relative;z-index:1}
+.page-title{font-family:'Playfair Display',serif;font-size:36px;font-weight:600;letter-spacing:-1px;margin-bottom:6px}
+.page-title em{color:var(--accent);font-style:normal}
+.page-sub{font-size:14px;color:var(--dim);margin-bottom:32px;font-weight:300;line-height:1.6}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-bottom:16px}
+.fld{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:16px;outline:none;transition:border-color .2s}
+.fld:focus{border-color:var(--accent)}
+select.fld{cursor:pointer}
+.btn{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:border-color .15s,background .15s;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:500}
+.btn.primary:hover{filter:brightness(1.06)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:560px){.grid2,.grid3{grid-template-columns:1fr}}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.12em;color:var(--dim);margin-bottom:8px;display:block}
+.status{font-size:13px;margin:10px 0 0;color:var(--mid);min-height:20px}
+.status.ok{color:var(--ok)}.status.err{color:var(--err)}.status.warn{color:var(--warn)}
+.big{font-size:52px;font-weight:300;letter-spacing:-2.5px;color:var(--accent);line-height:1.05;font-variant-numeric:tabular-nums}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:16px}
+.kpi{background:var(--surface2);border:1px solid var(--border);border-radius:14px;padding:12px 14px}
+.kpi b{display:block;font-size:18px;font-weight:400;letter-spacing:-.3px;font-variant-numeric:tabular-nums}
+.kpi span{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--dim)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{background:none;border:1px solid var(--border);color:var(--mid);border-radius:99px;padding:7px 16px;font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer}
+.tab[aria-pressed=true]{color:var(--accent);border-color:rgba(var(--accent-rgb),.45);background:var(--accent-dim)}
+label.chk{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--text);cursor:pointer;padding:6px 0}
+label.chk input{width:18px;height:18px;accent-color:var(--accent)}
+input[type=range]{accent-color:var(--accent);width:100%}
+.money{position:relative}
+.money span{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:16px;pointer-events:none}
+.money .fld{padding-left:28px}
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl th,.tbl td{padding:9px 8px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
+.tbl th:first-child,.tbl td:first-child{text-align:left;white-space:normal}
+.tbl th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);font-weight:500}
+.tbl tr.total td{font-weight:500;color:var(--text);border-bottom:0}
+.tbl tr.hi td{background:var(--accent-dim)}
+.note{font-size:12.5px;color:var(--dim);line-height:1.6;margin-top:12px}
+.note a{color:var(--accent)}
+.drop{border:2px dashed var(--border);border-radius:16px;padding:40px 20px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+.drop.over{border-color:var(--accent);background:var(--accent-dim)}
+.drop b{display:block;font-size:15px;font-weight:400;color:var(--text)}
+.drop small{display:block;font-size:12px;color:var(--dim);margin-top:6px}
+.res{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.res img{width:84px;height:84px;object-fit:cover;border-radius:10px;background:var(--surface2)}
+.res .meta{flex:1;min-width:180px}
+.res .nm{font-size:14px;word-break:break-all}
+.res .sz{font-size:12px;color:var(--dim);margin-top:4px}
+
+.page{max-width:1360px}
+.sim-top{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:16px}
+.sim-stats{display:flex;gap:8px;flex-wrap:wrap}
+.pill{background:var(--surface);border:1px solid var(--border);border-radius:99px;padding:7px 14px;font-size:13px;color:var(--mid);font-variant-numeric:tabular-nums}
+.pill b{color:var(--text);font-weight:500}
+.wo{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:start}
+.wo h2{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;margin-bottom:6px}
+.wo .cust{font-size:15px;line-height:1.6;color:var(--text)}
+.wo .meta{font-size:12px;color:var(--dim);margin-top:6px}
+@media(max-width:700px){.wo{grid-template-columns:1fr}}
+.sim{display:grid;grid-template-columns:minmax(0,1fr);gap:16px;align-items:start}
+@media(min-width:1080px){.sim{grid-template-columns:minmax(0,7fr) minmax(0,5fr)}}
+.sim .card{margin-bottom:0}
+.vtabs{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}
+.bay svg{width:100%;height:auto;display:block;user-select:none}
+.bay .comp{cursor:pointer}
+.bay .comp .body{fill:var(--surface2);stroke:var(--border-hi);stroke-width:1.5;transition:stroke .15s,fill .15s}
+.bay .comp:hover .body,.bay .comp:focus-visible .body{stroke:var(--accent)}
+.bay .comp.sel .body{stroke:var(--accent);stroke-width:2.5;fill:var(--accent-dim)}
+.bay .comp:focus{outline:none}
+.bay text{font-family:'DM Sans',sans-serif;fill:var(--mid);font-size:11px;pointer-events:none}
+.bay .lbl2{fill:var(--dim);font-size:10px}
+.bay .unplug{fill:var(--err)}
+.bay .newpart{fill:none;stroke:var(--ok);stroke-width:2;stroke-dasharray:3 3}
+.diag{max-height:640px;overflow:auto;border:1px solid var(--border);border-radius:12px;background:var(--surface2)}
+.diag svg{width:100%;min-width:560px;height:auto;display:block}
+.diag text{font-family:'DM Sans',sans-serif;font-size:10.5px;fill:var(--mid)}
+.diag .blk{fill:var(--surface);stroke:var(--border-hi)}
+.diag .blkt{font-size:11.5px;fill:var(--text);font-weight:500}
+.diag .wire{fill:none;stroke-width:2;opacity:.85}
+.diag .hit{fill:none;stroke:transparent;stroke-width:10;cursor:pointer}
+.diag .hit:hover+.wire,.diag .wire.sel{stroke-width:4;opacity:1}
+.pin{cursor:pointer}
+.pin circle{fill:var(--surface);stroke:var(--mid);stroke-width:1.5}
+.pin:hover circle{stroke:var(--accent);stroke-width:2.5}
+.pin.red circle{fill:#e5484d;stroke:#e5484d}
+.pin.blk circle{fill:var(--text);stroke:var(--text)}
+.insp h3{font-size:16px;font-weight:500;margin-bottom:4px}
+.insp p{font-size:13.5px;line-height:1.6;color:var(--mid)}
+.pins{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.pinbtn{background:var(--surface2);border:1px solid var(--border);border-radius:99px;padding:6px 12px;font:inherit;font-size:12.5px;color:var(--text);cursor:pointer}
+.pinbtn:hover{border-color:var(--accent)}
+.pinbtn.red{border-color:#e5484d;box-shadow:inset 0 0 0 1px #e5484d}
+.pinbtn.blk{border-color:var(--text);box-shadow:inset 0 0 0 1px var(--text)}
+.acts{display:flex;gap:8px;flex-wrap:wrap}
+.found{margin-top:10px;font-size:13.5px;padding:10px 12px;border-radius:10px;background:var(--surface2);border:1px solid var(--border)}
+/* dashboard */
+.dash{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;align-items:center}
+.gauge{width:150px;height:110px}
+.gauge text{font-family:'DM Sans',sans-serif;fill:var(--text)}
+.lights{display:flex;gap:8px;margin-top:8px}
+.lamp{font-size:11px;padding:4px 9px;border-radius:6px;border:1px solid var(--border);color:var(--dim)}
+.lamp.on{background:#f5a623;border-color:#f5a623;color:#1a1200}
+.lamp.bat.on{background:#e5484d;border-color:#e5484d;color:#fff}
+.lamp.blink{animation:blink .5s steps(1) infinite}
+@keyframes blink{50%{opacity:.25}}
+@media(prefers-reduced-motion:reduce){.lamp.blink{animation:none}}
+.keys{display:flex;gap:6px;flex-wrap:wrap}
+.keys .tab{padding:8px 14px}
+.msg{font-size:13.5px;color:var(--text);min-height:21px;margin-top:10px;line-height:1.5}
+.tooltabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.meter{background:#10140f;border-radius:14px;padding:16px 18px;color:#d9f99d;font-family:ui-monospace,Menlo,monospace;text-align:right;border:1px solid #2b3326}
+.meter .rd{font-size:44px;letter-spacing:1px;line-height:1.1;font-variant-numeric:tabular-nums}
+.meter .un{font-size:16px;margin-left:6px}
+.meter .hint{font-size:12px;color:#a3b18a;text-align:left;min-height:18px;margin-top:4px;font-family:'DM Sans',sans-serif}
+.probes{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.probe{border:1px solid var(--border);border-radius:12px;padding:10px 12px;cursor:pointer;background:var(--surface2);text-align:left;font:inherit;color:var(--text)}
+.probe small{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px}
+.probe span{font-size:13px}
+.probe.r small{color:#e5484d}.probe.k small{color:var(--mid)}
+.probe[aria-pressed=true]{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim)}
+.scope{background:#0c1210;border-radius:12px;border:1px solid #22302a;width:100%;height:auto;display:block}
+.scan{background:#0f1720;color:#dbeafe;border-radius:12px;padding:14px;font-size:13px;min-height:160px;border:1px solid #1f2b3a}
+.scan table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+.scan td{padding:5px 4px;border-bottom:1px solid #1f2b3a}
+.scan td:last-child{text-align:right}
+.scan .code{color:#fbbf24;font-weight:600;margin-right:8px}
+.fuelg{width:170px;height:130px;display:block;margin:0 auto}
+.inv td{padding:6px 4px;border-bottom:1px solid var(--border);font-size:13px}
+.inv td:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.result{border-radius:14px;padding:16px;margin-top:12px;border:1px solid var(--border);background:var(--surface2);font-size:14px;line-height:1.7}
+.result.ok{border-color:var(--ok)}.result.bad{border-color:var(--err)}
+.result ul{padding-left:18px}
+.help{font-size:13px;color:var(--mid);line-height:1.6;margin-top:10px}
+@media(max-width:600px){#bayView{overflow-x:auto;-webkit-overflow-scrolling:touch}#bayView svg{min-width:520px}.dash{grid-template-columns:1fr;justify-items:start}.card{padding:18px}}
+</style>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Car Diagnostics Simulator", "url": "https://www.mytoolpad.com/car-diagnostics-simulator.html", "description": "A free car diagnostics simulator. Use a multimeter, oscilloscope, scan tool and wiring diagram to find and fix engine management faults. Practice and challenge modes.", "applicationCategory": "EducationalApplication", "operatingSystem": "Any", "browserRequirements": "Requires JavaScript", "isAccessibleForFree": true, "offers": {"@type": "Offer", "price": "0", "priceCurrency": "AUD"}, "publisher": {"@type": "Organization", "name": "MyToolPad", "url": "https://www.mytoolpad.com/"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "Is this the Electude simulator?", "acceptedAnswer": {"@type": "Answer", "text": "No. It is an independent, simplified simulator inspired by workshop training tools like it. The car, circuits and faults are made up for learning, so readings are realistic but not taken from a specific vehicle."}}, {"@type": "Question", "name": "What faults can it have?", "acceptedAnswer": {"@type": "Answer", "text": "Challenge mode picks one of ten: a failed crankshaft sensor, an open coolant sensor wire, a dead injector, a failed ignition coil, a bad fuel pump relay, an open MAP sensor reference wire, a worn spark plug, a worn-out battery, a corroded injector supply wire and a blown EFI fuse."}}, {"@type": "Question", "name": "Why can I not measure resistance?", "acceptedAnswer": {"@type": "Answer", "text": "Resistance is measured with the circuit unpowered. Unplug the part to measure the part itself. To measure a wire, unplug the part at one end and the ECM at the other."}}, {"@type": "Question", "name": "How is the job graded?", "acceptedAnswer": {"@type": "Answer", "text": "You get an A for fixing it in about 12 minutes or less without replacing any part that was not faulty. Replacing good parts and taking longer lowers the grade, just as it would cost a real customer more."}}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "MyToolPad", "item": "https://www.mytoolpad.com/"}, {"@type": "ListItem", "position": 2, "name": "Car Diagnostics Simulator", "item": "https://www.mytoolpad.com/car-diagnostics-simulator.html"}]}</script>
+<script defer src="/_vercel/insights/script.js"></script>
+<!-- mtp:head -->
+<script>(function(){var d=document.documentElement;try{var t=localStorage.getItem("mtp-theme")||"dark",a=localStorage.getItem("mtp-accent")||"lime";if(t==="auto")t=matchMedia("(prefers-color-scheme: light)").matches?"light":"dark";d.setAttribute("data-theme",t);d.setAttribute("data-accent",a)}catch(e){d.setAttribute("data-theme","dark")}})()</script>
+<link rel="stylesheet" href="/assets/site.css?v=dcb89ac6"/>
+<link rel="manifest" href="/manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="/icons/icon-192.png"/>
+<script src="/assets/tools.js?v=dcb89ac6" defer></script>
+<script src="/assets/site.js?v=dcb89ac6" defer></script>
+<!-- /mtp:head -->
+</head>
+<body>
+<!-- mtp:nav -->
+<nav class="mtp-nav" aria-label="Main" data-tool="/car-diagnostics-simulator.html"><a href="/" class="mtp-brand">My<em>Tool</em>Pad</a><div class="mtp-cats"><a href="/study-tools.html" class="active">Study</a><a href="/money-tools.html">Money</a><a href="/image-tools.html">Images</a><a href="/productivity-tools.html">Productivity</a><a href="/everyday-tools.html">Everyday</a><a href="/text-and-dev-tools.html">Text &amp; Dev</a></div><button class="mtp-search-btn" type="button" data-mtp-search aria-label="Search tools"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Search tools</span><kbd>/</kbd></button><button class="mtp-icon-btn" type="button" data-mtp-pin aria-pressed="false" aria-label="Pin this tool to My Pad" title="Pin to My Pad"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></button><button class="mtp-icon-btn" type="button" data-mtp-theme aria-label="Theme and colour" title="Theme and colour"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 3.5a8.5 8.5 0 0 1 0 17z" fill="currentColor"/></svg></button></nav>
+<!-- /mtp:nav -->
+<div class="page">
+  <h1 class="page-title">Diagnostics<em>.</em>Simulator</h1>
+  <div class="page-sub">Find and fix engine faults with a multimeter, oscilloscope, scan tool and wiring diagram. Practice mode has no fault; Challenge picks one at random.</div>
+
+  <div class="sim-top">
+    <div class="tabs" role="group" aria-label="Mode"><button class="tab" type="button" data-mode="practice" aria-pressed="true">Practice (no fault)</button><button class="tab" type="button" data-mode="challenge" aria-pressed="false">Challenge: random fault</button></div>
+    <div class="sim-stats"><span class="pill">Time <b id="clock">0:00</b></span><span class="pill">Invoice <b id="invTotal">$0</b></span><span class="pill">Parts used <b id="partsN">0</b></span></div>
+  </div>
+
+  <div class="card wo" id="workorder">
+    <div>
+      <span class="lbl">Work order · <span id="woNo"></span></span>
+      <h2 id="woTitle">Practice bay</h2>
+      <div class="cust" id="woText"></div>
+      <div class="meta" id="woMeta"></div>
+    </div>
+    <div class="acts" style="justify-content:flex-end">
+      <button class="btn" type="button" id="newJob">New job</button>
+      <button class="btn" type="button" id="giveUp" hidden>Show the fault</button>
+      <button class="btn primary" type="button" id="finish" hidden>Hand the car back</button>
+    </div>
+  </div>
+  <div id="resultBox"></div>
+
+  <div class="sim" style="margin-top:16px">
+    <div>
+      <div class="card bay">
+        <div class="row" style="justify-content:space-between;margin-bottom:10px">
+          <div class="vtabs" role="group" aria-label="View"><button class="tab" type="button" data-view="bay" aria-pressed="true">Engine bay</button><button class="tab" type="button" data-view="diagram" aria-pressed="false">Wiring diagram</button></div>
+          <span style="font-size:12.5px;color:var(--dim)" id="viewHint">Click a part to inspect it, unplug it or probe its pins.</span>
+        </div>
+        <div id="bayView"></div>
+        <div id="diagView" class="diag" hidden></div>
+      </div>
+      <div class="card insp" id="insp" style="margin-top:16px"><h3>Nothing selected</h3><p>Pick a part in the engine bay or a wire in the wiring diagram.</p></div>
+    </div>
+
+    <div>
+      <div class="card">
+        <span class="lbl">Dashboard</span>
+        <div class="dash">
+          <svg class="gauge" viewBox="0 0 150 110" aria-label="Engine speed"><path d="M15 95 A60 60 0 0 1 135 95" fill="none" stroke="var(--border-hi)" stroke-width="10" stroke-linecap="round"/><path id="rpmArc" d="M15 95 A60 60 0 0 1 135 95" fill="none" stroke="var(--accent)" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 400"/><text x="75" y="78" text-anchor="middle" font-size="24" id="rpmTxt">0</text><text x="75" y="96" text-anchor="middle" font-size="10" fill="var(--dim)">rpm</text></svg>
+          <div>
+            <div style="font-size:13px;color:var(--mid)">Coolant <b id="tempTxt" style="color:var(--text);font-weight:500">--</b> · Battery <b id="voltTxt" style="color:var(--text);font-weight:500">--</b></div>
+            <div class="lights"><span class="lamp" id="mil">Check engine</span><span class="lamp bat" id="batl">Charge</span></div>
+            <div class="keys" style="margin-top:12px" role="group" aria-label="Ignition key"><button class="tab" type="button" data-key="off" aria-pressed="true">Off</button><button class="tab" type="button" data-key="on" aria-pressed="false">Ignition on</button><button class="tab" type="button" id="startBtn">Start</button></div>
+          </div>
+        </div>
+        <label class="lbl" for="pedal" style="margin-top:14px">Accelerator: <span id="pedalV">0</span>%</label>
+        <input type="range" id="pedal" min="0" max="100" value="0"/>
+        <div class="msg" id="msg" aria-live="polite">Key is off.</div>
+      </div>
+
+      <div class="card" style="margin-top:16px">
+        <div class="tooltabs" role="group" aria-label="Tools">
+          <button class="tab" type="button" data-tl="meter" aria-pressed="true">Multimeter</button>
+          <button class="tab" type="button" data-tl="scope" aria-pressed="false">Oscilloscope</button>
+          <button class="tab" type="button" data-tl="scan" aria-pressed="false">Scan tool</button>
+          <button class="tab" type="button" data-tl="fuel" aria-pressed="false">Fuel pressure</button>
+          <button class="tab" type="button" data-tl="jump" aria-pressed="false">Jump starter</button>
+          <button class="tab" type="button" data-tl="inv" aria-pressed="false">Invoice</button>
+        </div>
+
+        <div data-panel="meter">
+          <div class="meter"><span class="rd" id="mRead">0.00</span><span class="un" id="mUnit">V</span><div class="hint" id="mHint">Choose two points to measure between.</div></div>
+          <div class="tabs" role="group" aria-label="Meter setting" style="margin-top:12px"><button class="tab" type="button" data-mm="vdc" aria-pressed="true">V DC</button><button class="tab" type="button" data-mm="vac" aria-pressed="false">V AC</button><button class="tab" type="button" data-mm="ohm" aria-pressed="false">Ω resistance</button></div>
+        </div>
+        <div data-panel="scope" hidden>
+          <canvas class="scope" id="scope" width="640" height="300" aria-label="Oscilloscope trace of the red probe"></canvas>
+          <div class="help" id="scopeInfo">The scope shows the red probe against battery negative.</div>
+        </div>
+        <div data-panel="scan" hidden>
+          <div class="row" style="margin-bottom:10px"><button class="btn" type="button" id="scanRead">Read codes</button><button class="btn" type="button" id="scanClear">Clear codes</button><button class="btn" type="button" id="scanLive">Live data</button></div>
+          <div class="scan" id="scanOut">Turn the ignition on, then read codes.</div>
+        </div>
+        <div data-panel="fuel" hidden>
+          <svg class="fuelg" viewBox="0 0 170 130" aria-label="Fuel pressure gauge"><path d="M20 110 A65 65 0 0 1 150 110" fill="none" stroke="var(--border-hi)" stroke-width="8"/><line id="fNeedle" x1="85" y1="110" x2="35" y2="110" stroke="var(--accent)" stroke-width="3" stroke-linecap="round"/><circle cx="85" cy="110" r="6" fill="var(--text)"/><text x="20" y="126" font-size="10" fill="var(--dim)">0</text><text x="141" y="126" font-size="10" fill="var(--dim)">6 bar</text></svg>
+          <div style="text-align:center;font-size:28px;font-weight:300;font-variant-numeric:tabular-nums" id="fRead">0.0 bar</div>
+          <div class="help">Connected to the test port on the fuel rail. Spec: 2.8 to 3.2 bar with the pump running.</div>
+        </div>
+        <div data-panel="jump" hidden>
+          <p class="help" style="margin-top:0">A jump starter supports a weak battery while cranking. If the car starts with it connected but not without, the battery is your suspect.</p>
+          <button class="btn" type="button" id="jumpBtn" style="margin-top:10px">Connect jump starter</button>
+        </div>
+        <div data-panel="inv" hidden>
+          <table class="inv" style="width:100%;border-collapse:collapse" id="invTbl"></table>
+          <p class="help">Diagnosis time is charged at $140 an hour from when the job started. Try to fix the car with as few new parts as possible.</p>
+        </div>
+
+        <div class="probes" id="probeBox">
+          <button class="probe r" type="button" data-probe="red" aria-pressed="true"><small>Red probe</small><span id="pRed">Not placed</span></button>
+          <button class="probe k" type="button" data-probe="black" aria-pressed="false"><small>Black probe</small><span id="pBlack">Battery negative</span></button>
+        </div>
+        <div class="help" id="probeHelp">Select a probe, then click a pin in the inspector or the wiring diagram. The scope uses the red probe.</div>
+      </div>
+    </div>
+  </div>
+  <div class="seo">
+    <h2>A free car diagnostics simulator for learning engine fault-finding</h2>
+    <p>Practise diagnosing a petrol engine management system the way a workshop does it: read the customer's complaint, check the symptoms, use a multimeter, oscilloscope, scan tool and fuel pressure gauge, then fix the fault with as few new parts as possible. It is built for automotive apprentices, TAFE students and anyone curious about how an engine is controlled.</p>
+    <p>Practice mode has no fault, so you can learn what good readings look like. Challenge mode picks one of ten faults at random, from a failed crank sensor to a corroded injector wire that only shows up on the scope.</p>
+    <h3>How to use it</h3>
+    <ol><li>Read the work order, then turn the ignition on and try to start the car.</li><li>Read the fault codes with the scan tool, and check live data.</li><li>Click a part to see its pins. Choose the red or black probe, then click a pin to measure. Use the wiring diagram to trace circuits.</li><li>To measure resistance, unplug the part first. To check a wire, unplug both ends.</li><li>Replace the faulty part or repair the wire, clear the codes, turn the key off and hand the car back.</li></ol>
+    <h3>Good readings to compare against</h3>
+    <ul><li>Battery: 12.4 to 12.6 V key on, 10 V or more cranking, about 14 V running.</li><li>Injector: about 13 Ω. Ignition coil primary: about 0.6 Ω. Crank sensor: about 820 Ω.</li><li>Coolant sensor signal: about 2.5 V cold, under 0.5 V warm.</li><li>MAP signal: about 4 V key on, about 1.6 V at idle. Fuel pressure: about 3 bar.</li></ul>
+    <h3>Frequently asked questions</h3>
+    <details><summary>Is this the Electude simulator?</summary><p>No. It is an independent, simplified simulator inspired by workshop training tools like it. The car, circuits and faults are made up for learning, so readings are realistic but not taken from a specific vehicle.</p></details><details><summary>What faults can it have?</summary><p>Challenge mode picks one of ten: a failed crankshaft sensor, an open coolant sensor wire, a dead injector, a failed ignition coil, a bad fuel pump relay, an open MAP sensor reference wire, a worn spark plug, a worn-out battery, a corroded injector supply wire and a blown EFI fuse.</p></details><details><summary>Why can I not measure resistance?</summary><p>Resistance is measured with the circuit unpowered. Unplug the part to measure the part itself. To measure a wire, unplug the part at one end and the ECM at the other.</p></details><details><summary>How is the job graded?</summary><p>You get an A for fixing it in about 12 minutes or less without replacing any part that was not faulty. Replacing good parts and taking longer lowers the grade, just as it would cost a real customer more.</p></details>
+  </div>
+</div>
+<script>
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>'$'+Math.round(n).toLocaleString('en-AU');
+const rnd=(a,b)=>a+Math.random()*(b-a);
+const INF=Infinity;
+
+/* ---------- vehicle model ---------- */
+const C={
+  bat:{name:'Battery',desc:'12 V lead-acid battery. Its negative terminal is the ground reference for every measurement.',price:189,mins:15,pins:{pos:'B+ terminal',neg:'B− terminal'},noPlug:true},
+  fuse:{name:'Fuse and relay box',desc:'Holds the EFI fuse that powers the engine control module, the main relay that feeds injectors and coils, and the fuel pump relay.',pins:{efi:'EFI fuse output',main:'Main relay output',fp:'Fuel pump relay output'},noPlug:true,
+        parts:{efi:['EFI fuse (15 A)',3,5],main:['Main relay',38,10],fp:['Fuel pump relay',32,10]}},
+  ecu:{name:'Engine control module (ECM)',desc:'Reads the sensors and switches the injectors, coils and relays to ground. Unplug it to measure wiring resistance.',price:950,mins:45,
+       pins:{E1:'E1 power in',E2:'E2 ground',E10:'E10 crank sensor +',E11:'E11 crank sensor −',E20:'E20 coolant temp signal',E21:'E21 sensor ground',E22:'E22 5 V reference',E23:'E23 MAP signal',E24:'E24 throttle signal',
+             E31:'E31 injector 1',E32:'E32 injector 2',E33:'E33 injector 3',E34:'E34 injector 4',E41:'E41 coil 1',E42:'E42 coil 2',E43:'E43 coil 3',E44:'E44 coil 4',E50:'E50 pump relay control',E51:'E51 main relay control'}},
+  ckp:{name:'Crankshaft position sensor',desc:'Inductive sensor reading a 60-2 tooth wheel. It makes its own AC voltage while the engine turns. No signal, no start.',price:64,mins:30,pins:{a:'Pin 1 signal +',b:'Pin 2 signal −'},ohms:820},
+  ect:{name:'Coolant temperature sensor',desc:'NTC thermistor: resistance falls as the engine warms. The ECM feeds it 5 V through a resistor and reads the voltage.',price:38,mins:20,pins:{sig:'Pin 1 signal',gnd:'Pin 2 sensor ground'}},
+  map:{name:'MAP sensor',desc:'Measures intake manifold pressure. About 4 V with the engine off (atmospheric), about 1.5 V at idle.',price:92,mins:10,pins:{ref:'Pin 1 5 V reference',sig:'Pin 2 signal',gnd:'Pin 3 sensor ground'}},
+  tps:{name:'Throttle position sensor',desc:'Potentiometer on the throttle body. About 0.5 V closed, about 4.4 V wide open.',price:84,mins:20,pins:{ref:'Pin 1 5 V reference',sig:'Pin 2 signal',gnd:'Pin 3 sensor ground'}},
+  pump:{name:'Fuel pump (in tank)',desc:'Fed by the fuel pump relay. Runs for 2 seconds at key on, then only while cranking or running.',price:265,mins:60,pins:{pos:'Pin 1 supply',neg:'Pin 2 ground'},ohms:1.8}
+};
+for(let n=1;n<=4;n++){
+  C['inj'+n]={name:'Injector, cylinder '+n,desc:'Pin 1 gets 12 V from the main relay. The ECM opens it by switching pin 2 to ground for a few milliseconds.',price:118,mins:25,pins:{sup:'Pin 1 supply',ctl:'Pin 2 ECM control'},ohms:13.2};
+  C['coil'+n]={name:'Ignition coil, cylinder '+n,desc:'Coil-on-plug. Pin 1 gets 12 V from the main relay; the ECM switches pin 2 to ground to charge the coil and fire the plug. Unplug it to reach the spark plug.',price:96,mins:10,pins:{sup:'Pin 1 supply',ctl:'Pin 2 ECM control'},ohms:0.6};
+  C['plug'+n]={name:'Spark plug, cylinder '+n,desc:'Reached by unplugging and lifting the coil above it.',price:16,mins:12,pins:{},noPlug:true,hidden:true};
+}
+const W=[{id:'w_efi',a:'fuse.efi',b:'ecu.E1',c:'#e5484d'},{id:'w_gnd',a:'ecu.E2',b:'bat.neg',c:'#8b6b4a'}];
+for(let n=1;n<=4;n++){W.push({id:'w_si'+n,a:'fuse.main',b:'inj'+n+'.sup',c:'#f97316'},{id:'w_ci'+n,a:'ecu.E3'+n,b:'inj'+n+'.ctl',c:'#3b82f6'},{id:'w_sc'+n,a:'fuse.main',b:'coil'+n+'.sup',c:'#f97316'},{id:'w_cc'+n,a:'ecu.E4'+n,b:'coil'+n+'.ctl',c:'#a855f7'})}
+W.push({id:'w_ckpa',a:'ecu.E10',b:'ckp.a',c:'#22c55e'},{id:'w_ckpb',a:'ecu.E11',b:'ckp.b',c:'#16a34a'},
+  {id:'w_ects',a:'ecu.E20',b:'ect.sig',c:'#eab308'},{id:'w_ectg',a:'ecu.E21',b:'ect.gnd',c:'#8b6b4a'},
+  {id:'w_mapr',a:'ecu.E22',b:'map.ref',c:'#ec4899'},{id:'w_maps',a:'ecu.E23',b:'map.sig',c:'#14b8a6'},{id:'w_mapg',a:'ecu.E21',b:'map.gnd',c:'#8b6b4a'},
+  {id:'w_tpsr',a:'ecu.E22',b:'tps.ref',c:'#ec4899'},{id:'w_tpss',a:'ecu.E24',b:'tps.sig',c:'#06b6d4'},{id:'w_tpsg',a:'ecu.E21',b:'tps.gnd',c:'#8b6b4a'},
+  {id:'w_fp',a:'fuse.fp',b:'pump.pos',c:'#e5484d'},{id:'w_fpg',a:'pump.neg',b:'bat.neg',c:'#8b6b4a'});
+const pinName=p=>{const [c,k]=p.split('.');return C[c].name.replace(' (ECM)','')+': '+C[c].pins[k]};
+
+const FAULTS=[
+  {id:'ckp',title:'Crankshaft position sensor has an open winding',fix:'Replace the crankshaft position sensor.',text:'It was driving fine, then cut out on the motorway. Now it turns over but won’t start.',set:s=>s.cf.ckp='open'},
+  {id:'ect',title:'Open circuit in the coolant sensor signal wire (ECM E20 to sensor pin 1)',fix:'Repair the coolant sensor signal wire.',text:'Hard to start once it’s warm, smells of fuel and the exhaust is black. Using a lot more petrol than usual.',set:s=>{s.wf.w_ects='open';s.temp=88}},
+  {id:'inj3',title:'Injector 3 has an open coil',fix:'Replace injector 3.',text:'The engine shakes at idle and the check engine light came on.',set:s=>s.cf.inj3='open'},
+  {id:'coil2',title:'Ignition coil 2 has an open primary winding',fix:'Replace ignition coil 2.',text:'Feels like it’s missing, and the engine light flashes when I accelerate.',set:s=>s.cf.coil2='open'},
+  {id:'fp',title:'Fuel pump relay has failed (contacts do not close)',fix:'Replace the fuel pump relay.',text:'Won’t start. It cranks normally. No strange lights.',set:s=>s.pf.fp='dead'},
+  {id:'mapref',title:'Open circuit in the MAP sensor 5 V reference wire',fix:'Repair the MAP sensor reference wire.',text:'Hesitates when I accelerate, the idle goes up and down, and the check engine light is on.',set:s=>s.wf.w_mapr='open'},
+  {id:'plug4',title:'Spark plug 4 is worn out (gap 1.6 mm, spec 0.8 mm)',fix:'Replace spark plug 4.',text:'A slight shake at idle that gets worse when I put my foot down. Engine light on.',set:s=>s.cf.plug4='worn'},
+  {id:'bat',title:'Battery is worn out and cannot hold its charge',fix:'Replace the battery.',text:'Cranks really slowly in the morning, then won’t start at all.',set:s=>s.cf.bat='weak'},
+  {id:'inj1w',title:'Corroded injector 1 supply wire (about 8 Ω)',fix:'Repair the injector 1 supply wire.',text:'Rough running that comes and goes. Check engine light on.',set:s=>s.wf.w_si1=8},
+  {id:'efi',title:'EFI fuse is blown, so the ECM has no power',fix:'Replace the EFI fuse.',text:'Turns over but won’t start, and the engine light doesn’t even come on with the key.',set:s=>s.pf.efi='blown'}
+];
+const DTC={P0107:'MAP sensor circuit low',P0117:'Coolant temperature sensor circuit low',P0118:'Coolant temperature sensor circuit high',P0122:'Throttle position sensor circuit low',
+  P0201:'Injector 1 circuit open',P0202:'Injector 2 circuit open',P0203:'Injector 3 circuit open',P0204:'Injector 4 circuit open',P0300:'Random or multiple cylinder misfire',
+  P0301:'Misfire detected, cylinder 1',P0302:'Misfire detected, cylinder 2',P0303:'Misfire detected, cylinder 3',P0304:'Misfire detected, cylinder 4',P0335:'Crankshaft position sensor circuit',
+  P0351:'Ignition coil 1 primary circuit',P0352:'Ignition coil 2 primary circuit',P0353:'Ignition coil 3 primary circuit',P0354:'Ignition coil 4 primary circuit',P0562:'System voltage low',P0123:'Throttle position sensor circuit high'};
+
+let S;
+function fresh(mode){
+  return {mode,fault:null,cf:{},pf:{},wf:{},unplug:{},key:'off',crankUntil:0,primeUntil:0,rpm:0,thr:0,temp:22,pres:0,
+    codes:new Set(),mis:[0,0,0,0],misNow:[0,0,0,0],jump:false,flood:0,t0:Date.now(),parts:[],labour:[],extra:0,newParts:new Set(),
+    probe:{red:null,black:'bat.neg'},active:'red',mm:'vdc',sel:null,selWire:null,tool:'meter',view:'bay',crankNoSig:0,done:false,woNo:Math.floor(rnd(41000,49999)),found:{}};
+}
+
+/* ---------- electrics ---------- */
+const wireR=id=>{const f=S.wf[id];return f===undefined?0.1:f==='open'?INF:f};
+const wireOk=id=>wireR(id)!==INF;
+const running=()=>S.key==='run', cranking=()=>S.key==='crank';
+function vbat(){const weak=S.cf.bat==='weak';
+  if(running())return 14.1; if(cranking())return S.jump?11.2:weak?7.6:10.1; if(S.key==='on')return S.jump?12.9:weak?11.9:12.4; return S.jump?13.0:weak?12.1:12.6}
+const efiOut=()=>S.pf.efi?0:vbat();
+const ecuOn=()=>S.key!=='off'&&!S.unplug.ecu&&wireOk('w_efi')&&wireOk('w_gnd')&&efiOut()>7;
+const mainOut=()=>ecuOn()&&!S.pf.main?vbat()-0.1:0;
+const pumpCmd=()=>ecuOn()&&(running()||cranking()||Date.now()<S.primeUntil);
+const fpOut=()=>pumpCmd()&&!S.pf.fp?vbat()-0.1:0;
+const pumping=()=>fpOut()>8&&wireOk('w_fp')&&wireOk('w_fpg')&&!S.unplug.pump&&!S.cf.pump;
+const injDuty=()=>running()?0.035+S.thr*0.0012:cranking()?0.05:0;
+const coilDuty=()=>running()?0.08+S.rpm/6000*0.2:cranking()?0.05:0;
+function ectR(){const T=S.temp;return 2500*Math.exp(3500*(1/(T+273.15)-1/293.15))}
+function ectEcuV(){if(!ecuOn())return 0;if(!wireOk('w_ects')||!wireOk('w_ectg')||S.unplug.ect||S.cf.ect)return 5;const R=ectR();return 5*R/(R+2490)}
+function ectSensorV(){if(!wireOk('w_ects'))return 0;return ectEcuV()}
+const refV=w=>ecuOn()&&wireOk(w)?5:0;
+function kpa(){return running()?Math.min(98,33+S.thr*0.65):cranking()?88:101}
+function mapSensorV(){if(S.unplug.map||S.cf.map||refV('w_mapr')<4||!wireOk('w_mapg'))return 0;return 0.4+kpa()*0.036}
+const mapEcuV=()=>wireOk('w_maps')?mapSensorV():0;
+function tpsSensorV(){if(S.unplug.tps||S.cf.tps||refV('w_tpsr')<4||!wireOk('w_tpsg'))return 0;return 0.55+S.thr*0.039}
+const tpsEcuV=()=>wireOk('w_tpss')?tpsSensorV():0;
+function ckpAmp(){if(S.cf.ckp)return 0;if(cranking())return S.cf.bat==='weak'&&!S.jump?0.5:1.4;if(running())return 0.6+S.rpm/1000*1.6;return 0}
+const ckpAtEcu=()=>!S.unplug.ckp&&wireOk('w_ckpa')&&wireOk('w_ckpb')?ckpAmp():0;
+function supV(kind,n){const m=mainOut(),w=(kind==='inj'?'w_si':'w_sc')+n,r=wireR(w);if(r===INF)return 0;
+  if(kind==='inj'&&running()&&!S.unplug['inj'+n]&&!S.cf['inj'+n]){const loaded=m*13.2/(13.2+r);return m-(m-loaded)*injDuty()}
+  return m}
+function supLoaded(kind,n){const m=mainOut(),r=wireR((kind==='inj'?'w_si':'w_sc')+n);if(r===INF)return 0;return kind==='inj'?m*13.2/(13.2+r):m*0.6/(0.6+r)}
+function ctlBase(kind,n){const id=kind+n;if(S.unplug[id]||S.cf[id])return 0;return supV(kind,n)}
+function ctlV(kind,n,side){const wire=(kind==='inj'?'w_ci':'w_cc')+n;if(side==='ecu'&&!wireOk(wire))return 0;
+  const base=ctlBase(kind,n);if(base<1)return 0;const d=kind==='inj'?injDuty():coilDuty();return ecuOn()&&wireOk(wire)?base*(1-d):base}
+function pinV(p){
+  const [c,k]=p.split('.');let m;
+  if(p==='bat.pos')return vbat(); if(p==='bat.neg')return 0;
+  if(p==='fuse.efi')return efiOut(); if(p==='fuse.main')return mainOut(); if(p==='fuse.fp')return fpOut();
+  if(c==='ecu'){
+    if(k==='E1')return wireOk('w_efi')?efiOut():0; if(k==='E2'||k==='E21')return S.key==='off'?0:0.02;
+    if(k==='E22')return ecuOn()?5:0; if(k==='E20')return ectEcuV(); if(k==='E23')return mapEcuV(); if(k==='E24')return tpsEcuV();
+    if(k==='E10'||k==='E11')return 0;
+    if(k==='E50')return S.key==='off'?0:pumpCmd()?0.3:vbat();
+    if(k==='E51')return S.key==='off'?0:ecuOn()?0.3:vbat();
+    if((m=k.match(/^E3(\d)$/)))return ctlV('inj',+m[1],'ecu');
+    if((m=k.match(/^E4(\d)$/)))return ctlV('coil',+m[1],'ecu');
+  }
+  if((m=c.match(/^(inj|coil)(\d)$/)))return k==='sup'?supV(m[1],+m[2]):ctlV(m[1],+m[2],'comp');
+  if(c==='ect')return k==='sig'?ectSensorV():(S.key==='off'?0:0.02);
+  if(c==='map')return k==='ref'?refV('w_mapr'):k==='sig'?(S.unplug.map?mapEcuV():mapSensorV()):0.02;
+  if(c==='tps')return k==='ref'?refV('w_tpsr'):k==='sig'?(S.unplug.tps?tpsEcuV():tpsSensorV()):0.02;
+  if(c==='pump')return k==='pos'?(wireOk('w_fp')?fpOut():0):0;
+  return 0;
+}
+function pinAC(p){
+  if(p==='ckp.a'||p==='ckp.b')return S.unplug.ckp?0:ckpAmp()*0.71;
+  if(p==='ecu.E10'||p==='ecu.E11')return ckpAtEcu()*0.71;
+  if(p==='bat.pos'&&running())return 0.06;
+  if(/(inj|coil)\d\.ctl|ecu\.E[34]\d/.test(p)&&running())return pinV(p)>1?(/coil|E4/.test(p)?4.2:1.1):0;
+  return 0;
+}
+/* resistance between two probe points */
+function ohms(a,b){
+  const [ca,ka]=a.split('.'),[cb,kb]=b.split('.');
+  if(ca==='bat'&&cb==='bat')return {msg:'You cannot measure resistance across a battery.'};
+  if(ca===cb&&ca!=='ecu'&&ca!=='fuse'){
+    if(!S.unplug[ca]&&!C[ca].noPlug)return {msg:'Unplug the connector first. Resistance is measured with the part disconnected.'};
+    const comp=C[ca];
+    if(/^(inj|coil)\d$/.test(ca))return {v:S.cf[ca]?INF:comp.ohms*rnd(0.98,1.03)};
+    if(ca==='ckp')return {v:S.cf.ckp?INF:820*rnd(0.98,1.02)};
+    if(ca==='pump')return {v:1.8};
+    if(ca==='ect')return {v:S.cf.ect?INF:ectR()};
+    if(ca==='map'){const pr=[ka,kb].sort().join();return {v:pr==='gnd,ref'?6500:pr==='gnd,sig'?4100:3300}}
+    if(ca==='tps'){const pr=[ka,kb].sort().join();return {v:pr==='gnd,ref'?4800:pr==='gnd,sig'?600+S.thr*40:4200-S.thr*40}}
+    return {v:INF};
+  }
+  const wire=W.find(w=>(w.a===a&&w.b===b)||(w.a===b&&w.b===a));
+  const ends=[ca,cb];
+  const isolated=x=>x==='bat'||x==='fuse'?S.key==='off':!!S.unplug[x];
+  if(!ends.every(isolated))return {msg:'Disconnect both ends first (and turn the key off for fuse box or battery circuits) to measure a wire.'};
+  if(!wire){
+    const shared=W.filter(w=>w.a===a||w.b===a).map(w=>w.a===a?w.b:w.a).filter(x=>W.some(w=>(w.a===x&&w.b===b)||(w.b===x&&w.a===b)));
+    if(shared.length){const via=shared[0];const r=wireR(W.find(w=>(w.a===a&&w.b===via)||(w.b===a&&w.a===via)).id)+wireR(W.find(w=>(w.a===via&&w.b===b)||(w.b===via&&w.a===b)).id);return {v:r}}
+    return {v:INF};
+  }
+  return {v:wireR(wire.id)};
+}
+
+/* ---------- engine behaviour ---------- */
+function cylFires(n,forStart){
+  if(!ecuOn())return 0;
+  const coil=!S.cf['coil'+n]&&!S.unplug['coil'+n]&&supV('coil',n)>8&&wireOk('w_cc'+n);
+  const inj=!S.cf['inj'+n]&&!S.unplug['inj'+n]&&supV('inj',n)>8&&wireOk('w_ci'+n)&&S.pres>=2.3;
+  if(!coil||!inj)return 0;
+  let p=1;
+  if(S.cf['plug'+n]==='worn')p=S.thr>25?0.35:0.75;
+  if(wireR('w_si'+n)>2&&wireR('w_si'+n)!==INF)p=S.thr>25?0.45:0.6;
+  return forStart?(p>0.5?1:0.5):p;
+}
+function tryStart(){
+  const why=[];
+  if(cranking()&&vbat()<9){S.key='on';S.codes.add('P0562');return say('The engine cranks very slowly and does not start.')}
+  if(!ecuOn()||ckpAtEcu()<0.3||S.pres<2.3){S.key='on';return say('The engine cranks normally but does not fire.')}
+  let firing=0;for(let n=1;n<=4;n++)firing+=cylFires(n,true);
+  if(firing<2){S.key='on';return say('The engine cranks and coughs but does not start.')}
+  if(!wireOk('w_ects')&&S.temp>60&&S.flood<1){S.flood++;S.key='on';return say('The engine cranks, almost catches, then dies. You can smell fuel. Try again.')}
+  S.key='run';S.rpm=950;say('The engine started.');
+}
+function say(t){$('msg').textContent=t}
+function ecuEctC(){const v=ectEcuV();if(v>4.9)return -40;if(v<0.1)return 140;const R=2490*v/(5-v);return Math.round(1/(Math.log(R/2500)/3500+1/293.15)-273.15)}
+
+let lastTick=Date.now();
+function tick(){
+  const now=Date.now(),dt=Math.min(0.5,(now-lastTick)/1000);lastTick=now;
+  if(cranking()&&now>=S.crankUntil)tryStart();
+  // fuel pressure
+  if(pumping())S.pres+=(3.0+rnd(-0.03,0.03)-S.pres)*Math.min(1,dt*4);else S.pres=Math.max(0,S.pres-(running()?dt*1.2:dt*0.01));
+  if(running()){
+    let fire=0;for(let n=1;n<=4;n++){const p=cylFires(n);fire+=p;S.misNow[n-1]=Math.random()>p?1:0;if(S.misNow[n-1])S.mis[n-1]+=1}
+    if(fire<1.6||!ecuOn()||ckpAtEcu()<0.3){S.key='on';S.rpm=0;say('The engine stalled.')}
+    else{
+      const cold=ecuEctC()<40,mapBad=mapEcuV()<0.25;
+      let target=(cold?1050:800)+S.thr*50;
+      if(mapBad)target+=Math.sin(now/700)*180+(S.thr>5?-S.thr*15:0);
+      const misN=S.misNow.reduce((a,b)=>a+b,0);
+      target-=misN*90;
+      S.rpm+=(target-S.rpm)*Math.min(1,dt*3)+rnd(-15,15)*(1+misN*3);
+      S.temp=Math.min(90,S.temp+dt*1.4);
+      if(ecuEctC()<-30&&S.temp>50&&!S.smoke){S.smoke=true;say('It runs, but black smoke is coming out of the exhaust.')}
+    }
+  }else{S.rpm=cranking()?rnd(190,230)*(vbat()<9?0.45:1):0;if(S.temp>22)S.temp-=dt*0.02}
+  detectCodes(cranking()?dt:0);
+  render();
+}
+function detectCodes(crankDt){
+  if(!ecuOn())return;
+  const v=ectEcuV();if(v>4.9)S.codes.add('P0118');if(v<0.1)S.codes.add('P0117');
+  if(mapEcuV()<0.25)S.codes.add('P0107');
+  const t=tpsEcuV();if(t<0.25)S.codes.add('P0122');if(t>4.8)S.codes.add('P0123');
+  for(let n=1;n<=4;n++){if(ctlV('inj',n,'ecu')<1)S.codes.add('P020'+n);if(ctlV('coil',n,'ecu')<1)S.codes.add('P035'+n)}
+  if(crankDt&&ckpAtEcu()<0.3){S.crankNoSig+=crankDt;if(S.crankNoSig>1)S.codes.add('P0335')}
+  if(running()){let many=0;for(let n=0;n<4;n++)if(S.mis[n]>25){S.codes.add('P030'+(n+1));many++}if(many>1)S.codes.add('P0300')}
+}
+
+/* ---------- drawing: engine bay ---------- */
+const BAY=[
+  {id:'bat',x:70,y:330,w:96,h:96,l:'Battery'},
+  {id:'fuse',x:440,y:330,w:96,h:78,l:'Fuse box'},
+  {id:'ecu',x:452,y:64,w:84,h:58,l:'ECM'},
+  {id:'map',x:356,y:104,w:44,h:26,l:'MAP'},
+  {id:'tps',x:412,y:150,w:36,h:36,l:'TPS',r:18},
+  {id:'ect',x:176,y:336,w:34,h:24,l:'ECT'},
+  {id:'ckp',x:286,y:352,w:34,h:22,l:'CKP'},
+  {id:'pump',x:70,y:58,w:110,h:34,l:'Fuel pump (tank)'}
+];
+for(let n=1;n<=4;n++){BAY.push({id:'coil'+n,x:204+(n-1)*52,y:208,w:36,h:36,l:'Coil '+n,r:18},{id:'inj'+n,x:210+(n-1)*52,y:284,w:24,h:22,l:'Inj '+n})}
+function drawBay(){
+  let s='<svg viewBox="0 0 600 500" role="group" aria-label="Engine bay, front of the car at the bottom">';
+  s+='<rect x="40" y="20" width="520" height="462" rx="60" fill="var(--surface2)" stroke="var(--border-hi)"/>';
+  s+='<rect x="60" y="48" width="480" height="400" rx="26" fill="var(--bg)" stroke="var(--border)"/>';
+  s+='<rect x="160" y="140" width="250" height="190" rx="18" fill="var(--surface)" stroke="var(--border-hi)"/><text x="285" y="160" text-anchor="middle" class="lbl2">ENGINE</text>';
+  s+='<rect x="190" y="104" width="160" height="30" rx="10" fill="var(--surface)" stroke="var(--border)"/><text x="270" y="123" text-anchor="middle" class="lbl2">Intake manifold</text>';
+  s+='<rect x="196" y="276" width="208" height="8" rx="4" fill="var(--border-hi)"/><text x="300" y="322" text-anchor="middle" class="lbl2">Fuel rail</text>';
+  s+='<rect x="90" y="452" width="420" height="18" rx="6" fill="var(--surface)" stroke="var(--border)"/><text x="300" y="465" text-anchor="middle" class="lbl2">Radiator · front of car</text>';
+  for(const b of BAY){
+    const st=(S.sel===b.id?' sel':'');
+    s+='<g class="comp'+st+'" data-comp="'+b.id+'" tabindex="0" role="button" aria-label="'+esc(C[b.id].name)+'">';
+    s+=b.r?'<circle class="body" cx="'+(b.x+b.r)+'" cy="'+(b.y+b.r)+'" r="'+b.r+'"/>':'<rect class="body" x="'+b.x+'" y="'+b.y+'" width="'+b.w+'" height="'+b.h+'" rx="6"/>';
+    s+='<text x="'+(b.x+b.w/2)+'" y="'+(b.y+b.h/2+4)+'" text-anchor="middle">'+esc(b.l)+'</text>';
+    if(S.unplug[b.id])s+='<circle class="unplug" cx="'+(b.x+b.w-2)+'" cy="'+(b.y+2)+'" r="5"><title>Unplugged</title></circle>';
+    if(S.newParts.has(b.id))s+='<rect class="newpart" x="'+(b.x-4)+'" y="'+(b.y-4)+'" width="'+(b.w+8)+'" height="'+(b.h+8)+'" rx="8"/>';
+    s+='</g>';
+  }
+  $('bayView').innerHTML=s+'</svg>';
+}
+
+/* ---------- drawing: wiring diagram ---------- */
+const SRC=[['bat',['pos','neg']],['fuse',['efi','main','fp']],['ecu',['E1','E2','E10','E11','E20','E21','E22','E23','E24','E31','E32','E33','E34','E41','E42','E43','E44','E50','E51']]];
+const DST=['ckp','ect','map','tps','inj1','inj2','inj3','inj4','coil1','coil2','coil3','coil4','pump'];
+let PIN_XY={};
+function drawDiagram(){
+  PIN_XY={};let s='',y=16;const lx=30,lw=150,rx=440,rw=150;
+  for(const [c,pins] of SRC){const h=24+pins.length*20;s+='<rect class="blk" x="'+lx+'" y="'+y+'" width="'+lw+'" height="'+h+'" rx="8"/><text class="blkt" x="'+(lx+10)+'" y="'+(y+16)+'">'+esc(C[c].name.replace(' (ECM)',''))+'</text>';
+    pins.forEach((k,i)=>{const py=y+34+i*20;PIN_XY[c+'.'+k]=[lx+lw,py];s+='<text x="'+(lx+lw-12)+'" y="'+(py+4)+'" text-anchor="end">'+esc(C[c].pins[k].replace(/^E\d+ /,''))+(c==='ecu'?' '+k:'')+'</text>'});y+=h+14}
+  let yr=16;
+  for(const c of DST){const pins=Object.keys(C[c].pins),h=24+pins.length*20;s+='<rect class="blk" x="'+rx+'" y="'+yr+'" width="'+rw+'" height="'+h+'" rx="8"/><text class="blkt" x="'+(rx+12)+'" y="'+(yr+16)+'">'+esc(C[c].name.replace('Crankshaft position sensor','Crank sensor').replace('Coolant temperature sensor','Coolant temp sensor').replace('Throttle position sensor','Throttle sensor'))+(S.unplug[c]?' ⨯':'')+'</text>';
+    pins.forEach((k,i)=>{const py=yr+34+i*20;PIN_XY[c+'.'+k]=[rx,py];s+='<text x="'+(rx+12)+'" y="'+(py+4)+'">'+esc(C[c].pins[k])+'</text>'});yr+=h+12}
+  const H=Math.max(y,yr)+10;
+  let wires='';W.forEach((w,i)=>{const a=PIN_XY[w.a],b=PIN_XY[w.b];if(!a||!b)return;
+    let d;if(a[0]===b[0]){const x=a[0]+14+i%6*5;d='M'+a[0]+' '+a[1]+' H'+x+' V'+b[1]+' H'+b[0]}else{const x=200+i*6.2;d='M'+a[0]+' '+a[1]+' H'+x+' V'+b[1]+' H'+b[0]}
+    wires+='<path class="hit" data-wire="'+w.id+'" d="'+d+'"><title>'+esc(pinName(w.a)+' to '+pinName(w.b))+'</title></path><path class="wire'+(S.selWire===w.id?' sel':'')+'" d="'+d+'" stroke="'+w.c+'"/>'});
+  let pins='';for(const p in PIN_XY){const [x,yy]=PIN_XY[p];pins+='<g class="pin'+(S.probe.red===p?' red':'')+(S.probe.black===p?' blk':'')+'" data-pp="'+p+'"><circle cx="'+x+'" cy="'+yy+'" r="5.5"/><title>'+esc(pinName(p))+'</title></g>'}
+  $('diagView').innerHTML='<svg viewBox="0 0 620 '+H+'" role="group" aria-label="Wiring diagram. Click a pin to place a probe, or a wire to select it.">'+s+wires+pins+'</svg>';
+}
+
+/* ---------- inspector ---------- */
+function drawInsp(){
+  const box=$('insp');
+  if(S.selWire){const w=W.find(x=>x.id===S.selWire);
+    box.innerHTML='<h3>Wire</h3><p>From <b>'+esc(pinName(w.a))+'</b> to <b>'+esc(pinName(w.b))+'</b>. To test it, unplug both ends and measure resistance from one end to the other. A good wire reads under 0.5 Ω.</p><div class="pins">'+pinBtn(w.a)+pinBtn(w.b)+'</div><div class="acts"><button class="btn" type="button" data-act="repairwire">Repair this wire ($12 parts, 20 min)</button></div>';return}
+  if(!S.sel){box.innerHTML='<h3>Nothing selected</h3><p>Pick a part in the engine bay or a wire in the wiring diagram.</p>';return}
+  const c=C[S.sel];let h='<h3>'+esc(c.name)+'</h3><p>'+esc(c.desc)+'</p>';
+  const pins=Object.keys(c.pins);if(pins.length)h+='<div class="pins">'+pins.map(k=>pinBtn(S.sel+'.'+k)).join('')+'</div>';
+  h+='<div class="acts">';
+  if(!c.noPlug)h+='<button class="btn" type="button" data-act="plug">'+(S.unplug[S.sel]?'Plug connector back in':'Unplug connector')+'</button>';
+  if(c.parts){for(const k in c.parts)h+='<button class="btn" type="button" data-act="inspect" data-part="'+k+'">Check '+esc(c.parts[k][0])+'</button><button class="btn" type="button" data-act="replacepart" data-part="'+k+'">Replace '+esc(c.parts[k][0])+' ('+money(c.parts[k][1])+')</button>'}
+  else if(c.price)h+='<button class="btn" type="button" data-act="replace">Replace ('+money(c.price)+' + '+c.mins+' min)</button>';
+  if(/^coil\d$/.test(S.sel)){const n=S.sel.slice(4);h+='<button class="btn" type="button" data-act="inspectplug" data-n="'+n+'">Check spark plug '+n+'</button><button class="btn" type="button" data-act="replaceplug" data-n="'+n+'">Replace spark plug '+n+' ($16)</button>'}
+  h+='</div>';
+  if(S.found[S.sel])h+='<div class="found">'+esc(S.found[S.sel])+'</div>';
+  box.innerHTML=h;
+}
+const pinBtn=p=>'<button type="button" class="pinbtn'+(S.probe.red===p?' red':'')+(S.probe.black===p?' blk':'')+'" data-pp="'+p+'">'+esc(C[p.split('.')[0]].pins[p.split('.')[1]])+'</button>';
+
+/* ---------- tools ---------- */
+function meterRead(){
+  const a=S.probe.red,b=S.probe.black;
+  if(!a||!b)return ['----','',a?'Place the black probe.':'Place the red probe on a pin.'];
+  if(S.mm==='ohm'){const r=ohms(a,b);if(r.msg)return ['----','Ω',r.msg];if(r.v===INF)return ['O.L','Ω','Open circuit: no continuity.'];
+    if(r.v>=1000)return [(r.v/1000).toFixed(2),'kΩ',''];return [r.v.toFixed(r.v<10?2:1),'Ω','']}
+  if(S.mm==='vac'){const v=Math.max(pinAC(a),pinAC(b));return [v.toFixed(2),'V~','']}
+  let v=pinV(a)-pinV(b);v=Math.abs(v)<0.01?0:v+rnd(-0.004,0.004);return [(Math.abs(v)<0.005?0:v).toFixed(2),'V','']
+}
+function wave(p,t){
+  const [c,k]=p.split('.');const rpm=Math.max(S.rpm,1),per=120/rpm;
+  if(p==='ckp.a'||p==='ecu.E10'||p==='ckp.b'||p==='ecu.E11'){const amp=(p.startsWith('ecu')?ckpAtEcu():(S.unplug.ckp?0:ckpAmp()))*(p.endsWith('b')||p.endsWith('E11')?-1:1);
+    const f=rpm/60*60,tooth=Math.floor(t*f)%60;return tooth>=58?0:amp*1.4*Math.sin(t*f*2*Math.PI)}
+  let m=p.match(/^(?:(inj|coil)(\d)\.(sup|ctl)|ecu\.E([34])(\d))$/);
+  if(m&&(running()||cranking())){
+    const kind=m[1]||(m[4]==='3'?'inj':'coil'),n=+(m[2]||m[5]),pin=m[3]||'ctl',side=m[1]?'comp':'ecu';
+    const off={1:0,3:.25,4:.5,2:.75}[n]*per,ph=((t-off)%per+per)%per;
+    const pw=kind==='inj'?(0.0025+S.thr*0.00008):0.003;
+    const inPulse=ph<pw,after=ph-pw;
+    if(pin==='sup'){const base=supV(kind,n);return inPulse&&!S.unplug[kind+n]&&!S.cf[kind+n]?supLoaded(kind,n):base}
+    const base=ctlBase(kind,n);if(base<1||(side==='ecu'&&!wireOk((kind==='inj'?'w_ci':'w_cc')+n)))return 0;
+    if(inPulse)return 0.3;
+    if(after<0.0012)return base+(kind==='inj'?58:330)*Math.exp(-after/(kind==='inj'?0.0002:0.00008))*(kind==='coil'?Math.cos(after*30000):1);
+    return base;
+  }
+  const v=pinV(p);return v+(running()&&/bat|fuse|sup/.test(p)?Math.sin(t*2000)*0.05:0)+rnd(-0.01,0.01);
+}
+let scopeT=0;
+function drawScope(){
+  const cv=$('scope'),x=cv.getContext('2d'),W2=cv.width,H2=cv.height;
+  x.fillStyle='#0c1210';x.fillRect(0,0,W2,H2);x.strokeStyle='#1d2b25';x.lineWidth=1;
+  for(let i=1;i<10;i++){x.beginPath();x.moveTo(i*W2/10,0);x.lineTo(i*W2/10,H2);x.stroke()}
+  for(let i=1;i<8;i++){x.beginPath();x.moveTo(0,i*H2/8);x.lineTo(W2,i*H2/8);x.stroke()}
+  const p=S.probe.red;x.fillStyle='#86efac';x.font='13px ui-monospace,Menlo,monospace';
+  if(!p){x.fillText('Place the red probe on a pin',16,26);return}
+  const isCkp=/ckp|E1[01]/.test(p),isPulse=/(inj|coil)\d\.(ctl|sup)|ecu\.E[34]\d/.test(p);
+  const span=isCkp?0.04:isPulse&&(running()||cranking())?Math.min(0.24,120/Math.max(S.rpm,200)):1;
+  scopeT+=0.016;const N=900;let pts=[],mx=0.5,mn=0;
+  for(let i=0;i<N;i++){const v=wave(p,scopeT+i/N*span);pts.push(v);if(v>mx)mx=v;if(v<mn)mn=v}
+  const steps=[0.5,1,2,5,10,20,50,100];const need=Math.max(mx,-mn);const vdiv=steps.find(s=>s*4>=need*1.05)||100;
+  const zero=mn<-0.05?H2/2:H2-20;
+  x.strokeStyle='#ef4444';x.lineWidth=2;x.beginPath();
+  pts.forEach((v,i)=>{const px=i/N*W2,py=zero-v/vdiv*(H2/8);i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke();
+  x.fillStyle='#86efac';x.fillText(pinName(p),12,20);
+  x.fillText(vdiv+' V/div   '+(span*100>=1?(span*100).toFixed(0)+' ms/div':(span*100).toFixed(1)+' ms/div'),12,H2-6);
+}
+function scanText(kind){
+  if(S.key==='off')return 'Turn the ignition on first.';
+  if(!ecuOn())return 'No communication with the engine control module.\nCheck its power supply, ground and connector.';
+  if(kind==='codes'){if(!S.codes.size)return 'No fault codes stored.';return [...S.codes].sort().map(c=>'<div><span class="code">'+c+'</span>'+esc(DTC[c]||'')+'</div>').join('')}
+  const rows=[['Engine speed',Math.round(S.rpm)+' rpm'],['Coolant temperature',ecuEctC()+' °C'],['Manifold pressure',mapEcuV()<0.25?'60 kPa (default)':Math.round((mapEcuV()-0.4)/0.036)+' kPa'],['Throttle',Math.max(0,Math.round((tpsEcuV()-0.55)/0.039))+' %'],
+    ['Injection time',running()?(2.6+S.thr*0.09+(ecuEctC()<20?2.2:0)).toFixed(1)+' ms':'0.0 ms'],['Battery voltage',vbat().toFixed(1)+' V'],['Fuel pump',pumpCmd()?'On':'Off'],
+    ['Misfire count 1 / 2 / 3 / 4',S.mis.map(v=>Math.min(999,v)).join(' / ')]];
+  return '<table>'+rows.map(r=>'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>').join('')+'</table>';
+}
+let scanMode=null;
+
+/* ---------- invoice & job ---------- */
+const elapsedMin=()=>(Date.now()-S.t0)/60000;
+function invoice(){
+  const rows=[['Diagnosis ('+Math.max(1,Math.round(elapsedMin()))+' min at $140/h)',Math.max(0.25,elapsedMin()/60)*140]];
+  S.labour.forEach(l=>rows.push([l[0]+' ('+l[1]+' min)',l[1]/60*140]));S.parts.forEach(p=>rows.push([p[0],p[1]]));
+  return rows}
+function addWork(task,mins,part,price){S.labour.push([task,mins]);if(part)S.parts.push([part,price])}
+function replaceComp(id){
+  const c=C[id];
+  if(!c.noPlug&&!S.unplug[id])return say('Unplug '+c.name.toLowerCase()+' before removing it.');
+  if(id==='ecu'&&S.key!=='off')return say('Turn the key off before replacing the ECM.');
+  const was=!!S.cf[id];delete S.cf[id];S.newParts.add(id);addWork('Replace '+c.name.toLowerCase(),c.mins,c.name,c.price);
+  if(id==='bat'){S.jump=false}
+  say(c.name+' replaced.'+(was?'':''));S.found[id]=null;
+}
+function act(a,el){
+  const id=S.sel;
+  if(a==='plug'){S.unplug[id]=!S.unplug[id];say(C[id].name+(S.unplug[id]?' unplugged.':' plugged back in.'))}
+  if(a==='replace')replaceComp(id);
+  if(a==='replacepart'){const k=el.dataset.part,p=C.fuse.parts[k];if(S.key!=='off')return say('Turn the key off before swapping fuses or relays.');delete S.pf[k];addWork('Replace '+p[0],p[2],p[0],p[1]);say(p[0]+' replaced.')}
+  if(a==='inspect'){const k=el.dataset.part,p=C.fuse.parts[k];addWork('Check '+p[0],2);
+    S.found.fuse=k==='efi'?(S.pf.efi?'EFI fuse: the element is melted through. Blown.':'EFI fuse: looks fine, element intact.'):p[0]+': no visible damage. A relay can look fine and still fail, so test its output with the meter while it should be on.'}
+  if(a==='inspectplug'||a==='replaceplug'){const n=el.dataset.n;if(!S.unplug['coil'+n])return say('Unplug and lift ignition coil '+n+' first.');
+    if(a==='inspectplug'){addWork('Remove and check spark plug '+n,8);S.found['coil'+n]=S.cf['plug'+n]==='worn'?'Spark plug '+n+': electrode badly worn, gap about 1.6 mm (spec 0.8 mm).':'Spark plug '+n+': light tan colour, gap 0.8 mm. Good.'}
+    else{delete S.cf['plug'+n];S.newParts.add('coil'+n);addWork('Replace spark plug '+n,12,'Spark plug '+n,16);say('Spark plug '+n+' replaced.');S.found['coil'+n]=null}}
+  if(a==='repairwire'){const w=S.selWire;delete S.wf[w];S.found[w]=true;addWork('Repair wire '+pinName(W.find(x=>x.id===w).a).split(':')[0]+' circuit',20,'Wire repair kit',12);say('Wire repaired.')}
+  drawAll();
+}
+function finishJob(){
+  const left=[];
+  const faultLeft=Object.keys(S.cf).length||Object.keys(S.pf).length||Object.keys(S.wf).length;
+  if(faultLeft)left.push('The fault is still there.');
+  if(Object.values(S.unplug).some(Boolean))left.push('A connector is still unplugged.');
+  if(S.codes.size)left.push('Fault codes are still stored. Clear them with the scan tool.');
+  if(S.jump)left.push('The jump starter is still connected.');
+  if(S.key!=='off')left.push('Turn the key off before handing the car back.');
+  const total=invoice().reduce((a,r)=>a+r[1],0),need=FAULTS.find(f=>f.id===S.fault);
+  const extra=S.parts.length-(faultLeft?0:1);
+  let h;
+  if(left.length)h='<div class="result bad"><b>Not ready yet.</b><ul>'+left.map(l=>'<li>'+l+'</li>').join('')+'</ul></div>';
+  else{S.done=true;const mins=Math.round(elapsedMin());const grade=extra<=0&&mins<=12?'A':extra<=1&&mins<=25?'B':extra<=3?'C':'D';
+    h='<div class="result ok"><b>Job done. Grade '+grade+'.</b><br>Fault: '+esc(need.title)+'.<br>Time '+mins+' min · invoice '+money(total)+' · '+(extra>0?extra+' part'+(extra>1?'s':'')+' replaced that were not needed':'no unnecessary parts')+'.<br>Start a new job to try another fault.</div>';$('finish').hidden=true;$('giveUp').hidden=true}
+  $('resultBox').innerHTML=h;
+}
+function newJob(mode){
+  const keepTool=S?S.tool:'meter';S=fresh(mode);S.tool=keepTool;
+  if(mode==='challenge'){const f=FAULTS[Math.floor(Math.random()*FAULTS.length)];S.fault=f.id;f.set(S)}
+  $('resultBox').innerHTML='';
+  $('woNo').textContent='#'+S.woNo;
+  if(mode==='practice'){$('woTitle').textContent='Practice bay';$('woText').textContent='This car has no faults. Measure everything and learn what good readings look like, then switch to Challenge.';$('woMeta').textContent='Nothing is charged in practice mode.'}
+  else{$('woTitle').textContent='Customer complaint';$('woText').textContent='“'+FAULTS.find(f=>f.id===S.fault).text+'”';$('woMeta').textContent='Small 4-cylinder petrol, port injection. Find the fault, fix it with as few parts as possible, clear the codes and hand it back.'}
+  $('finish').hidden=mode!=='challenge';$('giveUp').hidden=mode!=='challenge';
+  document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===mode));
+  $('pedal').value=0;$('pedalV').textContent=0;say('Key is off.');scanMode=null;$('scanOut').textContent='Turn the ignition on, then read codes.';
+  drawAll();
+}
+
+/* ---------- rendering ---------- */
+function drawAll(){drawBay();drawDiagram();drawInsp();render(true)}
+let lastSlow=0;
+function render(force){
+  document.querySelectorAll('[data-key]').forEach(b=>b.setAttribute('aria-pressed',S.key===b.dataset.key||(b.dataset.key==='on'&&(S.key==='run'||S.key==='crank'))));
+  $('startBtn').setAttribute('aria-pressed',cranking()||running());
+  const r=Math.max(0,Math.min(7000,S.rpm));$('rpmArc').setAttribute('stroke-dasharray',(r/7000*188.5)+' 400');$('rpmTxt').textContent=Math.round(r/10)*10;
+  $('tempTxt').textContent=S.key==='off'?'--':(ecuOn()?ecuEctC():'--')+' °C';$('voltTxt').textContent=S.key==='off'?'--':vbat().toFixed(1)+' V';
+  const milOn=S.key!=='off'&&ecuOn()&&(!running()||S.codes.size>0);$('mil').classList.toggle('on',milOn);
+  $('mil').classList.toggle('blink',running()&&S.misNow.some(Boolean)&&S.codes.size>0);
+  $('batl').classList.toggle('on',S.key!=='off'&&!running());
+  const [rd,un,hint]=meterRead();$('mRead').textContent=rd;$('mUnit').textContent=un;$('mHint').textContent=hint;
+  $('pRed').textContent=S.probe.red?pinName(S.probe.red):'Not placed';$('pBlack').textContent=S.probe.black?pinName(S.probe.black):'Not placed';
+  const ang=Math.PI-(Math.min(6,S.pres)/6)*Math.PI;$('fNeedle').setAttribute('x2',85+50*Math.cos(ang));$('fNeedle').setAttribute('y2',110-50*Math.sin(ang));$('fRead').textContent=S.pres.toFixed(1)+' bar';
+  const now=Date.now();
+  if(force||now-lastSlow>500){lastSlow=now;
+    const sec=Math.floor((now-S.t0)/1000);$('clock').textContent=Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0');
+    const rows=invoice(),tot=S.mode==='practice'?0:rows.reduce((a,b)=>a+b[1],0);$('invTotal').textContent=money(tot);$('partsN').textContent=S.parts.length;
+    $('invTbl').innerHTML=S.mode==='practice'?'<tr><td>Practice mode: nothing is charged.</td><td></td></tr>':rows.map(r=>'<tr><td>'+esc(r[0])+'</td><td>'+money(r[1])+'</td></tr>').join('')+'<tr><td><b>Total</b></td><td><b>'+money(tot)+'</b></td></tr>';
+    if(scanMode==='live')$('scanOut').innerHTML=scanText('live');
+  }
+}
+function setProbe(p){S.probe[S.active]=p;render(true);drawDiagram();drawInsp()}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const pin=e.target.closest('[data-pp]');if(pin){setProbe(pin.dataset.pp);return}
+  const comp=e.target.closest('[data-comp]');if(comp){S.sel=comp.dataset.comp;S.selWire=null;drawBay();drawInsp();return}
+  const wire=e.target.closest('[data-wire]');if(wire){S.selWire=wire.dataset.wire;S.sel=null;drawDiagram();drawInsp();return}
+  const a=e.target.closest('[data-act]');if(a){act(a.dataset.act,a);return}
+});
+$('bayView').addEventListener('keydown',e=>{const g=e.target.closest('[data-comp]');if(g&&(e.key==='Enter'||e.key===' ')){e.preventDefault();g.dispatchEvent(new MouseEvent('click',{bubbles:true}))}});
+document.querySelectorAll('[data-probe]').forEach(b=>b.onclick=()=>{S.active=b.dataset.probe;document.querySelectorAll('[data-probe]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+document.querySelectorAll('[data-mm]').forEach(b=>b.onclick=()=>{S.mm=b.dataset.mm;document.querySelectorAll('[data-mm]').forEach(x=>x.setAttribute('aria-pressed',x===b));render(true)});
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>{S.view=b.dataset.view;document.querySelectorAll('[data-view]').forEach(x=>x.setAttribute('aria-pressed',x===b));$('bayView').hidden=S.view!=='bay';$('diagView').hidden=S.view!=='diagram';$('viewHint').textContent=S.view==='bay'?'Click a part to inspect it, unplug it or probe its pins.':'Click a pin to place the selected probe. Click a wire to select it.'});
+document.querySelectorAll('[data-tl]').forEach(b=>b.onclick=()=>{S.tool=b.dataset.tl;document.querySelectorAll('[data-tl]').forEach(x=>x.setAttribute('aria-pressed',x===b));document.querySelectorAll('[data-panel]').forEach(p=>p.hidden=p.dataset.panel!==S.tool);$('probeBox').hidden=$('probeHelp').hidden=!(S.tool==='meter'||S.tool==='scope')});
+document.querySelectorAll('[data-key]').forEach(b=>b.onclick=()=>{const k=b.dataset.key;if(k==='off'){S.key='off';S.rpm=0;say('Key is off.')}else if(S.key==='off'){S.key='on';S.primeUntil=Date.now()+2000;S.flood=Math.min(S.flood,1);say(ecuOn()?'Ignition on. You hear the fuel pump run for 2 seconds.':'Ignition on.')}render(true)});
+$('startBtn').onclick=()=>{if(running())return;if(S.key==='off'){S.key='on';S.primeUntil=Date.now()+2000}S.key='crank';S.crankNoSig=0;S.crankUntil=Date.now()+(wireOk('w_ects')?1500:2200);say('Cranking…')};
+$('pedal').oninput=()=>{S.thr=+$('pedal').value;$('pedalV').textContent=S.thr};
+$('scanRead').onclick=()=>{scanMode='codes';$('scanOut').innerHTML=scanText('codes')};
+$('scanLive').onclick=()=>{scanMode='live';$('scanOut').innerHTML=scanText('live')};
+$('scanClear').onclick=()=>{if(!ecuOn()){$('scanOut').innerHTML=scanText('codes');return}S.codes.clear();S.mis=[0,0,0,0];scanMode='codes';$('scanOut').innerHTML='Codes cleared. If a fault is still present, its code will come back.'};
+$('jumpBtn').onclick=()=>{S.jump=!S.jump;$('jumpBtn').textContent=S.jump?'Disconnect jump starter':'Connect jump starter';say(S.jump?'Jump starter connected to the battery.':'Jump starter removed.');render(true)};
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>newJob(b.dataset.mode));
+$('newJob').onclick=()=>newJob(S.mode==='practice'?'challenge':S.mode);
+$('finish').onclick=finishJob;
+$('giveUp').onclick=()=>{const f=FAULTS.find(x=>x.id===S.fault);$('resultBox').innerHTML='<div class="result bad"><b>The fault:</b> '+esc(f.title)+'.<br><b>Fix:</b> '+esc(f.fix)+'</div>'};
+
+newJob('practice');
+setInterval(tick,100);
+(function loop(){if(S.tool==='scope'&&!document.hidden)drawScope();requestAnimationFrame(loop)})();
+
+</script>
+<!-- mtp:disclaimer -->
+<p class="mtp-disclaimer">A simplified training simulator. The car, readings and faults are made up for learning and do not match any specific vehicle. On a real car, follow the manufacturer's repair information and safety rules. MyToolPad accepts no responsibility for work done on a vehicle.</p>
+<!-- /mtp:disclaimer -->
+<!-- mtp:footer -->
+<footer class="mtp-footer"><div class="mtp-fcols"><div><a class="mtp-fh" href="/study-tools.html">Study</a><a href="/gpa.html">GPA Calculator</a><a href="/wam-calculator.html">WAM Calculator</a><a href="/final-grade.html">Final Grade Calculator</a><a href="/car-diagnostics-simulator.html">Car Diagnostics Simulator</a></div><div><a class="mtp-fh" href="/money-tools.html">Money</a><a href="/budget.html">Budget Tracker</a><a href="/loan.html">Loan Calculator</a><a href="/gst-calculator.html">GST Calculator</a><a href="/take-home-pay.html">Take-Home Pay Calculator</a><a href="/help-repayment.html">HECS-HELP Repayment Calculator</a><a href="/stamp-duty-nsw.html">NSW Stamp Duty Calculator</a></div><div><a class="mtp-fh" href="/image-tools.html">Images</a><a href="/qr-code.html">QR Code Generator</a><a href="/image-compressor.html">Image Compressor</a><a href="/image-resizer.html">Image Resizer and Converter</a><a href="/heic-to-jpg.html">HEIC to JPG Converter</a><a href="/wallpaper-preview.html">Wallpaper Preview</a><a href="/wallpaper-sizes.html">Wallpaper Sizes for Every Device</a></div><div><a class="mtp-fh" href="/productivity-tools.html">Productivity</a><a href="/todo.html">To-Do List</a><a href="/pomodoro.html">Pomodoro Focus Timer</a><a href="/notes.html">Online Notes</a><a href="/countdown.html">Countdown Timer</a></div><div><a class="mtp-fh" href="/everyday-tools.html">Everyday</a><a href="/spinner.html">Decision Spinner Wheel</a><a href="/converter.html">Unit Converter</a><a href="/percentage.html">Percentage Calculator</a><a href="/age.html">Age Calculator</a><a href="/tip.html">Tip Calculator</a><a href="/bmi.html">BMI Calculator</a><a href="/days-between-dates.html">Days Between Dates</a></div><div><a class="mtp-fh" href="/text-and-dev-tools.html">Text &amp; Dev</a><a href="/counter.html">Word Counter</a><a href="/password.html">Password Generator</a><a href="/color.html">Color Picker</a><a href="/json-formatter.html">JSON Formatter</a></div></div><p>MyToolPad: free tools for students and everyday life.<br>No sign-up · No pop-ups · Your data stays in your browser<br><a href="/about.html">About</a> · <a href="/privacy.html">Privacy</a> · <a href="https://github.com/game9151/mytoolpad/issues" rel="noopener">Feedback</a><br>Tools are provided as is, for general information, without any warranty.<br>I design websites. <a href="mailto:officialmeridianstudio@gmail.com">Contact me</a></p></footer>
+<!-- /mtp:footer -->
+</body>
+</html>

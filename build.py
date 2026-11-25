@@ -58,13 +58,14 @@ TOOLS = [
     ('heic-to-jpg.html', 'HEIC to JPG Converter', 'HEIC to JPG', '⇄', ['images'], 'Convert iPhone HEIC photos to JPG or PNG in your browser. Batch convert, nothing uploaded.', 'heic heif to jpg iphone photo convert apple'),
     ('wallpaper-preview.html', 'Wallpaper Preview', 'Wallpaper preview', '▯', ['images'], 'See a wallpaper on any phone, tablet or monitor and check if it is high-res enough.', 'wallpaper background preview resolution phone iphone screen size'),
     ('wallpaper-sizes.html', 'Wallpaper Sizes for Every Device', 'Wallpaper sizes', '⊞', ['images'], 'A reference table of screen resolutions for iPhone, Android, iPad, MacBook and monitors.', 'wallpaper size resolution iphone dimensions pixels screen'),
+    ('car-diagnostics-simulator.html', 'Car Diagnostics Simulator', 'Car diagnostics', '⚙', ['study', 'everyday'], 'Find and fix engine faults with a multimeter, oscilloscope, scan tool and wiring diagram. Practice and challenge modes.', 'car mechanic automotive engine diagnostics multimeter oscilloscope scan tool obd fault codes electude simulator apprentice tafe'),
     ('json-formatter.html', 'JSON Formatter', 'JSON', '{ }', ['text'], 'Beautify, minify, sort and validate JSON. Errors show the exact line and column.', 'json format beautify validate minify pretty print'),
     ('days-between-dates.html', 'Days Between Dates', 'Date calculator', '▤', ['everyday'], 'Count days, weeks and weekdays between dates, or add and subtract time from a date.', 'days between dates date calculator weekdays add days'),
 ]
 assert len({t[0] for t in TOOLS}) == len(TOOLS), 'duplicate tool file'
-FEATURED = ['take-home-pay.html', 'help-repayment.html', 'wam-calculator.html', 'pomodoro.html', 'image-compressor.html', 'heic-to-jpg.html']
+FEATURED = ['car-diagnostics-simulator.html', 'take-home-pay.html', 'help-repayment.html', 'wam-calculator.html', 'image-compressor.html', 'heic-to-jpg.html']
 PAGES = ['index.html', 'about.html', 'privacy.html', '404.html'] + [c[2] for c in CATS]
-NO_ASIDE = {'wallpaper-preview.html'}  # big visual tools keep the full width
+NO_ASIDE = {'wallpaper-preview.html', 'car-diagnostics-simulator.html'}  # big visual tools keep the full width
 
 
 # Small-print disclaimers. Money tools get the finance wording, health tools the health wording.
@@ -78,12 +79,17 @@ DISCLAIMER_HEALTH = ('General information only, not medical advice. BMI is a rou
 DISCLAIMER_STUDY = ('Estimates only. Grading scales and rules differ between universities and courses, so check your official '
                     'results and handbook. MyToolPad accepts no responsibility for decisions made using this tool.')
 HEALTH = {'bmi.html'}
+CUSTOM_DISCLAIMER = {'car-diagnostics-simulator.html': 'A simplified training simulator. The car, readings and faults are made up for learning and do not match any '
+                     'specific vehicle. On a real car, follow the manufacturer\'s repair information and safety rules. MyToolPad accepts no '
+                     'responsibility for work done on a vehicle.'}
 
 
 def disclaimer_for(fname):
     t = next((x for x in TOOLS if x[0] == fname), None)
     if not t:
         return ''
+    if fname in CUSTOM_DISCLAIMER:
+        return CUSTOM_DISCLAIMER[fname]
     if fname in HEALTH:
         return DISCLAIMER_HEALTH
     if t[4][0] == 'money':
