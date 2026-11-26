@@ -60,6 +60,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .views button{background:none;border:0;border-radius:7px;padding:6px 10px;font-size:13px;color:#d6d3cc}
 .views button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);font-weight:600}
 .views .va{padding:6px 8px;font-size:16px;line-height:1}
+#steam{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
 #engLayer{position:absolute;inset:0;will-change:transform;pointer-events:none}
 #engImg{position:absolute;left:0;top:0}
 #altSpin{position:absolute}#fanSpin img{position:absolute;inset:0;width:100%;height:100%;visibility:hidden}#fanSpin img.on{visibility:visible}
@@ -310,17 +311,19 @@ button{font:inherit;color:inherit;cursor:pointer}
     <button class="chip hide-s" id="invBtn" type="button" title="Work done so far">Parts used <b id="invTotal">0</b></button>
     <button class="btn" id="hintBtn" type="button" aria-pressed="true" title="Plain-English explanations of your readings">Hints on</button>
     <button class="btn" id="soundBtn" type="button" aria-pressed="true">Sound on</button>
+    <button class="btn" id="restartBtn" type="button" title="Start this car again">Restart</button>
     <button class="btn primary" id="finishBtn" type="button">Hand back car</button>
   </header>
 
   <main class="mid">
     <div class="stage" id="stage" aria-label="Engine bay. Drag to move, scroll or pinch to zoom, click a part to work on it.">
       <div class="world" id="world"><div class="shake" id="shake">
-        <img id="bayImg" src="/assets/car-sim/bay.webp?v=d98cdbf8" alt="Open engine bay of a small four-cylinder petrol car, viewed from the front" width="2000" height="1334">
+        <img id="bayImg" src="/assets/car-sim/bay.webp?v=1bc0d7dd" alt="Open engine bay of a small four-cylinder petrol car, viewed from the front" width="2000" height="1334">
         <div class="paintc" id="paintC" hidden></div><div class="paintl" id="paintL" hidden></div>
-        <div id="engLayer"><img id="engImg" src="/assets/car-sim/bay-engine.webp?v=d98cdbf8" alt="" aria-hidden="true" width="2000" height="1334"><div id="altSpin" aria-hidden="true"></div></div>
+        <div id="engLayer"><img id="engImg" src="/assets/car-sim/bay-engine.webp?v=1bc0d7dd" alt="" aria-hidden="true" width="2000" height="1334"><div id="altSpin" aria-hidden="true"></div></div>
         <svg id="hotspots" viewBox="0 0 2000 1334"></svg>
       </div></div>
+      <canvas id="steam" aria-hidden="true"></canvas>
       <div class="tip" id="tip"></div>
       <div class="hint" id="hint">Turn the key to <b>ON</b> and listen. Click any part to open it, then tap a pin to put the red probe on it.<button type="button" id="hintX">Got it</button></div>
       <div class="views" id="views" role="group" aria-label="Camera view"><button type="button" class="va" data-vstep="-1" aria-label="Previous view">‹</button><button type="button" data-view="front">Front</button><button type="button" data-view="top">Bird’s-eye</button><button type="button" data-view="side">Side</button><button type="button" class="va" data-vstep="1" aria-label="Next view">›</button></div>
@@ -482,7 +485,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   <header class="wbar"><h2>Radiator and cooling fan</h2><button class="x" type="button" data-close aria-label="Close">×</button></header>
   <div class="wbody">
     <div style="position:relative" id="radBox">
-      <img id="radImg" src="/assets/car-sim/radiator.webp?v=d98cdbf8" alt="Radiator and electric cooling fan, seen from the engine side" style="display:block;width:100%;height:auto;border-radius:8px" width="900" height="640">
+      <img id="radImg" src="/assets/car-sim/radiator.webp?v=1bc0d7dd" alt="Radiator and electric cooling fan, seen from the engine side" style="display:block;width:100%;height:auto;border-radius:8px" width="900" height="640">
       <div id="fanSpin" aria-hidden="true" style="position:absolute"></div>
       <button type="button" id="fanHs" aria-label="Cooling fan motor and connector" style="position:absolute;border-radius:12px;background:transparent;border:2px dashed transparent"></button>
     </div>
@@ -495,7 +498,7 @@ button{font:inherit;color:inherit;cursor:pointer}
   <header class="wbar"><h2>Fuel tank, under the rear seat</h2><button class="x" type="button" data-close aria-label="Close">×</button></header>
   <div class="wbody">
     <div style="position:relative">
-      <img src="/assets/car-sim/tank.webp?v=d98cdbf8" alt="Fuel pump module on top of the fuel tank" style="display:block;width:100%;height:auto;border-radius:8px" width="900" height="640">
+      <img src="/assets/car-sim/tank.webp?v=1bc0d7dd" alt="Fuel pump module on top of the fuel tank" style="display:block;width:100%;height:auto;border-radius:8px" width="900" height="640">
       <button type="button" id="pumpHs" aria-label="Fuel pump" style="position:absolute;left:30%;top:30%;width:44%;height:52%;border-radius:50%;background:transparent;border:2px dashed transparent"></button>
     </div>
     <p class="small" style="margin-top:8px">Click the pump module to work on it.</p>
@@ -523,7 +526,7 @@ const C={
         parts:{efi:['EFI fuse (15 A)',3,5],main:['Main relay',38,10],fp:['Fuel pump relay',32,10],fanr:['Cooling fan relay',30,10]}},
   ecu:{name:'Engine control module (ECM)',desc:'Reads the sensors and switches the injectors, coils and relays to ground. Unplug it to measure wiring resistance from this end.',price:950,mins:45,
        pins:{E1:'E1 power in',E2:'E2 ground',E10:'E10 crank sensor +',E11:'E11 crank sensor −',E20:'E20 coolant temp signal',E21:'E21 sensor ground',E22:'E22 5 V reference',E23:'E23 MAP signal',E24:'E24 throttle signal',
-             E31:'E31 injector 1',E32:'E32 injector 2',E33:'E33 injector 3',E34:'E34 injector 4',E41:'E41 coil 1',E42:'E42 coil 2',E43:'E43 coil 3',E44:'E44 coil 4',E50:'E50 pump relay control',E51:'E51 main relay control',E52:'E52 fan relay control'}},
+             E31:'E31 injector 1',E32:'E32 injector 2',E33:'E33 injector 3',E34:'E34 injector 4',E41:'E41 coil 1',E42:'E42 coil 2',E43:'E43 coil 3',E44:'E44 coil 4',E50:'E50 pump relay control',E51:'E51 main relay control',E52:'E52 fan relay control',E25:'E25 MAF signal',E26:'E26 O2 signal',E27:'E27 O2 heater control'}},
   ckp:{name:'Crankshaft position sensor',desc:'Inductive sensor reading a 60-2 tooth wheel. It makes its own AC voltage while the engine turns. No signal, no start.',price:64,mins:30,pins:{a:'1 signal +',b:'2 signal −'},ohms:820},
   ect:{name:'Coolant temperature sensor',desc:'NTC thermistor: resistance falls as the engine warms up. The ECM feeds it 5 V through a resistor and reads the voltage.',price:38,mins:20,pins:{sig:'1 signal',gnd:'2 sensor ground'}},
   map:{name:'MAP sensor',desc:'Measures intake manifold pressure. About 4 V with the engine off, about 1.5 V at idle.',price:92,mins:10,pins:{ref:'1 5 V reference',sig:'2 signal',gnd:'3 sensor ground'}},
@@ -532,6 +535,11 @@ const C={
   alt:{name:'Alternator',desc:'Belt-driven generator that charges the battery while the engine runs. With the engine running, its output terminal should read 13.8 to 14.8 V.',price:420,mins:50,pins:{out:'B+ output terminal'},noPlug:true},
   tstat:{name:'Thermostat housing',desc:'The thermostat stays shut until the coolant reaches about 85 °C, so the engine warms up quickly. Stuck open, the engine runs cold.',price:45,mins:40,pins:{},noPlug:true},
   fan:{name:'Radiator and cooling fan',desc:'The electric fan pulls air through the radiator when the car is standing still. The engine computer switches it on through the fan relay at about 94 °C and off again at about 90 °C. At speed, air rushing through does the job instead.',price:180,mins:40,pins:{pos:'1 supply (fan relay)',neg:'2 ground'},ohms:0.5},
+  maf:{name:'Mass airflow (MAF) sensor',desc:'Measures how much air the engine is breathing, so the ECM can add the right amount of fuel. About 1 V with no airflow, about 1.3 V at idle, up to 4 V at full throttle.',price:160,mins:10,pins:{sup:'1 12 V supply',gnd:'2 ground',sig:'3 signal'}},
+  o2:{name:'Oxygen (O2) sensor',desc:'Sits in the exhaust and tells the ECM whether the mixture is rich or lean. Warm and working, its signal flicks between about 0.1 V (lean) and 0.9 V (rich) about once a second. A built-in heater gets it working quickly.',price:120,mins:20,pins:{sig:'1 signal',gnd:'2 signal ground',htr:'3 heater supply',hgnd:'4 heater control'}},
+  belt:{name:'Drive belt',desc:'One ribbed belt turns the alternator, the water pump, the power steering pump and the A/C compressor from the crankshaft pulley.',price:45,mins:30,pins:{},noPlug:true},
+  eng:{name:'Engine (head, gasket, oil)',desc:'The engine itself. A compression test checks each cylinder can seal. The dipstick shows the oil level and colour: milky oil means coolant is getting in.',price:3800,mins:600,pins:{},noPlug:true},
+  res:{name:'Coolant reservoir',desc:'The overflow bottle for the cooling system. Check the level here with the engine cool. A level that keeps dropping means a leak somewhere.',price:40,mins:15,pins:{},noPlug:true},
   hose:{name:'Intake air duct and hoses',desc:'Carries filtered air to the throttle body. A split or loose clamp after the airflow measurement lets in air the engine computer does not know about, so it runs lean.',price:60,mins:15,pins:{},noPlug:true}
 };
 for(let n=1;n<=4;n++){
@@ -546,7 +554,9 @@ W.push({id:'w_ckpa',a:'ecu.E10',b:'ckp.a',c:'#16a34a',n:'GN'},{id:'w_ckpb',a:'ec
   {id:'w_mapr',a:'ecu.E22',b:'map.ref',c:'#db2777',n:'PK'},{id:'w_maps',a:'ecu.E23',b:'map.sig',c:'#0d9488',n:'TQ'},{id:'w_mapg',a:'ecu.E21',b:'map.gnd',c:'#6b4b2e',n:'BN'},
   {id:'w_tpsr',a:'ecu.E22',b:'tps.ref',c:'#db2777',n:'PK'},{id:'w_tpss',a:'ecu.E24',b:'tps.sig',c:'#0891b2',n:'LB'},{id:'w_tpsg',a:'ecu.E21',b:'tps.gnd',c:'#6b4b2e',n:'BN'},
   {id:'w_fp',a:'fuse.fp',b:'pump.pos',c:'#d42a22',n:'RD/BK'},{id:'w_fpg',a:'pump.neg',b:'bat.neg',c:'#6b4b2e',n:'BN'},
-  {id:'w_fan',a:'fuse.fan',b:'fan.pos',c:'#16a34a',n:'GN/RD'},{id:'w_fang',a:'fan.neg',b:'bat.neg',c:'#6b4b2e',n:'BN'});
+  {id:'w_fan',a:'fuse.fan',b:'fan.pos',c:'#16a34a',n:'GN/RD'},{id:'w_fang',a:'fan.neg',b:'bat.neg',c:'#6b4b2e',n:'BN'},
+  {id:'w_mafp',a:'fuse.main',b:'maf.sup',c:'#e8731a',n:'OG'},{id:'w_mafg',a:'ecu.E21',b:'maf.gnd',c:'#6b4b2e',n:'BN'},{id:'w_mafs',a:'ecu.E25',b:'maf.sig',c:'#7c3aed',n:'VT/WH'},
+  {id:'w_o2s',a:'ecu.E26',b:'o2.sig',c:'#111827',n:'BK'},{id:'w_o2g',a:'ecu.E21',b:'o2.gnd',c:'#9ca3af',n:'GY'},{id:'w_o2h',a:'fuse.main',b:'o2.htr',c:'#f5f5f4',n:'WH'},{id:'w_o2c',a:'ecu.E27',b:'o2.hgnd',c:'#f5f5f4',n:'WH/BK'});
 const isPart=p=>p.endsWith('~p'), base=p=>p.replace('~p','');
 const pinName=p=>{const [c,k]=base(p).split('.');const nm=c==='fuse'?'Fuse box:':c==='bat'?'Battery':C[c].name.replace(' (ECM)','');return nm+(c==='ecu'||C[c].noPlug?' ':' pin ')+C[c].pins[k]+(isPart(p)?' (part side)':'')};
 const wireColor=p=>{p=base(p);const w=W.find(x=>x.a===p||x.b===p);return w?w.c:'#888'};
@@ -568,21 +578,26 @@ const FAULTS=[
   {id:'gnd',title:'Corroded engine computer ground wire (about 4 Ω)',fix:'Repair the ECM ground wire (power and ground circuit).',text:'Idles fast and a bit rough even when it’s warm. No engine light.',set:s=>s.wf.w_gnd=4},
   {id:'fan',title:'Cooling fan motor has an open winding',fix:'Replace the cooling fan motor.',text:'Fine on the motorway, but it overheats in traffic. The temperature gauge climbs when I’m sitting still.',set:s=>s.cf.fan='open'},
   {id:'fanr',title:'Cooling fan relay has failed (contacts do not close)',fix:'Replace the cooling fan relay.',text:'It overheats when I’m stuck in traffic. I never hear the fan come on.',set:s=>s.pf.fanr='dead'},
+  {id:'maf',title:'Dirty mass airflow sensor (reads about 30% low)',fix:'Replace the MAF sensor.',text:'Feels flat and hesitates when I accelerate. Engine light on.',set:s=>s.cf.maf='dirty'},
+  {id:'o2',title:'Lazy O2 sensor (switches far too slowly)',fix:'Replace the O2 sensor.',text:'Using more fuel than it used to. Engine light came on.',set:s=>s.cf.o2='lazy'},
+  {id:'o2h',title:'O2 sensor heater has an open circuit',fix:'Replace the O2 sensor.',text:'Engine light on. It seems to run fine otherwise.',set:s=>s.cf.o2h='open'},
+  {id:'beltw',title:'Worn, glazed drive belt slipping on its pulleys',fix:'Replace the drive belt.',text:'Squeals when I start it on cold mornings, and the battery light flickers sometimes.',set:s=>s.cf.belt='worn'},
+  {id:'beltb',title:'Snapped drive belt',fix:'Replace the drive belt.',text:'Battery light came on, then the temperature shot up and I pulled over. It sounded different too.',set:s=>s.cf.belt='broken'},
   {id:'tstat',title:'Thermostat stuck open',fix:'Replace the thermostat.',text:'The heater blows cold on the motorway and the temperature gauge sits really low. Engine light came on.',set:s=>s.cf.tstat='open'}
 ];
-const FSYS={fan:'cool',fanr:'cool',ckp:'start',efi:'start',fp:'start',bat:'start',coil2:'ign',plug4:'ign',inj3:'fuel',inj1w:'fuel',filter:'fuel',ect:'sensor',mapref:'sensor',gnd:'sensor',tstat:'cool',vac:'air',alt:'charge'};
+const FSYS={maf:'air',o2:'exhaust',o2h:'exhaust',beltw:'charge',beltb:'cool',fan:'cool',fanr:'cool',ckp:'start',efi:'start',fp:'start',bat:'start',coil2:'ign',plug4:'ign',inj3:'fuel',inj1w:'fuel',filter:'fuel',ect:'sensor',mapref:'sensor',gnd:'sensor',tstat:'cool',vac:'air',alt:'charge'};
 const NOSTART=['ckp','efi','fp','bat'];
-const EASY=['efi','fp','bat','coil2','inj3','alt','tstat','fan'];
+const EASY=['efi','fp','bat','coil2','inj3','alt','tstat','fan','beltb','o2h'];
 const DTC={P0107:'MAP sensor circuit low',P0117:'Coolant temp sensor circuit low',P0118:'Coolant temp sensor circuit high',P0122:'Throttle sensor circuit low',P0123:'Throttle sensor circuit high',
   P0201:'Injector 1 circuit open',P0202:'Injector 2 circuit open',P0203:'Injector 3 circuit open',P0204:'Injector 4 circuit open',P0300:'Random or multiple misfire',
   P0301:'Misfire, cylinder 1',P0302:'Misfire, cylinder 2',P0303:'Misfire, cylinder 3',P0304:'Misfire, cylinder 4',P0335:'Crankshaft sensor circuit',
-  P0351:'Coil 1 primary circuit',P0352:'Coil 2 primary circuit',P0353:'Coil 3 primary circuit',P0354:'Coil 4 primary circuit',P0562:'System voltage low',P0171:'System too lean',P0128:'Coolant temperature below thermostat temperature',P0217:'Engine coolant over temperature'};
+  P0351:'Coil 1 primary circuit',P0352:'Coil 2 primary circuit',P0353:'Coil 3 primary circuit',P0354:'Coil 4 primary circuit',P0562:'System voltage low',P0171:'System too lean',P0128:'Coolant temperature below thermostat temperature',P0217:'Engine coolant over temperature',P0101:'MAF sensor range or performance',P0102:'MAF sensor circuit low',P0130:'O2 sensor circuit',P0133:'O2 sensor slow response',P0135:'O2 sensor heater circuit',P0620:'Charging system voltage'};
 
 let S;
 function fresh(mode){
   return {mode,fault:null,cf:{},pf:{},wf:{},unplug:{},lifted:{},key:'off',holdStart:false,crankSince:0,primeUntil:0,rpm:0,thr:0,temp:22,pres:0,
     codes:new Set(),mis:[0,0,0,0],misNow:[0,0,0,0],jump:false,flood:0,t0:Date.now(),parts:[],labour:[],newParts:new Set(),
-    probe:{red:null,black:'bat.neg'},mm:'vdc',sel:null,selWire:null,leads:'meter',gauge:false,crankNoSig:0,done:false,woNo:Math.floor(rnd(41000,49999)),found:{},act:null,flog:{},faults:[],level:0,drain:0,leanT:0,coldT:0,speed:0,gear:1,drive:false,tray:[],sandbox:new Set()};
+    probe:{red:null,black:'bat.neg'},mm:'vdc',sel:null,selWire:null,leads:'meter',gauge:false,crankNoSig:0,done:false,woNo:Math.floor(rnd(41000,49999)),found:{},act:null,flog:{},dmg:0,coolant:1,hg:false,seized:false,rough:0,faults:[],level:0,drain:0,leanT:0,coldT:0,speed:0,gear:1,drive:false,tray:[],sandbox:new Set()};
 }
 
 /* ================= electrics ================= */
@@ -590,12 +605,24 @@ const wireR=id=>{const f=S.wf[id];return f===undefined?0.1:f==='open'?INF:f};
 const wireOk=id=>wireR(id)!==INF;
 const running=()=>S.key==='run', cranking=()=>S.key==='crank';
 function vbat(){const weak=S.cf.bat==='weak';
-  if(running())return S.cf.alt?Math.max(10.6,(weak?11.9:12.3)-S.drain):14.1; if(cranking())return S.jump?11.2:weak?7.6:(S.drain>1.2?8.4:10.1-S.drain*0.5); if(S.key==='on')return S.jump?12.9:(weak?11.9:12.4)-S.drain*0.6; return S.jump?13.0:(weak?12.1:12.6)-S.drain*0.6}
+  if(running())return S.cf.alt||!beltDrives()?Math.max(10.6,(weak?11.9:12.3)-S.drain):S.cf.belt==='worn'?(S.thr>30||S.slip>0?12.9:13.6):14.1; if(cranking())return S.jump?11.2:weak?7.6:(S.drain>1.2?8.4:10.1-S.drain*0.5); if(S.key==='on')return S.jump?12.9:(weak?11.9:12.4)-S.drain*0.6; return S.jump?13.0:(weak?12.1:12.6)-S.drain*0.6}
 const efiOut=()=>S.pf.efi?0:vbat();
 const ecuOn=()=>S.key!=='off'&&!S.unplug.ecu&&wireOk('w_efi')&&wireOk('w_gnd')&&efiOut()>7;
 const mainOut=()=>ecuOn()&&!S.pf.main?vbat()-0.1:0;
 const pumpCmd=()=>ecuOn()&&(running()||cranking()||Date.now()<S.primeUntil);
 const fpOut=()=>pumpCmd()&&!S.pf.fp?vbat()-0.1:0;
+const beltDrives=()=>S.cf.belt!=='broken';
+const mafSensorV=()=>{if(S.unplug.maf||!wireOk('w_mafp')||mainOut()<8||!wireOk('w_mafg'))return 0;const flow=running()?(0.35+S.rpm/1000*0.22+S.thr*0.03):cranking()?0.12:0;return 0.98+flow*(S.cf.maf?0.7:1)};
+const mafEcuV=()=>wireOk('w_mafs')?mafSensorV():0;
+const o2HeaterOk=()=>!S.cf.o2h&&!S.unplug.o2&&wireOk('w_o2h')&&wireOk('w_o2c')&&mainOut()>8;
+function o2V(t){ // the O2 sensor's own signal
+  if(S.unplug.o2||!running())return S.key==='off'?0:0.45;
+  const warm=(S.o2Warm||0)>(o2HeaterOk()?15:120);if(!warm)return 0.45;
+  const tr=trim(),rich=ecuEctC()<-20||S.hg;
+  if(tr>14&&!rich)return 0.12+Math.abs(Math.sin(t*3))*0.06;
+  if(rich)return 0.82+Math.sin(t*3)*0.04;
+  const hz=S.cf.o2?0.18:1.1,amp=S.cf.o2?0.22:0.4;return 0.47+amp*Math.tanh(Math.sin(t*2*Math.PI*hz)*4);
+}
 const fanCmd=()=>ecuOn()&&(S.fanCmd||Date.now()<(S.fanTest||0));
 const fanOut=()=>fanCmd()&&!S.pf.fanr?vbat()-0.1:0;
 const fanSpinning=()=>fanOut()>8&&wireOk('w_fan')&&wireOk('w_fang')&&!S.unplug.fan&&!S.cf.fan;
@@ -608,7 +635,7 @@ function ectSensorV(){if(!wireOk('w_ects'))return 0;return ectEcuV()}
 const refV=w=>ecuOn()&&wireOk(w)?5:0;
 const gndDrop=()=>S.key==='off'?0:wireR('w_gnd')>1&&wireR('w_gnd')!==INF?0.85:0.02;
 function kpa(){return running()?Math.min(98,33+S.thr*0.65+(S.cf.hose?16*(1-S.thr/100):0)):cranking()?88:101}
-function trim(){if(!running())return 0;let t=0;if(S.cf.hose)t+=22*(1-S.thr/100);if(S.cf.filter&&S.pres<2.7)t+=(2.9-S.pres)*30;if(wireR('w_gnd')>1&&wireR('w_gnd')!==INF)t-=8;return Math.max(-25,Math.min(25,t))}
+function trim(){if(!running())return 0;let t=0;if(S.cf.hose)t+=22*(1-S.thr/100);if(S.cf.filter&&S.pres<2.7)t+=(2.9-S.pres)*30;if(wireR('w_gnd')>1&&wireR('w_gnd')!==INF)t-=8;if(S.cf.maf)t+=17;if(S.unplug.maf||mafEcuV()<0.3)t+=6;if(S.hg)t-=6;return Math.max(-25,Math.min(25,t))}
 function mapSensorV(){if(S.unplug.map||S.cf.map||refV('w_mapr')<4||!wireOk('w_mapg'))return 0;return 0.4+kpa()*0.036}
 const mapEcuV=()=>wireOk('w_maps')?mapSensorV():0;
 function tpsSensorV(){if(S.unplug.tps||S.cf.tps||refV('w_tpsr')<4||!wireOk('w_tpsg'))return 0;return 0.55+S.thr*0.039}
@@ -627,6 +654,8 @@ function pinV(p){
   const [c,k]=p.split('.');let m;
   if(p==='bat.pos')return vbat(); if(p==='bat.neg')return 0;
   if(p==='fuse.in')return vbat(); if(p==='fuse.efi')return efiOut(); if(p==='fuse.main')return mainOut(); if(p==='fuse.fp')return fpOut(); if(p==='fuse.fan')return fanOut();
+  if(c==='maf')return k==='sup'?(wireOk('w_mafp')?mainOut():0):k==='sig'?(S.unplug.maf?mafEcuV():mafSensorV()):gndDrop();
+  if(c==='o2')return k==='sig'?(wireOk('w_o2s')?o2V(performance.now()/1000):0):k==='htr'?(wireOk('w_o2h')?mainOut():0):k==='hgnd'?(S.key==='off'?0:o2HeaterOk()&&running()?0.3:mainOut()):gndDrop();
   if(c==='ecu'){
     if(k==='E1')return wireOk('w_efi')?efiOut():0; if(k==='E2'||k==='E21')return S.key==='off'?0:gndDrop();
     if(k==='E22')return ecuOn()?5:0; if(k==='E20')return ectEcuV(); if(k==='E23')return mapEcuV(); if(k==='E24')return tpsEcuV();
@@ -634,12 +663,13 @@ function pinV(p){
     if(k==='E50')return S.key==='off'?0:pumpCmd()?0.3:vbat();
     if(k==='E51')return S.key==='off'?0:ecuOn()?0.3:vbat();
     if(k==='E52')return S.key==='off'?0:fanCmd()?0.3:vbat();
+    if(k==='E25')return mafEcuV(); if(k==='E26')return wireOk('w_o2s')&&!S.unplug.o2?o2V(performance.now()/1000):0; if(k==='E27')return S.key==='off'?0:wireOk('w_o2c')&&!S.unplug.o2&&!S.cf.o2h&&running()?0.3:0;
     if((m=k.match(/^E3(\d)$/)))return ctlV('inj',+m[1],'ecu');
     if((m=k.match(/^E4(\d)$/)))return ctlV('coil',+m[1],'ecu');
   }
   if((m=c.match(/^(inj|coil)(\d)$/)))return k==='sup'?supV(m[1],+m[2]):ctlV(m[1],+m[2],'comp');
   if(c==='ect')return k==='sig'?ectSensorV():gndDrop();
-  if(c==='alt')return running()&&!S.cf.alt?14.1:vbat();
+  if(c==='alt')return vbat();
   if(c==='map')return k==='ref'?refV('w_mapr'):k==='sig'?(S.unplug.map?mapEcuV():mapSensorV()):0.02;
   if(c==='tps')return k==='ref'?refV('w_tpsr'):k==='sig'?(S.unplug.tps?tpsEcuV():tpsSensorV()):0.02;
   if(c==='pump')return k==='pos'?(wireOk('w_fp')?fpOut():0):0;
@@ -660,6 +690,8 @@ function partOhms(c,ka,kb){
   if(c==='ckp')return S.cf.ckp?INF:820*rnd(0.98,1.02);
   if(c==='pump')return 1.8;
   if(c==='fan')return S.cf.fan?INF:0.5*rnd(0.95,1.05);
+  if(c==='o2'){const pr=[ka,kb].sort().join();return pr==='hgnd,htr'?(S.cf.o2h?INF:4.2):INF}
+  if(c==='maf')return INF;
   if(c==='ect')return S.cf.ect?INF:ectR();
   const pr=[ka,kb].sort().join();
   if(c==='map')return pr==='gnd,ref'?6500:pr==='gnd,sig'?4100:3300;
@@ -694,6 +726,7 @@ function cylFires(n,forStart){
   const inj=!S.cf['inj'+n]&&!S.unplug['inj'+n]&&supV('inj',n)>8&&wireOk('w_ci'+n)&&(running()?S.pres>=1.2:S.pres>=2.3);
   if(!coil||!inj)return 0;
   let p=1;
+  if(S.hg&&n===2)p*=0.55;
   if(S.cf['plug'+n]==='worn')p=S.thr>25?0.35:0.75;
   if(wireR('w_si'+n)>2&&wireR('w_si'+n)!==INF)p=S.thr>25?0.45:0.6;
   if(running()&&S.pres<2.4)p*=S.pres<1.8?0.45:0.7;
@@ -706,7 +739,9 @@ function tryStart(){
   if(vbat()<9){S.codes.add('P0562');crankMsg='The engine cranks very slowly and won’t catch.';return false}
   if(!ecuOn()||ckpAtEcu()<0.3||S.pres<2.3){crankMsg='It cranks normally but never fires.';return false}
   let firing=0;for(let n=1;n<=4;n++)firing+=cylFires(n,true);
+  if(S.seized){crankMsg='The starter clunks but the engine won’t turn. It has seized.';return false}
   if(firing<2){crankMsg='It cranks and coughs but won’t start.';return false}
+  if(firing<3&&Math.random()<0.6){crankMsg='It fires on a couple of cylinders, coughs and dies.';return false}
   if(!wireOk('w_ects')&&S.temp>60&&S.flood<1){S.flood++;crankMsg='It almost catches, then dies. You can smell fuel.';return false}
   S.key='run';S.rpm=950;S.holdStart=false;say('The engine started.');return true;
 }
@@ -716,6 +751,7 @@ function ecuEctC(){const v=ectEcuV();if(v>4.9)return -40;if(v<0.1)return 140;con
 let lastTick=Date.now();
 function tick(){
   const now=Date.now(),dt=Math.min(0.5,(now-lastTick)/1000);lastTick=now;
+  if(cranking()&&S.seized){S.key='on';S.holdStart=false;sfx('clunk');say('The starter clunks but the engine won’t turn. It has seized.')}
   if(cranking()){
     const need=wireOk('w_ects')?1.3:2.0;
     if((now-S.crankSince)/1000>need){if(!tryStart()){S.crankSince=now-400;say('Cranking… '+crankMsg)}}
@@ -723,24 +759,47 @@ function tick(){
   if(pumping())S.pres+=(3.0-(S.cf.filter?0.35+S.thr/100*1.5:0)+rnd(-0.03,0.03)-S.pres)*Math.min(1,dt*4);else S.pres=Math.max(0,S.pres-(running()?dt*1.2:dt*0.01));
   if(running()){
     let fire=0;S.misR=S.misR||[0,0,0,0];for(let n=1;n<=4;n++){const p=cylFires(n);fire+=p;S.misNow[n-1]=Math.random()>p?1:0;S.misR[n-1]*=Math.exp(-dt/20);if(S.misNow[n-1]){S.mis[n-1]+=1;S.misR[n-1]+=1}}
-    if(fire<1.6||!ecuOn()||ckpAtEcu()<0.3){S.key='on';S.rpm=0;say('The engine stalled.');sfx('stall')}
+    // how badly it's running: dead cylinders, missing sensors, overheating
+    const tpsBad=tpsEcuV()<0.25||tpsEcuV()>4.8,ev0=ectEcuV(),ectBad=ev0>4.9||ev0<0.1;
+    S.rough=(4-fire)+(mapEcuV()<0.25?0.6:0)+(tpsBad?0.4:0)+(ectBad?0.3:0)+(S.unplug.maf||mafEcuV()<0.3?0.5:0)+(trim()>15?0.3:0)+(vbat()<11?0.5:0)+(S.temp>118?0.6:0)+(S.hg?0.4:0);
+    S.limp=tpsBad||(S.unplug.maf&&mapEcuV()<0.25);
+    if(S.limp&&!S.limpMsg){S.limpMsg=true;say('The engine computer has gone into limp mode: it won’t rev past about 2000 rpm.')}
+    const keep=S.thr>12?0.3:1,pStall=Math.min(0.45,Math.max(0,S.rough-0.9)**2*0.4)*keep*(S.drive&&S.speed>15?0.3:1);
+    let why='';
+    if(S.seized||fire<1.2||!ecuOn()||ckpAtEcu()<0.3)why='The engine stalled.';
+    else if(Math.random()<pStall*dt)why=S.rough>2?'It shudders, sputters and stalls.':'It stumbles and stalls.';
+    if(why){S.key='on';S.stallRpm=S.rpm;say(why);sfx('stall')}
     else{
       const mapBad=mapEcuV()<0.25,fast=Math.max(0,Math.min(1,(70-ecuEctC())/50));
-      let target=800+fast*380+S.thr*50;
+      let target=800+fast*380+(S.limp?Math.min(S.thr,25):S.thr)*50;
+      if(S.limp)target=Math.min(target,2000);
+      if(S.rough>0.9&&Math.random()<dt*S.rough*0.8)S.rpm-=rnd(60,200)*S.rough;
       if(mapBad)target+=Math.sin(now/700)*180+(S.thr>5?-S.thr*15:0);
       if(S.cf.hose)target+=(240+Math.sin(now/850)*150)*(1-S.thr/100);
       const misN=S.misNow.reduce((a,b)=>a+b,0);
       target-=misN*90;
       if(S.drive)target=driveTarget(target,dt,misN);
-      S.rpm+=(target-S.rpm)*Math.min(1,dt*(S.drive?5:3))+rnd(-15,15)*(1+misN*3);
+      S.rpm+=(target-S.rpm)*Math.min(1,dt*(S.drive?5:3))+rnd(-15,15)*(1+misN*3+S.rough);
       const tmax=S.cf.tstat?57:90,air=Math.min(1,S.speed/50),cool=(fanSpinning()?1:0)+air*2;
       if(S.temp<tmax)S.temp=Math.min(tmax,S.temp+dt*(S.temp<60?1.1:0.6));
       else if(S.cf.tstat)S.temp-=dt*0.3;
-      else S.temp=Math.max(tmax,Math.min(121,S.temp+dt*(0.35+S.thr*0.004-cool*0.55)));
+      else S.temp=Math.max(tmax,Math.min(140,S.temp+dt*(0.35+S.thr*0.004-cool*0.55)));
+      // no belt means no water pump; low coolant means nothing to carry the heat away
+      if(!beltDrives())S.temp=Math.min(140,S.temp+dt*0.5);
+      if(S.coolant<0.6)S.temp=Math.min(140,S.temp+dt*(0.6-S.coolant)*3);
+      S.o2Warm=(S.o2Warm||0)+dt;
+      if(S.temp>118){S.dmg+=dt*(S.temp-118)*0.006;if(S.dmg>=1&&!S.hg){S.hg=true;say('A cloud of white steam: the head gasket has failed. It’s losing coolant.')}}
+      if(S.hg)S.coolant=Math.max(0,S.coolant-dt*0.006);
+      if(S.temp>=135)S.cookT=(S.cookT||0)+dt;else S.cookT=Math.max(0,(S.cookT||0)-dt);
+      if(S.cookT>12&&!S.seized){S.seized=true;S.key='on';S.stallRpm=S.rpm;sfx('clunk');say('Bang. The engine has seized.');setTimeout(seizedCard,900)}
+      if(S.cf.belt==='worn'){S.slip=Math.max(0,(S.slip||0)-dt);if(S.thr-(S.lastThr||0)>20)S.slip=1.5}S.lastThr=S.thr;
+      if(S.cf.o2&&S.o2Warm>40)S.codes.add('P0133');if(S.cf.o2h&&S.o2Warm>30)S.codes.add('P0135');
+      if(S.cf.maf&&S.thr>30)S.codes.add('P0101');
+      if((!beltDrives()||S.cf.belt==='worn'&&S.slip>0)&&vbat()<13)S.codes.add('P0620');
       const ect=ecuEctC(),ev=ectEcuV();if(ev>4.9||ev<0.1)S.fanCmd=true;else if(ect>=94)S.fanCmd=true;else if(ect<=90)S.fanCmd=false;
       if(S.temp>114)S.codes.add('P0217');
       if(S.temp>115&&!S.hotMsg){S.hotMsg=true;say('The temperature gauge is in the red and steam is coming from the front of the car.')}
-      if(S.cf.alt)S.drain=Math.min(1.7,S.drain+dt*0.012);else S.drain=Math.max(0,S.drain-dt*0.02);
+      if(S.cf.alt||!beltDrives())S.drain=Math.min(1.7,S.drain+dt*0.004);else S.drain=Math.max(0,S.drain-dt*0.02);
       if(trim()>15)S.leanT+=dt;if(S.leanT>8)S.codes.add('P0171');
       if(S.temp<65)S.coldT+=dt;if(S.coldT>45&&S.cf.tstat)S.codes.add('P0128');
       if(S.cf.alt&&vbat()<11.9)S.codes.add('P0562');
@@ -749,7 +808,7 @@ function tick(){
   }
   if(S.drive&&!running()){S.speed=Math.max(0,S.speed-dt*(DRV.brake||DRV.pulling?30:6))}
   checkPulled();
-  if(!running()){S.rpm=cranking()?rnd(190,230)*(vbat()<9?0.45:1):Math.max(0,S.rpm-dt*2500);S.misNow=[0,0,0,0];if(S.temp>22)S.temp-=dt*(S.temp>95?0.08:0.02);if(S.key!=='off'&&!running())S.fanCmd=ecuEctC()>=94||(S.fanCmd&&ecuEctC()>90)}
+  if(!running()){S.rpm=cranking()?rnd(190,230)*(vbat()<9?0.45:1)*(S.seized?0:1):Math.max(0,S.rpm-dt*1400);S.misNow=[0,0,0,0];if(S.temp>22)S.temp-=dt*(S.temp>95?0.08:0.02);if(S.key!=='off'&&!running())S.fanCmd=ecuEctC()>=94||(S.fanCmd&&ecuEctC()>90)}
   detectCodes(cranking()?dt:0);
   render();
 }
@@ -757,6 +816,8 @@ function detectCodes(crankDt){
   if(!ecuOn())return;
   const v=ectEcuV();if(v>4.9)S.codes.add('P0118');if(v<0.1)S.codes.add('P0117');
   if(mapEcuV()<0.25)S.codes.add('P0107');
+  if((S.unplug.maf||!wireOk('w_mafs'))&&S.key!=='off')S.codes.add('P0102');
+  if(S.unplug.o2&&running())S.codes.add('P0130');
   const t=tpsEcuV();if(t<0.25)S.codes.add('P0122');if(t>4.8)S.codes.add('P0123');
   for(let n=1;n<=4;n++){if(ctlV('inj',n,'ecu')<1)S.codes.add('P020'+n);if(ctlV('coil',n,'ecu')<1)S.codes.add('P035'+n)}
   if(crankDt&&ckpAtEcu()<0.3){S.crankNoSig+=crankDt;if(S.crankNoSig>1)S.codes.add('P0335')}
@@ -789,7 +850,7 @@ function audioInit(){
   A.pumpG=ctx.createGain();A.pumpG.gain.value=0;po.connect(pf);pf.connect(A.pumpG);pn.connect(ph);ph.connect(A.pumpG);A.pumpG.connect(A.master);po.start();pn.start();
   // vacuum hiss, radiator fan, road/wind noise
   const mkNoise=(type,f,q)=>{const n=ctx.createBufferSource();n.buffer=A.white;n.loop=true;const fl=ctx.createBiquadFilter();fl.type=type;fl.frequency.value=f;fl.Q.value=q;const g=ctx.createGain();g.gain.value=0;n.connect(fl);fl.connect(g);g.connect(A.master);n.start();return {g,fl}};
-  A.hiss=mkNoise('bandpass',5200,4);A.fan=mkNoise('bandpass',700,0.6);A.road=mkNoise('lowpass',400,0.5);
+  A.hiss=mkNoise('bandpass',5200,4);A.steam=mkNoise('bandpass',3000,0.8);A.squeal=mkNoise('bandpass',2900,18);A.fan=mkNoise('bandpass',700,0.6);A.road=mkNoise('lowpass',400,0.5);
   A.next=ctx.currentTime;
 }
 function thump(t,rpm,thr,cyl){
@@ -802,6 +863,15 @@ function thump(t,rpm,thr,cyl){
   const og=ctx.createGain();og.gain.setValueAtTime(0.0001,t);og.gain.exponentialRampToValueAtTime(0.5,t+0.003);og.gain.exponentialRampToValueAtTime(0.0001,t+0.07);
   o.connect(og);og.connect(A.master);o.start(t);o.stop(t+0.09);
 }
+function chuff(t,rpm){ // a cylinder that doesn't fire still pumps air: soft, dull puff
+  const ctx=A.ctx,s=ctx.createBufferSource();s.buffer=A.noise;const f=ctx.createBiquadFilter();f.type='lowpass';f.frequency.value=160+rpm*0.05;
+  const g=ctx.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.16,t+0.006);g.gain.exponentialRampToValueAtTime(0.0001,t+0.06);
+  s.connect(f);f.connect(g);g.connect(A.master);s.start(t,Math.random()*1.5,0.1)}
+function pop(t){ // unburnt fuel lighting off in the exhaust: sharp crack
+  const ctx=A.ctx,s=ctx.createBufferSource();s.buffer=A.white;const f=ctx.createBiquadFilter();f.type='highpass';f.frequency.value=900;
+  const g=ctx.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.55,t+0.002);g.gain.exponentialRampToValueAtTime(0.0001,t+0.035);
+  s.connect(f);f.connect(g);g.connect(A.master);s.start(t,Math.random(),0.06);
+  const o=ctx.createOscillator();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(50,t+0.05);const og=ctx.createGain();og.gain.setValueAtTime(0.35,t);og.gain.exponentialRampToValueAtTime(0.0001,t+0.07);o.connect(og);og.connect(A.master);o.start(t);o.stop(t+0.08)}
 function click(t,vol=0.4,freq=3500,len=0.012){
   if(!A.ctx)return;const ctx=A.ctx;t=t||ctx.currentTime;
   const s=ctx.createBufferSource();s.buffer=A.white;const f=ctx.createBiquadFilter();f.type='bandpass';f.frequency.value=freq;f.Q.value=3;
@@ -815,7 +885,7 @@ function sfx(kind){
   if(kind==='plug'){click(t,0.35,2000,0.012);click(t+0.03,0.8,1400,0.02)}
   if(kind==='probe')click(t,0.25,5200,0.008);
   if(kind==='knob')click(t,0.3,3000,0.01);
-  if(kind==='stall'){}
+  if(kind==='clunk'){const o=A.ctx.createOscillator(),g=A.ctx.createGain();o.type='triangle';o.frequency.setValueAtTime(90,t);o.frequency.exponentialRampToValueAtTime(30,t+0.25);g.gain.setValueAtTime(0.7,t);g.gain.exponentialRampToValueAtTime(0.0001,t+0.4);o.connect(g);g.connect(A.master);o.start(t);o.stop(t+0.45);pop(t+0.01);click(t+0.02,0.6,800,0.05)}
 }
 const FIRING=[1,3,4,2];
 function audioLoop(){
@@ -831,21 +901,24 @@ function audioLoop(){
   // pump
   A.pumpG.gain.setTargetAtTime(pumping()?(run?0.012:0.05):0,now,0.05);
   A.hiss.g.gain.setTargetAtTime(run&&S.cf.hose?0.035*(1-S.thr/100)+0.01:0,now,0.1);
+  A.steam.g.gain.setTargetAtTime(S.temp>113||S.hg&&S.key!=='off'?Math.min(0.09,(S.temp-110)*0.006+(S.hg?0.03:0)):0,now,0.4);
+  const sq=S.cf.belt==='worn'&&run&&((S.slip||0)>0||S.temp<40);A.squeal.g.gain.setTargetAtTime(sq?0.05+Math.sin(now*7)*0.015:0,now,0.05);A.squeal.fl.frequency.setTargetAtTime(2600+S.rpm*0.25,now,0.05);
   const fanOn=fanSpinning();A.fan.g.gain.setTargetAtTime(fanOn?0.05:0,now,fanOn?0.6:0.4);
   A.road.g.gain.setTargetAtTime(S.drive?Math.min(0.25,S.speed/400):0,now,0.2);A.road.fl.frequency.setTargetAtTime(250+S.speed*6,now,0.2);
   // combustion events
   if(A.next<now)A.next=now;
   while(A.next<now+ahead){
-    const rpm=run?Math.max(S.rpm,300):crank?S.rpm:0;
+    const dying=!run&&!crank&&S.rpm>140;const rpm=run?Math.max(S.rpm,300):crank?S.rpm:dying?S.rpm:0;
     if(!rpm){A.next=now+ahead;break}
     const gap=60/(rpm*2);const n=FIRING[A.cyl%4];A.cyl++;
-    if(run){if(!S.misNow[n-1])thump(A.next,rpm,S.thr,n)}
+    if(run){if(!S.misNow[n-1])thump(A.next,rpm,S.thr,n);else{chuff(A.next,rpm);const spark=!S.cf['coil'+n]&&!S.unplug['coil'+n]&&S.cf['plug'+n]!=='worn';if(!spark&&Math.random()<0.3)pop(A.next+gap*(0.3+Math.random()*0.4))}}
+    else if(dying){if(Math.random()<0.6)thump(A.next,rpm,0,n);else chuff(A.next,rpm)}
     else if(crank){
       // compression chug while cranking
       const g=A.starterG.gain;g.setValueAtTime(0.2,A.next);g.linearRampToValueAtTime(0.08,A.next+gap*0.6);
       if(cylFires(n)&&ckpAtEcu()>0.3&&S.pres>2.3&&Math.random()<0.25)thump(A.next,300,0,n);
     }
-    A.next+=gap;
+    A.next+=gap*(1+(run&&S.rough>0.9?rnd(-0.12,0.12)*Math.min(2,S.rough):0));
   }
 }
 let HINTS=true;
@@ -949,9 +1022,9 @@ function connSVG(id,side){
   return s+'</svg>';
 }
 function ecuSVG(){
-  const keys=Object.keys(C.ecu.pins),cols=10,pw=40;let s='<svg width="'+(cols*pw+30)+'" height="140" viewBox="0 0 '+(cols*pw+30)+' 140">';
-  s+='<rect x="6" y="10" width="'+(cols*pw+18)+'" height="120" rx="10" fill="#202226" stroke="#000" stroke-width="2"/>';
-  keys.forEach((k,i)=>{const r=i<cols?0:1,c=i%cols,x=30+c*pw+(r?pw/2:0),y=50+r*50,p='ecu.'+k;
+  const keys=Object.keys(C.ecu.pins).sort((a,b)=>+a.slice(1)-+b.slice(1)),cols=8,pw=44,rows=Math.ceil(keys.length/cols),H=40+rows*46;let s='<svg width="'+(cols*pw+30)+'" height="'+H+'" viewBox="0 0 '+(cols*pw+30)+' '+H+'">';
+  s+='<rect x="6" y="10" width="'+(cols*pw+18)+'" height="'+(H-20)+'" rx="10" fill="#202226" stroke="#000" stroke-width="2"/>';
+  keys.forEach((k,i)=>{const r=Math.floor(i/cols),c=i%cols,x=32+c*pw+(r%2?pw/2:0),y=48+r*46,p='ecu.'+k;
     s+='<g class="cpin" data-pp="'+p+'"><circle class="hole" cx="'+x+'" cy="'+y+'" r="13"/><circle class="metal" cx="'+x+'" cy="'+y+'" r="4.5"/><circle class="ring" cx="'+x+'" cy="'+y+'" r="16"/><text x="'+x+'" y="'+(y-18)+'" text-anchor="middle" style="font-size:11px">'+k+'</text><title>'+esc(pinName(p))+'</title></g>'});
   return s+'</svg>';
 }
@@ -1042,7 +1115,7 @@ function drawComp(){
   if(id==='bat')h+='<div class="conns"><div class="conn">'+batSVG()+'</div></div><div id="compGuide"></div>';
   else if(id==='fuse')h+='<div class="conns"><div class="conn">'+(S.lid?fuseLidSVG():fuseSVG())+'</div></div><div class="acts" style="justify-content:center;margin-top:6px"><button class="btn small" type="button" data-act="lid" aria-pressed="'+!!S.lid+'">'+(S.lid?'Back to the fuse box':'Show the lid diagram')+'</button></div><div id="compGuide"></div>';
   else if(id==='alt')h+='<div class="conns"><div class="conn"><svg width="240" height="120" viewBox="0 0 240 120" role="group" aria-label="Alternator, back view"><circle cx="120" cy="60" r="54" fill="#8c9197" stroke="#2b2e33" stroke-width="3"/>'+[0,1,2,3,4,5,6,7].map(i=>{const a=i*Math.PI/4;return '<rect x="'+(116+Math.cos(a)*30)+'" y="'+(56+Math.sin(a)*30)+'" width="8" height="8" rx="2" fill="#4a4f55" transform="rotate('+(i*45)+' '+(120+Math.cos(a)*30)+' '+(60+Math.sin(a)*30)+')"/>'}).join('')+'<rect x="150" y="22" width="44" height="26" rx="5" fill="#1c1d20"/>'+tpPin('alt.out',172,35,7)+'<text x="172" y="66" text-anchor="middle" style="font:700 13px system-ui;fill:#fff">B+</text></svg><div class="cap">Black on battery −, red on B+. Compare engine off and engine running.</div></div></div>';
-  else if(id==='tstat'||id==='hose'){}
+  else if(['tstat','hose','belt','eng','res'].includes(id)){if(id==='eng'&&S.compRes)h+=S.compRes}
   else if(id==='ecu')h+='<div class="conns"><div class="conn">'+ecuSVG()+'<div class="cap">'+(S.unplug.ecu?'Harness connector, unplugged from the ECM':'Plugged in. Probe from the back of the connector.')+'</div></div></div>';
   else{
     h+='<div class="conns"><div class="conn">'+connSVG(id,'harness')+'<div class="cap">'+(S.unplug[id]?'Harness side (unplugged)':'Plugged in. Back-probe the pins.')+'</div></div>';
@@ -1052,8 +1125,11 @@ function drawComp(){
   h+='<div class="acts">';
   if(!c.noPlug)h+='<button class="btn" type="button" data-act="plug">'+(S.unplug[id]?'Plug back in':'Unplug connector')+'</button>';
   if(id==='bat')h+='<button class="btn" type="button" data-act="jump">'+(S.jump?'Remove jump pack':'Clamp on jump pack')+'</button><button class="btn" type="button" data-act="replace">Replace battery</button>';
-  else if(c.price)h+='<button class="btn" type="button" data-act="replace">Replace part</button>';
+  else if(c.price&&id!=='eng'&&id!=='res')h+='<button class="btn" type="button" data-act="replace">Replace part</button>';
   if(id==='tstat')h+='<button class="btn" type="button" data-act="feelhose">Feel the top radiator hose</button>';
+  if(id==='belt')h+='<button class="btn" type="button" data-act="beltlook">Inspect the belt</button>';
+  if(id==='res')h+='<button class="btn" type="button" data-act="coollvl">Check the coolant level</button><button class="btn" type="button" data-act="topup">Top up coolant</button>';
+  if(id==='eng')h+='<button class="btn" type="button" data-act="comp">Compression test</button><button class="btn" type="button" data-act="dipstick">Pull the dipstick</button></div><div class="acts"><button class="btn small" type="button" data-act="gasket">Replace head gasket (big job)</button><button class="btn small" type="button" data-act="newengine">Fit a replacement engine</button>';
   if(id==='hose')h+='<button class="btn" type="button" data-act="spray">Spray around the duct while it idles</button>';
   if(id==='pump')h+='<button class="btn" type="button" data-act="filter">Replace fuel filter</button>';
   if(id==='fan')h+='<button class="btn" type="button" data-act="watchfan">Look at the fan</button>';
@@ -1241,6 +1317,7 @@ function wave(p,t){
     if(after<0.0012)return b+(kind==='inj'?58:330)*Math.exp(-after/(kind==='inj'?0.0002:0.00008))*(kind==='coil'?Math.cos(after*30000):1);
     return b;
   }
+  if(p==='o2.sig'||p==='ecu.E26')return (p==='ecu.E26'&&!wireOk('w_o2s'))?0:o2V(t)+rnd(-0.01,0.01);
   const v=pinV(p);return v+(running()&&/bat|fuse|sup/.test(p)?Math.sin(t*2000)*0.05:0)+rnd(-0.01,0.01);
 }
 function scopeSig(t){const a=S.probe.red,b=S.probe.black;if(!a||!b)return null;return wave(a,t)-(isPart(b)?0:pinV(b))}
@@ -1294,7 +1371,7 @@ const SCAN={scr:'off',sel:0};
 const MENU=[['codes','Read fault codes'],['clear','Clear fault codes'],['live','Live data'],['act','Actuator tests']];
 const ACTS=[['pump','Run fuel pump (5 s)'],['fan','Run cooling fan (5 s)'],['inj1','Click injector 1'],['inj2','Click injector 2'],['inj3','Click injector 3'],['inj4','Click injector 4']];
 function liveRows(){return [['Engine speed',Math.round(S.rpm)+' rpm'],['Coolant temp',ecuEctC()+' °C'],['MAP',mapEcuV()<0.25?'60 kPa*':Math.round((mapEcuV()-0.4)/0.036)+' kPa'],['Throttle',Math.max(0,Math.round((tpsEcuV()-0.55)/0.039))+' %'],
-  ['Inj. time',running()?(2.6+S.thr*0.09+(ecuEctC()<20?2.2:0)).toFixed(1)+' ms':'0.0 ms'],['Cooling fan',fanCmd()?'ON':'OFF'],['Battery',vbat().toFixed(1)+' V'],['Fuel trim',(trim()>=0?'+':'')+trim().toFixed(0)+' %'],['Fuel pump',pumpCmd()?'ON':'OFF'],['Misfires 1-4',S.mis.map(v=>Math.min(999,v)).join('/')]]}
+  ['Inj. time',running()?(2.6+S.thr*0.09+(ecuEctC()<20?2.2:0)).toFixed(1)+' ms':'0.0 ms'],['Cooling fan',fanCmd()?'ON':'OFF'],['MAF',S.key==='off'?'--':Math.max(0,(mafEcuV()-0.98)*12).toFixed(1)+' g/s'],['O2 sensor',S.key==='off'?'--':pinV('ecu.E26').toFixed(2)+' V'],['Battery',vbat().toFixed(1)+' V'],['Fuel trim',(trim()>=0?'+':'')+trim().toFixed(0)+' %'],['Fuel pump',pumpCmd()?'ON':'OFF'],['Misfires 1-4',S.mis.map(v=>Math.min(999,v)).join('/')]]}
 function drawScan(){
   const L=$('slcd');let h='';
   if(SCAN.scr!=='off'&&(S.key==='off'||!ecuOn()))SCAN.scr=S.key==='off'?'nokey':'nocomm';
@@ -1342,6 +1419,7 @@ const CIRCUITS={
   ign:{name:'Ignition coils',src:[['fuse',['main']],['ecu',['E41','E42','E43','E44']]],dst:[['coil1',['sup','ctl']],['coil2',['sup','ctl']],['coil3',['sup','ctl']],['coil4',['sup','ctl']]],wires:['w_sc1','w_sc2','w_sc3','w_sc4','w_cc1','w_cc2','w_cc3','w_cc4']},
   ckp:{name:'Crank sensor',src:[['ecu',['E10','E11']]],dst:[['ckp',['a','b']]],wires:['w_ckpa','w_ckpb']},
   ect:{name:'Coolant sensor',src:[['ecu',['E20','E21']]],dst:[['ect',['sig','gnd']]],wires:['w_ects','w_ectg']},
+  maf:{name:'MAF and O2 sensor',src:[['fuse',['main']],['ecu',['E25','E26','E27','E21']]],dst:[['maf',['sup','gnd','sig']],['o2',['sig','gnd','htr','hgnd']]],wires:['w_mafp','w_mafg','w_mafs','w_o2s','w_o2g','w_o2h','w_o2c'],note:'E27 switches the O2 heater to ground once the engine is running.'},
   sens:{name:'MAP and throttle',src:[['ecu',['E22','E23','E24','E21']]],dst:[['map',['ref','sig','gnd']],['tps',['ref','sig','gnd']]],wires:['w_mapr','w_maps','w_mapg','w_tpsr','w_tpss','w_tpsg']}
 };
 let curCirc='power';
@@ -1410,7 +1488,7 @@ function drawRoad(dt){
   for(let i=0;i<14;i++){const z=((i+DRV.off)/14);const zz=z*z;const y=hz+(h-hz)*zz,y2=hz+(h-hz)*Math.min(1,((i+DRV.off+0.45)/14)**2);if(i%2)continue;const ww=2+zz*14;x.fillStyle='#e8e2cf';x.fillRect(w/2-ww/2,y,ww,y2-y)}
   for(let i=0;i<10;i++){const z=((i+DRV.off*1.4)%10)/10,zz=z*z,y=hz+(h-hz)*zz;for(const side of [-1,1]){const px=w/2+side*(w*0.03+zz*w*0.56);x.fillStyle='#ddd';x.fillRect(px-1-zz*3,y-6-zz*40,2+zz*6,6+zz*40)}}
   // exhaust: white vapour when cold, black smoke when very rich
-  const run=running(),rich=run&&ecuEctC()<-20,cold=run&&S.temp<45;
+  const run=running(),rich=run&&ecuEctC()<-20,cold=run&&(S.temp<45||S.hg);
   if((rich||cold)&&Math.random()<0.5)PUFFS.push({x:w*0.86,y:h*0.93,r:10,a:rich?0.55:0.28,c:rich?'30,30,32':'235,238,242',vx:-(30+S.speed*1.5),vy:-8});
   for(let i=PUFFS.length-1;i>=0;i--){const p=PUFFS[i];p.x+=p.vx*dt;p.y+=p.vy*dt;p.r+=24*dt;p.a-=0.35*dt;if(p.a<=0){PUFFS.splice(i,1);continue}x.fillStyle='rgba('+p.c+','+p.a+')';x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fill()}
   // bonnet
@@ -1441,6 +1519,11 @@ const BENCH={inj:['The coil reads O.L (spec about 13 Ω). This one was faulty.',
   main:['It doesn’t switch when powered on the bench. Faulty.','Clicks and switches on the bench. This one was fine.'],
   fp:['It doesn’t switch when powered on the bench. Faulty.','Clicks and switches on the bench. This one was fine.'],
   fanr:['It doesn’t switch when powered on the bench. Faulty.','Clicks and switches on the bench. This one was fine.'],
+  belt:['Glazed, cracked or snapped. Worn out.','No cracks, ribs in good shape. This one was fine.'],
+  maf:['The sensing wire is coated in grime. Faulty.','Clean and reads correctly on the bench. This one was fine.'],
+  o2:['Slow to respond or the heater is open. Faulty.','Switches quickly and the heater reads 4 Ω. This one was fine.'],
+  gasket:['Burnt through between cylinders 2 and 3.','Intact. The head gasket wasn’t the problem.'],
+  engine:['Seized solid, or the head is warped. Finished.','It turned freely. A whole engine wasn’t needed.'],
   fan:['The motor winding reads O.L and it won’t spin on 12 V. Faulty.','It spins up straight away on 12 V. This one was fine.'],
   alt:['Spun up on the bench, it puts out nothing. Faulty.','Charges at 14.1 V on the bench. This one was fine.'],
   tstat:['In hot water it stays wide open. Faulty.','Opens at 85 °C in hot water. This one was fine.'],
@@ -1455,8 +1538,8 @@ $('tray').addEventListener('click',e=>{const b=e.target.closest('[data-tray]');i
 function replaceComp(id){
   const c=C[id];
   if(!c.noPlug&&!S.unplug[id])return say('Unplug the '+c.name.toLowerCase()+' before removing it.');
-  if(['ecu','bat','alt','tstat','hose','fan'].includes(id)&&S.key!=='off')return say('Turn the key off first.');
-  const bad=!!S.cf[id];delete S.cf[id];S.newParts.add(id);addWork('Replace '+c.name.toLowerCase(),c.mins,c.name,c.price);
+  if(['ecu','bat','alt','tstat','hose','fan','belt'].includes(id)&&S.key!=='off')return say('Turn the key off first.');
+  const bad=!!S.cf[id]||(id==='o2'&&!!S.cf.o2h);delete S.cf[id];if(id==='o2')delete S.cf.o2h;S.newParts.add(id);addWork('Replace '+c.name.toLowerCase(),c.mins,c.name,c.price);
   toTray(id.replace(/\d$/,''),c.name,bad);
   if(id==='bat'){S.jump=false;S.drain=0;syncJump()}
   say(c.name+' replaced.');S.found[id]=null;sfx('plug');
@@ -1475,6 +1558,15 @@ function act(a,el){
   if(a==='inspectplug'||a==='replaceplug'){const n=el.dataset.n;if(!S.unplug['coil'+n])return say('Unplug and lift ignition coil '+n+' first.');
     if(a==='inspectplug'){addWork('Remove and check spark plug '+n,8);S.found['coil'+n]=S.cf['plug'+n]==='worn'?'Spark plug '+n+': electrode badly worn, gap about 1.6 mm (spec 0.8 mm).':'Spark plug '+n+': light tan colour, gap 0.8 mm. Good.'}
     else{const bad=!!S.cf['plug'+n];delete S.cf['plug'+n];S.newParts.add('coil'+n);addWork('Replace spark plug '+n,12,'Spark plug '+n,16);toTray('plug','Spark plug '+n,bad);say('Spark plug '+n+' replaced.');S.found['coil'+n]=null}}
+  if(a==='beltlook'){addWork('Inspect drive belt',3);S.found.belt=S.cf.belt==='broken'?'The belt has snapped and is hanging off the pulleys. Nothing is turning the alternator or the water pump.':S.cf.belt==='worn'?'The ribs are glazed shiny and cracked across. It’s slipping.':'Ribs are clean with no cracks. Tension is good.'}
+  if(a==='coollvl'){addWork('Check coolant level',1);const c=S.coolant;S.found.res=(S.temp>80&&S.key!=='off'?'Careful: it’s hot and under pressure. ':'')+(c>0.85?'Level is between MIN and MAX. Good.':c>0.5?'Level is below MIN.':c>0.2?'Very low. Barely any coolant in the bottle.':'Empty.')+(S.hg?' There are bubbles in the coolant with the engine running.':'')}
+  if(a==='topup'){if(S.temp>80){say('Let it cool down first. Opening a hot cooling system sprays boiling coolant.');return}S.coolant=1;addWork('Top up coolant',5,'Coolant',15);S.found.res='Topped up to MAX.';sfx('plug')}
+  if(a==='comp'){if(S.seized){S.found.eng='The engine won’t turn over, so there is nothing to measure.'}else{addWork('Compression test',30);const r=[1,2,3,4].map(n=>n===2&&S.hg?92:n===3&&S.hg?148:Math.round(172+rnd(-5,5)));
+    S.compRes='<table class="ftbl"><tr><th>Cylinder</th><th>Pressure</th><th></th></tr>'+r.map((v,i)=>'<tr><td>'+(i+1)+'</td><td><b>'+v+' psi</b></td><td style="text-align:left"><span style="display:inline-block;height:8px;border-radius:4px;background:'+(v<140?'var(--err)':'var(--ok)')+';width:'+Math.round(v/2)+'px"></span></td></tr>').join('')+'</table>';
+    S.found.eng='Spec is 160 to 185 psi, within 10% of each other.'+(HINTS&&S.hg?' Cylinder 2 is far too low, and so is 3 next to it: a failed head gasket between them.':'')}}
+  if(a==='dipstick'){addWork('Check engine oil',1);S.found.eng=S.hg?'The oil is milky, like a caramel milkshake. Coolant is getting into it.':S.seized?'Barely any oil, and it smells burnt.':'Oil is between the marks and a clean amber colour.'}
+  if(a==='gasket'){if(S.key!=='off')return say('Turn the key off first.');if(S.seized)return say('The engine has seized. A head gasket won’t fix that.');const bad=S.hg;S.hg=false;S.dmg=0;S.coolant=1;S.compRes=null;addWork('Replace head gasket',360,'Head gasket set',220);toTray('gasket','Head gasket',bad);S.found.eng='New head gasket fitted, coolant and oil changed.';sfx('plug')}
+  if(a==='newengine'){if(S.key!=='off')return say('Turn the key off first.');const bad=S.seized||S.hg;S.seized=false;S.hg=false;S.dmg=0;S.coolant=1;S.cookT=0;S.compRes=null;addWork('Fit replacement engine',600,'Replacement engine',3800);toTray('engine','Old engine',bad);S.found.eng='Replacement engine fitted.';sfx('plug')}
   if(a==='filter'){if(S.key!=='off')return say('Turn the key off first.');const bad=!!S.cf.filter;delete S.cf.filter;addWork('Replace fuel filter',25,'Fuel filter',30);toTray('filter','Fuel filter',bad);say('Fuel filter replaced.');sfx('plug')}
   if(a==='feelhose'){addWork('Feel top radiator hose',1);const T=Math.round(S.temp);
     S.found.tstat=!running()?'The engine is off. Start it and let it warm up, then feel the hose.':S.cf.tstat&&T<70?'The top hose is already warm, but the engine is only '+T+' °C.'+(HINTS?' Coolant is flowing through the radiator too early: the thermostat is stuck open.':''):T<80?'The top hose is still cold at '+T+' °C.'+(HINTS?' The thermostat is shut while the engine warms up. That’s normal.':''):'The top hose is hot.'+(HINTS?' The thermostat has opened at full temperature. Normal.':'')}
@@ -1486,6 +1578,7 @@ function act(a,el){
 }
 function modal(html){$('modalCard').innerHTML=html;$('modal').hidden=false}
 $('modal').addEventListener('click',e=>{if(e.target.id==='modal'||e.target.closest('[data-closemodal]'))$('modal').hidden=true;
+  if(e.target.closest('[data-restart]')){restartJob();return}
   const n=e.target.closest('[data-newjob]');if(n){$('modal').hidden=true;const [m,l]=n.dataset.newjob.split(':');newJob(m,+l||0)}
   if(e.target.closest('[data-answer]')){$('ans').innerHTML='<div class="result bad">'+S.faults.map(id=>{const f=FAULTS.find(x=>x.id===id);return '<b>The fault:</b> '+esc(f.title)+'.<br><b>Fix:</b> '+esc(f.fix)}).join('<br><br>')+'</div>'}});
 $('modal').addEventListener('change',e=>{const c=e.target.closest('[data-sbf]');if(!c)return;c.checked?S.sandbox.add(c.dataset.sbf):S.sandbox.delete(c.dataset.sbf);applySandbox()});
@@ -1507,6 +1600,10 @@ function jobCard(){
 $('jobBtn').onclick=jobCard;
 $('invBtn').onclick=()=>{const done=S.labour.filter(l=>l[0]);
   modal('<h2>Work done</h2>'+(done.length?'<table>'+done.map(l=>'<tr><td>'+esc(l[0])+'</td><td>'+l[1]+' min</td></tr>').join('')+'</table>':'<p>Nothing yet.</p>')+'<p class="small">Parts replaced: '+S.parts.length+'. Old parts go in the tray at the bottom of the bay: click one to bench-test it.</p><div class="acts"><button class="btn" type="button" data-closemodal>Close</button></div>')};
+function seizedCard(){modal('<h2>The engine has seized</h2><p>It got so hot the pistons welded themselves to the cylinders. In a real workshop this car now needs a replacement engine.</p><p class="small">Watch the temperature gauge: past about 118 °C the engine starts getting damaged, and the head gasket goes first.</p><div class="acts"><button class="btn primary" type="button" data-restart>Restart this car</button><button class="btn" type="button" data-newjob="'+(S.mode==='challenge'?'challenge:'+S.level:S.mode)+'">Next car</button><button class="btn" type="button" data-closemodal>Look around</button></div>')}
+function restartJob(){const keep={mode:S.mode,level:S.level,faults:S.faults.slice(),paint:S.paint,sandbox:new Set(S.sandbox)};
+  newJob(keep.mode,keep.level,keep);$('modal').hidden=true;say('Same car, fresh start. Key is off.')}
+$('restartBtn').onclick=()=>modal('<h2>Restart?</h2><p>Start this car again from cold with the same '+(S.mode==='practice'?'setup':'fault'+(S.faults.length>1?'s':''))+', or get a different car.</p><div class="acts"><button class="btn primary" type="button" data-restart>Restart this car</button><button class="btn" type="button" data-newjob="'+(S.mode==='challenge'?'challenge:'+S.level:S.mode)+'">Next car</button><button class="btn" type="button" data-closemodal>Cancel</button></div>');
 function finishJob(){
   if(S.mode!=='challenge'){modal('<h2>'+(S.mode==='sandbox'?'Sandbox':'Practice bay')+'</h2><p>There is nothing to hand back here. Challenge gives you a car with a fault and grades the job.</p><div class="acts"><button class="btn primary" type="button" data-newjob="challenge:1">Start a level 1 challenge</button><button class="btn" type="button" data-closemodal>Keep going</button></div>');return}
   const left=[],still=S.faults.filter(id=>faultOn(FAULTS.find(f=>f.id===id)));
@@ -1516,6 +1613,8 @@ function finishJob(){
   if(S.jump)left.push('The jump pack is still connected.');
   if(S.gauge)left.push('The fuel pressure gauge is still fitted.');
   if(S.drive)left.push('Finish the road test first.');
+  if(S.seized)left.push('The engine has seized. It needs a replacement engine (Engine window), or restart the car.');
+  if(S.hg)left.push('The head gasket has failed from overheating.');
   if(S.key!=='off')left.push('Turn the key off.');
   if(left.length){modal('<h2>Not ready yet</h2><div class="result bad"><ul>'+left.map(l=>'<li>'+esc(l)+'</li>').join('')+'</ul></div><div class="acts"><button class="btn" type="button" data-closemodal>Back to work</button></div>');return}
   const wrong=S.tray.filter(x=>!x.bad).length+(S.badRepairs||0),mins=Math.round(elapsedMin()),tgt={1:10,2:12,3:20}[S.level]||12;
@@ -1532,11 +1631,12 @@ function pickFaults(level){
 }
 let hintsBefore=null;
 let lastPaint=0;
-function newJob(mode,level){hidePop();
+function newJob(mode,level,preset){hidePop();
   if(S&&S.drive)endDrive();
   S=fresh(mode);S.level=mode==='challenge'?(level||2):0;
-  if(typeof setPaint==='function'){let pi=0;if(newJob.started){do{pi=Math.floor(Math.random()*PAINTS.length)}while(pi===lastPaint)}lastPaint=pi;setPaint(pi)}newJob.started=true;
-  if(mode==='challenge'){S.faults=pickFaults(S.level);for(const id of S.faults)FAULTS.find(f=>f.id===id).set(S);S.fault=S.faults[0]}
+  if(typeof setPaint==='function'){let pi=0;if(preset)pi=preset.paint||0;else if(newJob.started){do{pi=Math.floor(Math.random()*PAINTS.length)}while(pi===lastPaint)}lastPaint=pi;setPaint(pi)}newJob.started=true;
+  if(preset&&mode==='sandbox'){S.sandbox=preset.sandbox;applySandbox()}
+  if(mode==='challenge'){S.faults=preset?preset.faults:pickFaults(S.level);for(const id of S.faults)FAULTS.find(f=>f.id===id).set(S);S.fault=S.faults[0]}
   // hints by level
   const hb=$('hintBtn');if(hintsBefore!==null&&!(mode==='challenge'&&S.level!==2)){setHints(hintsBefore);hintsBefore=null}
   if(mode==='challenge'&&S.level!==2){if(hintsBefore===null)hintsBefore=HINTS;setHints(S.level===1)}
@@ -1548,7 +1648,7 @@ function newJob(mode,level){hidePop();
   $('knob').style.transform='rotate(0deg)';syncJump();drawTray();
   document.querySelectorAll('.win').forEach(w=>{if(w.id==='w-comp'||w.id==='w-drive')w.hidden=true});syncRail();
   drawHotspots();drawScan();drawFuel();if(!$('w-diag').hidden)drawDiag();render(true);
-  if(mode==='challenge'||mode==='sandbox')jobCard();
+  if(!preset&&(mode==='challenge'||mode==='sandbox'))jobCard();
 }
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{const m=b.dataset.mode;if(m==='challenge')levelPicker();else newJob(m)});
 
@@ -1573,7 +1673,7 @@ $('soundBtn').onclick=()=>{audioInit();setSound(!A.on)};
 $('hintBtn').onclick=()=>setHints(!HINTS);
 function hideHint(){$('hint').hidden=true;try{localStorage.setItem('cds-hint','1')}catch(e){}}
 $('hintX').onclick=hideHint;
-$('helpBtn').onclick=()=>modal('<h2>How it works</h2><ol><li><b>Practice</b> is a healthy car. <b>Sandbox</b> lets you switch any faults on and watch what changes. <b>Challenge</b> has three levels, from one easy fault with hints to two faults with hints off.</li><li>Read the job card at the top. Turn the key to ON and listen, then hold START to crank.</li><li>Use the scan tool for fault codes, live data and fuel trim. The road test shows faults that only appear under load.</li><li>Click a part in the engine bay to open it. Tap a pin to put the red probe on it (tapping battery − moves the black one). Right-click or long-press a pin to choose which probe, or drag either probe tip.</li><li>Volts: black on battery −. Resistance: unplug first and measure the part side, or unplug both ends to test a wire.</li><li>Replaced parts go in the Old parts tray. Click one to bench-test it and see if it really was faulty.</li><li>Fix it, clear the codes, plug everything back in, key off, then hand the car back.</li></ol><p class="small">Drag to move around the bay, scroll or pinch to zoom. Switch between Front, Bird’s-eye and Side views at the top left, or swipe sideways. The – button on a window minimises it.</p><p class="small">A simplified simulator. The car, readings and faults are made up and don’t match any specific vehicle. On a real car, follow the manufacturer’s repair information and safety rules. MyToolPad accepts no responsibility for work done on a vehicle.</p><div class="acts"><button class="btn primary" type="button" data-closemodal>OK</button></div>');
+$('helpBtn').onclick=()=>modal('<h2>How it works</h2><ol><li><b>Practice</b> is a healthy car. <b>Sandbox</b> lets you switch any faults on and watch what changes. <b>Challenge</b> has three levels, from one easy fault with hints to two faults with hints off.</li><li>Read the job card at the top. Turn the key to ON and listen, then hold START to crank.</li><li>Use the scan tool for fault codes, live data and fuel trim. The road test shows faults that only appear under load.</li><li>Click a part in the engine bay to open it. Tap a pin to put the red probe on it (tapping battery − moves the black one). Right-click or long-press a pin to choose which probe, or drag either probe tip.</li><li>Volts: black on battery −. Resistance: unplug first and measure the part side, or unplug both ends to test a wire.</li><li>Replaced parts go in the Old parts tray. Click one to bench-test it and see if it really was faulty.</li><li>Fix it, clear the codes, plug everything back in, key off, then hand the car back. Restart puts the same car back to the start.</li><li>Keep an eye on the temperature. Past about 118 °C the engine gets damaged: first the head gasket, then it seizes.</li></ol><p class="small">Drag to move around the bay, scroll or pinch to zoom. Switch between Front, Bird’s-eye and Side views at the top left, or swipe sideways. The – button on a window minimises it.</p><p class="small">A simplified simulator. The car, readings and faults are made up and don’t match any specific vehicle. On a real car, follow the manufacturer’s repair information and safety rules. MyToolPad accepts no responsibility for work done on a vehicle.</p><div class="acts"><button class="btn primary" type="button" data-closemodal>OK</button></div>');
 
 /* ================= render loop ================= */
 const TC={x:60,y:54,R:44};
@@ -1630,12 +1730,16 @@ function frame(t){
   }else{SH.ex=SH.ey=0}
   const eng=$('engLayer');if(eng)eng.style.transform='translate('+(SH.ex/V.s).toFixed(2)+'px,'+(SH.ey/V.s).toFixed(2)+'px) rotate('+(SH.ey*0.05).toFixed(3)+'deg)';
   $('shake').style.transform='translate('+(bx/V.s).toFixed(2)+'px,'+(by/V.s).toFixed(2)+'px)';
+  // steam from the engine bay when it's boiling, or with a failed head gasket
+  {const cv=$('steam'),r=stage.getBoundingClientRect();if(cv.width!==Math.round(r.width)){cv.width=r.width;cv.height=r.height}const x=cv.getContext('2d'),boil=S.temp>113||(S.hg&&S.key!=='off');
+   SH.puffs=SH.puffs||[];if(boil&&BAY&&BAY.engine&&!REDUCED&&Math.random()<Math.min(0.9,(S.temp-108)*0.06+(S.hg?0.3:0))){const e=BAY.engine,px=V.x+(e[0]+(e[2]-e[0])*Math.random())*V.s,py=V.y+(e[1]+(e[3]-e[1])*0.35)*V.s;SH.puffs.push({x:px,y:py,r:10+Math.random()*16,a:0.26,vx:rnd(-12,12),vy:rnd(-55,-30)})}
+   x.clearRect(0,0,cv.width,cv.height);for(let i=SH.puffs.length-1;i>=0;i--){const p=SH.puffs[i];p.x+=p.vx*(dt||0.016);p.y+=p.vy*(dt||0.016);p.r+=30*(dt||0.016);p.a-=0.12*(dt||0.016);if(p.a<=0){SH.puffs.splice(i,1);continue}const g=x.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);g.addColorStop(0,'rgba(240,242,245,'+p.a+')');g.addColorStop(1,'rgba(240,242,245,0)');x.fillStyle=g;x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fill()}}
   // cooling fan: spins up and down smoothly
   {const on=fanSpinning();SH.fanSpd=(SH.fanSpd||0)+((on?1:0)-(SH.fanSpd||0))*Math.min(1,(dt||0.016)*(on?1.5:0.5));const imgs=$('fanSpin').children;
    if(imgs.length&&SH.fanSpd>0.02&&!REDUCED){SH.fan=(SH.fan||0)+(dt||0.016)*36*SH.fanSpd;const k=Math.floor(SH.fan)%imgs.length;if(k!==SH.fanK){if(imgs[SH.fanK])imgs[SH.fanK].classList.remove('on');imgs[k].classList.add('on');SH.fanK=k}}
    if(!$('w-rad').hidden){const t=SH.fanSpd>0.5?'The fan is running.':SH.fanSpd>0.02?(on?'The fan is spinning up.':'The fan is slowing down.'):S.key==='off'?'The fan is still. Key is off.':'The fan is still.';if($('fanState').textContent!==t)$('fanState').textContent=t}}
   // spinning alternator: frame rate follows engine speed
-  {const imgs=$('altSpin').children;if(imgs.length&&(running()||cranking())&&!REDUCED){SH.alt=(SH.alt||0)+(dt||0.016)*Math.min(42,8+S.rpm/60);const k=Math.floor(SH.alt)%imgs.length;if(k!==SH.altK){if(imgs[SH.altK])imgs[SH.altK].classList.remove('on');imgs[k].classList.add('on');SH.altK=k}}}
+  {const imgs=$('altSpin').children;if(imgs.length&&(running()||cranking())&&beltDrives()&&!REDUCED){SH.alt=(SH.alt||0)+(dt||0.016)*Math.min(42,8+S.rpm/60);const k=Math.floor(SH.alt)%imgs.length;if(k!==SH.altK){if(imgs[SH.altK])imgs[SH.altK].classList.remove('on');imgs[k].classList.add('on');SH.altK=k}}}
   if(!$('w-scope').hidden&&!document.hidden)drawScope();
   if(!$('w-drive').hidden&&!document.hidden)drawRoad(dt||0.016);
   updateLCD();drawLeads();audioLoop();

@@ -79,10 +79,10 @@ def cyl(name, loc, r, depth, m, comp=None, axis='Z', segs=32, r2=None, bevel=0.0
     if axis == 'X': o.rotation_euler = Euler((0, math.pi/2, 0))
     elif axis == 'Y': o.rotation_euler = Euler((math.pi/2, 0, 0))
     return finish(o, m, comp, bevel, smooth=True)
-def tube(name, pts, r, m, comp=None, res=4):
+def tube(name, pts, r, m, comp=None, res=4, cyclic=False):
     cu = bpy.data.curves.new(name, 'CURVE'); cu.dimensions = '3D'
     cu.bevel_depth = r; cu.bevel_resolution = res; cu.use_fill_caps = True
-    sp = cu.splines.new('BEZIER'); sp.bezier_points.add(len(pts)-1)
+    sp = cu.splines.new('BEZIER'); sp.bezier_points.add(len(pts)-1); sp.use_cyclic_u = cyclic
     for bp, p in zip(sp.bezier_points, pts):
         bp.co = Vector(p); bp.handle_left_type = bp.handle_right_type = 'AUTO'
     o = bpy.data.objects.new(name, cu); B.col.objects.link(o); cu.materials.append(m)
@@ -110,7 +110,7 @@ def setup_render(sc, w, h):
     bg = wd.node_tree.nodes["Background"]; bg.inputs[0].default_value = (0.05,0.055,0.06,1); bg.inputs[1].default_value = 0.35
     sc.world = wd
 
-ENGINE_PREFIX = ("altfin_","altpul_","block","oil_pan","head","valve_cover","vc_rib_","oil_cap","dipstick","timing_cover","crank_pulley","alt_pulley","alternator","belt",
+ENGINE_PREFIX = ("ac_comp","ac_pulley","ps_pump","ps_pulley","tensioner","oil_filter","o2_","maf_","harness_maf","pcv_hose","altfin_","altpul_","block","oil_pan","head","valve_cover","vc_rib_","oil_cap","dipstick","timing_cover","crank_pulley","alt_pulley","alternator","belt",
   "heat_shield","hs_rib_","downpipe","coil","plenum","runner_","throttle_body","tps_","map_","fuel_rail","inj","tstat_housing","ect_","ckp_",
   "harness_inj","harness_coils","harness_map","harness_tps","harness_ect","harness_ckp","lead_")
 def is_engine(o): return o.type in ('MESH','CURVE') and o.name.startswith(ENGINE_PREFIX)
@@ -169,7 +169,9 @@ box("subframe", (0,-0.1,0.0), (1.3,0.12,0.08), underbay, bevel=0.01)
 for s in (-1,1):
     box("inner_fender_%d"%s, (s*0.80,0,0.2), (0.05,1.4,0.55), bay, bevel=0.01)
     box("fender_%d"%s, (s*0.93,-0.02,0.47), (0.22,1.55,0.06), paint, bevel=0.025)
-    box("fender_side_%d"%s, (s*1.03,-0.02,0.2), (0.03,1.55,0.5), paint, bevel=0.01)
+    box("fender_side_%d"%s, (s*1.03,-0.02,0.43), (0.03,1.55,0.14), paint, bevel=0.01)
+    box("sill_%d"%s, (s*1.03,0.95,0.18), (0.03,0.75,0.36), paint, bevel=0.01)
+    box("fender_front_%d"%s, (s*1.03,-0.62,0.2), (0.03,0.32,0.36), paint, bevel=0.01)
     cyl("strut_%d"%s, (s*0.71,0.36,0.40), 0.085, 0.12, bay)
     cyl("strut_top_%d"%s, (s*0.71,0.36,0.47), 0.05, 0.02, rubber)
     for i in range(3):
@@ -207,6 +209,27 @@ for s_ in (-1,1):
     tube("bonnet_strut_%d"%s_, [(s_*0.84,0.70,0.50), tuple((Vector((s_*0.84,0.70,0.50))+top)/2), tuple(top)], 0.012, steel)
 box("rad_support", (0,-0.70,0.45), (1.62,0.08,0.05), bay, bevel=0.01)
 box("front_bumper_top", (0,-0.83,0.40), (1.95,0.14,0.08), paint, bevel=0.03)
+# ---- wheels, arches, front end ----
+rubber_t = mat("tyre", (0.02,0.02,0.022), 0, 0.85, bump=0.4, scale=200)
+rim = mat("rim", (0.55,0.56,0.58), 1, 0.3)
+lens = mat("headlamp", (0.75,0.78,0.8), 0.0, 0.05)
+for s_ in (-1,1):
+    cyl("tyre_%d"%s_, (s_*0.92,0.36,0.02), 0.31, 0.21, rubber_t, axis='X', segs=48)
+    cyl("rim_%d"%s_, (s_*1.03,0.36,0.02), 0.2, 0.02, rim, axis='X', segs=48)
+    for i in range(5):
+        a=i*2*math.pi/5
+        box("spoke_%d_%d"%(s_,i), (s_*1.04,0.36+0.1*math.cos(a),0.02+0.1*math.sin(a)), (0.02,0.035,0.17), rim, bevel=0.004, rot=(a+math.pi/2,0,0))
+    cyl("hub_%d"%s_, (s_*1.045,0.36,0.02), 0.05, 0.03, steel, axis='X')
+    cyl("tub_%d"%s_, (s_*0.75,0.36,0.02), 0.355, 0.12, bay, axis='X', segs=48)
+    box("lamp_%d"%s_, (s_*0.68,-0.86,0.37), (0.36,0.1,0.13), lens, bevel=0.02)
+    box("lamp_back_%d"%s_, (s_*0.68,-0.76,0.37), (0.3,0.12,0.13), blackp, bevel=0.02)
+    cyl("lamp_cap_%d"%s_, (s_*0.68,-0.69,0.38), 0.035, 0.03, blackp, axis='Y')
+box("bumper_face", (0,-0.9,0.22), (1.95,0.1,0.3), paint, bevel=0.03)
+box("grille", (0,-0.95,0.27), (0.7,0.02,0.12), blackp, bevel=0.01)
+for i in range(6):
+    box("grille_bar_%d"%i, (0,-0.962,0.22+i*0.02), (0.66,0.006,0.006), darkalu, bevel=0)
+cyl("horn", (0.32,-0.70,0.36), 0.045, 0.03, red, axis='Y')
+tube("horn_lead", [(0.32,-0.68,0.36),(0.4,-0.6,0.42),(0.5,-0.55,0.42)], 0.005, rubber)
 box("radiator", (0,-0.64,0.22), (1.15,0.04,0.38), darkalu, bevel=0.004, comp="fan")
 box("rad_tank_l", (-0.6,-0.64,0.22), (0.06,0.06,0.4), blackp, bevel=0.01)
 box("rad_tank_r", (0.6,-0.64,0.22), (0.06,0.06,0.4), blackp, bevel=0.01)
@@ -217,17 +240,28 @@ box("hood_latch", (0,-0.67,0.49), (0.12,0.05,0.03), steel, bevel=0.005)
 box("block", (0,0.02,0.20), (0.58,0.30,0.34), darkalu, bevel=0.012)
 box("oil_pan", (0,0.02,0.0), (0.56,0.28,0.08), darkalu, bevel=0.01)
 box("head", (0,0.02,0.40), (0.60,0.28,0.08), alu, bevel=0.01)
-box("valve_cover", (0,0.03,0.47), (0.58,0.23,0.07), blackp, bevel=0.03)
+box("valve_cover", (0,0.03,0.47), (0.58,0.23,0.07), blackp, bevel=0.03, comp="eng")
 for i in range(3):
     box("vc_rib_%d"%i, (-0.14+i*0.14,0.03,0.508), (0.01,0.2,0.008), blackp, bevel=0.003)
-cyl("oil_cap", (-0.27,0.10,0.515), 0.03, 0.025, yellow)
+cyl("oil_cap", (-0.27,0.10,0.515), 0.03, 0.025, yellow, comp="eng")
 tube("dipstick", [(-0.25,-0.13,0.15),(-0.26,-0.2,0.4),(-0.25,-0.22,0.52)], 0.006, steel)
 cyl("dipstick_handle", (-0.25,-0.22,0.53), 0.014, 0.012, yellow)
 box("timing_cover", (-0.31,0.02,0.27), (0.05,0.28,0.38), blackp, bevel=0.02)
 cyl("crank_pulley", (-0.35,-0.06,0.12), 0.075, 0.03, steel, axis='X')
 cyl("alt_pulley", (-0.35,-0.04,0.36), 0.035, 0.03, steel, axis='X', comp="alt")
 cyl("alternator", (-0.40,-0.04,0.36), 0.075, 0.12, alu, axis='X', comp="alt")
-box("belt", (-0.36,-0.05,0.24), (0.025,0.015,0.24), rubber, bevel=0.004, rot=(0.1,0,0))
+cyl("ac_comp", (-0.40,-0.21,0.10), 0.068, 0.15, alu, axis='X')
+cyl("ac_pulley", (-0.35,-0.21,0.10), 0.055, 0.03, steel, axis='X')
+cyl("ps_pump", (-0.41,0.13,0.36), 0.05, 0.1, alu, axis='X')
+cyl("ps_pulley", (-0.35,0.13,0.36), 0.05, 0.025, steel, axis='X')
+cyl("tensioner", (-0.35,-0.13,0.25), 0.028, 0.025, steel, axis='X')
+tube("belt", [(-0.36,-0.06,0.045),(-0.36,-0.275,0.09),(-0.36,-0.16,0.265),(-0.36,-0.075,0.37),(-0.36,0.13,0.41),(-0.36,0.18,0.36),(-0.36,0.06,0.2),(-0.36,0.015,0.11)], 0.009, rubber, comp="belt", cyclic=True)
+box("ps_res", (-0.47,0.25,0.46), (0.07,0.07,0.09), blackp, bevel=0.02)
+cyl("ps_cap", (-0.47,0.25,0.515), 0.028, 0.02, yellow)
+tube("ps_hose", [(-0.47,0.25,0.42),(-0.45,0.2,0.36),(-0.41,0.13,0.33)], 0.012, rubber)
+tube("ac_line1", [(-0.40,-0.21,0.17),(-0.5,-0.3,0.3),(-0.55,-0.6,0.36)], 0.009, alu)
+tube("ac_line2", [(-0.42,-0.19,0.16),(-0.52,0.1,0.32),(-0.42,0.62,0.46)], 0.009, alu)
+cyl("oil_filter", (-0.18,-0.17,0.12), 0.04, 0.09, blue, axis='Y')
 # spinning alternator: slots and a fan ring parented to a rotating empty
 ALT_ROT = bpy.data.objects.new("alt_rot", None); B.col.objects.link(ALT_ROT); ALT_ROT.location = (-0.40,-0.04,0.36)
 for i in range(10):
@@ -243,6 +277,10 @@ box("heat_shield", (0,0.19,0.30), (0.52,0.06,0.2), alushiny, bevel=0.01)
 for i in range(6):
     box("hs_rib_%d"%i, (-0.22+i*0.088,0.222,0.30), (0.012,0.006,0.18), alushiny, bevel=0.002)
 tube("downpipe", [(0.2,0.22,0.2),(0.28,0.35,0.05),(0.3,0.5,-0.05)], 0.04, alushiny)
+cyl("o2_body", (0.15,0.255,0.44), 0.013, 0.06, steel, comp="o2")
+cyl("o2_hex", (0.15,0.255,0.415), 0.018, 0.012, steel, segs=6, comp="o2")
+box("o2_conn", (0.15,0.255,0.49), (0.03,0.026,0.026), grey, comp="o2", bevel=0.003)
+tube("o2_lead", [(0.15,0.255,0.50),(0.1,0.18,0.56),(-0.05,0.15,0.56)], 0.006, rubber)
 
 for n in range(1,5):
     x = -0.21 + (n-1)*0.14; c = "coil%d" % n
@@ -265,6 +303,11 @@ tube("intake_duct", [(0.36,-0.31,0.45),(0.44,-0.31,0.47),(0.50,-0.36,0.44)], 0.0
 for i in range(5):
     cyl("duct_rib_%d"%i, (0.39+i*0.02,-0.31,0.455), 0.058, 0.006, rubber, axis='X', comp="hose")
 box("airbox", (0.57,-0.40,0.36), (0.25,0.30,0.18), blackp, bevel=0.025)
+cyl("maf_tube", (0.47,-0.33,0.46), 0.058, 0.07, blackp, axis='X', comp="maf")
+box("maf_body", (0.47,-0.33,0.525), (0.05,0.05,0.03), blackp, comp="maf", bevel=0.006)
+box("maf_conn", (0.47,-0.36,0.54), (0.034,0.025,0.024), grey, comp="maf", bevel=0.003)
+box("maf_tab", (0.47,-0.374,0.55), (0.012,0.006,0.008), green, comp="maf", bevel=0.002)
+tube("harness_maf", [(0.30,-0.12,0.50),(0.40,-0.25,0.56),(0.47,-0.36,0.555)], 0.006, rubber)
 box("airbox_lid", (0.57,-0.40,0.46), (0.26,0.31,0.03), blackp, bevel=0.012)
 for i in range(4):
     cyl("airbox_clip_%d"%i, (0.45 if i<2 else 0.69,-0.5 if i%2 else -0.3,0.45), 0.008, 0.03, steel)
@@ -318,14 +361,27 @@ for i in range(7):
 box("ecm_conn", (0.58,0.365,0.37), (0.17,0.035,0.05), blackp, comp="ecu", bevel=0.006)
 box("ecm_conn_lever", (0.58,0.35,0.39), (0.18,0.006,0.012), grey, comp="ecu", bevel=0.002)
 
-box("coolant_res", (0.62,0.08,0.34), (0.12,0.18,0.14), white, bevel=0.03)
+box("coolant_res", (0.62,0.08,0.34), (0.12,0.18,0.14), white, bevel=0.03, comp="res")
 box("coolant_level", (0.62,0.08,0.31), (0.121,0.181,0.08), fluid, bevel=0.03)
-cyl("coolant_cap", (0.62,0.05,0.42), 0.03, 0.025, blue)
+cyl("coolant_cap", (0.62,0.05,0.42), 0.03, 0.025, blue, comp="res")
 cyl("brake_booster", (-0.36,0.60,0.30), 0.14, 0.12, darkalu, axis='Y')
 cyl("master_cyl", (-0.36,0.50,0.30), 0.03, 0.12, alu, axis='Y')
 box("brake_res", (-0.36,0.48,0.36), (0.09,0.06,0.06), white, bevel=0.015)
 cyl("brake_cap", (-0.36,0.48,0.40), 0.022, 0.02, yellow)
 box("washer_bottle", (0.66,-0.15,0.30), (0.10,0.12,0.16), white, bevel=0.03)
+box("abs_unit", (-0.60,0.44,0.40), (0.12,0.10,0.09), alu, bevel=0.008)
+box("abs_ecu", (-0.60,0.44,0.455), (0.12,0.10,0.025), blackp, bevel=0.006)
+for i,(y1,z1) in enumerate([(0.30,0.40),(0.20,0.30),(0.36,0.15),(0.0,0.35)]):
+    tube("brake_line_%d"%i, [(-0.55,0.44,0.40),(-0.45,0.49+i*0.01,0.36),(-0.66+i*0.02,y1,z1)], 0.004, copper)
+cyl("evap_can", (0.40,0.58,0.35), 0.05, 0.16, blackp)
+tube("evap_hose", [(0.40,0.58,0.43),(0.3,0.45,0.5),(0.12,-0.25,0.52)], 0.006, rubber)
+tube("vac_hose", [(-0.25,-0.30,0.52),(-0.3,0.1,0.56),(-0.36,0.48,0.40)], 0.012, rubber)
+tube("pcv_hose", [(0.2,0.12,0.51),(0.25,-0.05,0.56),(0.22,-0.24,0.52)], 0.009, rubber)
+for s_ in (-1,1):
+    box("mount_%d"%s_, (s_*0.36,0.02,0.25), (0.08,0.10,0.08), rubber, bevel=0.01)
+tube("gnd_strap", [(-0.29,0.12,0.33),(-0.5,0.18,0.30),(-0.72,0.2,0.32)], 0.006, steel)
+for i in range(6):
+    box("clip_%d"%i, (0.42-i*0.16,0.145,0.545), (0.02,0.03,0.02), blackp, bevel=0.003)
 cyl("washer_cap", (0.66,-0.15,0.39), 0.018, 0.02, blue)
 
 H = rubber
@@ -386,33 +442,58 @@ st.render.filepath = OUT + "/tank.webp"
 sr = bpy.data.scenes.new("RadiatorFan"); B.col = sr.collection
 fins = mat("radfins", (0.12,0.12,0.13), 0.9, 0.55, bump=0.8, scale=900)
 box("r_floor", (0,0,-0.5), (3,3,0.02), floor, bevel=0)
-box("r_core", (0,0.03,0), (1.0,0.03,0.42), fins, bevel=0.004)
+box("r_core", (0,0.03,0), (1.06,0.03,0.5), fins, bevel=0.004)
+for i in range(26):
+    box("r_fin_%d"%i, (-0.51+i*0.0408,0.012,0), (0.004,0.006,0.5), alu, bevel=0)
 for s_ in (-1,1):
     box("r_tank_%d"%s_, (s_*0.53,0.03,0), (0.07,0.07,0.46), blackp, bevel=0.012)
 cyl("r_cap", (0.53,0.03,0.25), 0.03, 0.035, steel)
 tube("r_upper_hose", [(0.53,-0.02,0.15),(0.45,-0.25,0.2),(0.35,-0.45,0.25)], 0.025, rubber)
 tube("r_lower_hose", [(-0.53,-0.02,-0.15),(-0.45,-0.25,-0.2),(-0.35,-0.45,-0.25)], 0.025, rubber)
-box("r_shroud", (0.0,-0.005,0.0), (0.82,0.03,0.40), blackp, bevel=0.02)
-cyl("r_ring", (0.0,-0.03,0.0), 0.185, 0.03, rubber, axis='Y', segs=64)
-cyl("r_ring_in", (0.0,-0.032,0.0), 0.172, 0.034, floor, axis='Y', segs=64)
-for i in range(4):
-    a = i*math.pi/2+math.pi/4
-    box("r_strut_%d"%i, (0.10*math.cos(a),-0.06,0.10*math.sin(a)), (0.2,0.012,0.014), blackp, bevel=0.003, rot=(0,-a,0))
-cyl("r_motor", (0,-0.08,0), 0.05, 0.07, darkalu, axis='Y', comp="fan")
-box("r_conn", (0.0,-0.125,0.065), (0.05,0.03,0.03), grey, comp="fan", bevel=0.004)
-box("r_tab", (0.0,-0.125,0.085), (0.018,0.01,0.008), green, comp="fan", bevel=0.002)
-tube("r_loom", [(0.0,-0.14,0.065),(0.12,-0.2,0.18),(0.3,-0.3,0.3)], 0.008, rubber)
-FAN_ROT = bpy.data.objects.new("fan_rot", None); B.col.objects.link(FAN_ROT); FAN_ROT.location = (0,-0.05,0)
+def bladed(name, r0, r1, w0, w1, pitch, m):
+    me = bpy.data.meshes.new(name); bm = bmesh.new()
+    pts = [(-w0/2, r0), (w0/2, r0), (w1/2, r1), (-w1/2, r1)]
+    vs = []
+    for (x, z) in pts:
+        vs.append(bm.verts.new((x, -0.004, z)))
+    for (x, z) in pts:
+        vs.append(bm.verts.new((x, 0.004, z)))
+    bm.faces.new(vs[0:4]); bm.faces.new(vs[4:8][::-1])
+    for i in range(4):
+        j = (i+1) % 4; bm.faces.new((vs[i], vs[j], vs[4+j], vs[4+i]))
+    for v in bm.verts:   # twist the blade about its long axis
+        t = (v.co.z - r0) / (r1 - r0); ang = pitch * (1 - 0.35*t)
+        x, y = v.co.x, v.co.y
+        v.co.x = x*math.cos(ang) - y*math.sin(ang); v.co.y = x*math.sin(ang) + y*math.cos(ang)
+    bm.to_mesh(me); bm.free()
+    o = bpy.data.objects.new(name, me); B.col.objects.link(o); o.data.materials.append(m)
+    bv = o.modifiers.new("bev","BEVEL"); bv.width = 0.002; bv.segments = 2
+    for p in o.data.polygons: p.use_smooth = True
+    return o
+fanblk = mat("fanblade", (0.02,0.02,0.022), 0, 0.42)
+shroud = box("r_shroud", (0.0,-0.01,0.0), (0.84,0.025,0.42), blackp, bevel=0.015)
+hole = bpy.data.objects.new("r_hole", bpy.data.meshes.new("r_hole")); bmh = bmesh.new()
+bmesh.ops.create_cone(bmh, cap_ends=True, segments=64, radius1=0.19, radius2=0.19, depth=0.2); bmh.to_mesh(hole.data); bmh.free()
+hole.rotation_euler = (math.pi/2,0,0); B.col.objects.link(hole); hole.hide_render = True; hole.hide_viewport = True
+bo = shroud.modifiers.new("hole","BOOLEAN"); bo.operation = 'DIFFERENCE'; bo.object = hole
+ring = cyl("r_ring", (0.0,-0.035,0.0), 0.2, 0.045, blackp, axis='Y', segs=64)
+bo2 = ring.modifiers.new("hole","BOOLEAN"); bo2.operation = 'DIFFERENCE'; bo2.object = hole
+for i in range(3):
+    a = i*2*math.pi/3 + math.pi/2
+    box("r_strut_%d"%i, (0.11*math.cos(a),-0.075,0.11*math.sin(a)), (0.17,0.01,0.012), blackp, bevel=0.003, rot=(0,-a,0))
+cyl("r_motor", (0,-0.085,0), 0.048, 0.06, darkalu, axis='Y', comp="fan")
+box("r_conn", (0.0,-0.10,0.075), (0.05,0.03,0.03), grey, comp="fan", bevel=0.004)
+box("r_tab", (0.0,-0.10,0.095), (0.018,0.01,0.008), green, comp="fan", bevel=0.002)
+tube("r_loom", [(0.0,-0.115,0.09),(0.12,-0.2,0.2),(0.3,-0.3,0.3)], 0.008, rubber)
+FAN_ROT = bpy.data.objects.new("fan_rot", None); B.col.objects.link(FAN_ROT); FAN_ROT.location = (0,-0.04,0)
 FAN_ROT.rotation_mode = 'XYZ'
-hub = cyl("r_hub", (0,0,0), 0.04, 0.03, blackp, axis='Y'); hub.parent = FAN_ROT; hub.location = (0,0,0)
+hub = cyl("r_hub", (0,0,0), 0.05, 0.035, fanblk, axis='Y'); hub.parent = FAN_ROT
 for i in range(7):
-    a = i*2*math.pi/7
-    bl = box("r_blade_%d"%i, (0.1*math.cos(a), 0, 0.1*math.sin(a)), (0.13,0.006,0.055), blackp, bevel=0.004, rot=(0.0,-a,0.0))
-    bl.rotation_mode = 'YXZ'; bl.rotation_euler = (0.45,-a,0.0)
-    bl.parent = FAN_ROT
-light("RKey", 'AREA', (0.3,-1.2,0.9), 45, 1.6, target=(0,0,0))
+    bl = bladed("r_blade_%d"%i, 0.04, 0.178, 0.05, 0.085, 0.55, fanblk)
+    bl.parent = FAN_ROT; bl.rotation_euler = (0, i*2*math.pi/7, 0)
+light("RKey", 'AREA', (0.5,-1.1,0.9), 70, 1.6, target=(0,0,0))
 light("RFill", 'AREA', (-0.9,-0.7,0.4), 10, 1.0, target=(0,0,0))
-cam3 = camera(sr, (0.0,-1.05,0.38), (0,0,0.0), 40)
+cam3 = camera(sr, (0.32,-0.95,0.42), (0.02,0,0.0), 38)
 setup_render(sr, 900, 640)
 sr.render.filepath = OUT + "/radiator.webp"
 
