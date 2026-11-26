@@ -114,7 +114,13 @@ ENGINE_PREFIX = ("altfin_","altpul_","block","oil_pan","head","valve_cover","vc_
   "heat_shield","hs_rib_","downpipe","coil","plenum","runner_","throttle_body","tps_","map_","fuel_rail","inj","tstat_housing","ect_","ckp_",
   "harness_inj","harness_coils","harness_map","harness_tps","harness_ect","harness_ckp","lead_")
 def is_engine(o): return o.type in ('MESH','CURVE') and o.name.startswith(ENGINE_PREFIX)
+def wm(o):
+    m = o.matrix_basis.copy()
+    return wm(o.parent) @ o.matrix_parent_inverse @ m if o.parent else m
+def fix_matrices(sc):
+    for o in sc.objects: o.matrix_world = wm(o)
 def export(sc, cam, path, LW=None, LH=None):
+    fix_matrices(sc)
     dg = sc.view_layers[0].depsgraph; dg.update()
     W = LW or sc.render.resolution_x; H = LH or sc.render.resolution_y
     pts = {}
@@ -201,11 +207,11 @@ for s_ in (-1,1):
     tube("bonnet_strut_%d"%s_, [(s_*0.84,0.70,0.50), tuple((Vector((s_*0.84,0.70,0.50))+top)/2), tuple(top)], 0.012, steel)
 box("rad_support", (0,-0.70,0.45), (1.62,0.08,0.05), bay, bevel=0.01)
 box("front_bumper_top", (0,-0.83,0.40), (1.95,0.14,0.08), paint, bevel=0.03)
-box("radiator", (0,-0.64,0.22), (1.15,0.04,0.38), darkalu, bevel=0.004)
+box("radiator", (0,-0.64,0.22), (1.15,0.04,0.38), darkalu, bevel=0.004, comp="fan")
 box("rad_tank_l", (-0.6,-0.64,0.22), (0.06,0.06,0.4), blackp, bevel=0.01)
 box("rad_tank_r", (0.6,-0.64,0.22), (0.06,0.06,0.4), blackp, bevel=0.01)
-cyl("rad_cap", (0.6,-0.64,0.44), 0.025, 0.03, steel)
-cyl("fan_shroud", (0.12,-0.585,0.22), 0.17, 0.04, blackp, axis='Y')
+cyl("rad_cap", (0.6,-0.64,0.44), 0.025, 0.03, steel, comp="fan")
+cyl("fan_shroud", (0.12,-0.585,0.22), 0.17, 0.04, blackp, axis='Y', comp="fan")
 box("hood_latch", (0,-0.67,0.49), (0.12,0.05,0.03), steel, bevel=0.005)
 
 box("block", (0,0.02,0.20), (0.58,0.30,0.34), darkalu, bevel=0.012)
@@ -339,11 +345,19 @@ for n in range(1,5):
 light("KeyPanel", 'AREA', (0.2,-0.4,2.4), 260, 2.2)
 light("Fill", 'AREA', (-1.6,-1.2,1.4), 60, 1.5, color=(0.85,0.9,1))
 light("Rim", 'AREA', (1.2,1.6,1.6), 90, 1.2, color=(1,0.92,0.8))
-cam = camera(sc, (0,-1.55,1.70), (0,0.10,0.42), 33)
+PAINT_MATS = {"bay_paint", "bay_baymetal"}
+def is_paint(o): return o.type in ('MESH','CURVE') and any(m and m.name in PAINT_MATS for m in o.data.materials)
+# camera views: name, file suffix, camera position, target, lens
+VIEWS = [("front", "", (0,-1.55,1.70), (0,0.10,0.42), 33),
+         ("top", "-top", (0,-0.12,2.75), (0,0.02,0.20), 31),
+         ("side", "-side", (-1.45,-1.25,1.55), (-0.04,0.05,0.34), 30)]
+ONLY = os.environ.get("VIEWS")
+PASSES = set((os.environ.get("PASSES") or "main,engine,paint,alt").split(","))
+cams = {}
+for vname, suf, loc, tgt, lens in VIEWS:
+    cams[vname] = camera(sc, loc, tgt, lens)
 setup_render(sc, 3000, 2001)
 sc.render.image_settings.quality = 88
-sc.render.filepath = OUT + "/bay.webp"
-export(sc, cam, OUT + "/bay.json", 2000, 1334)
 
 # ======================= FUEL TANK ACCESS =======================
 st = bpy.data.scenes.new("TankAccess"); B.col = st.collection
@@ -367,37 +381,108 @@ light("TFill", 'AREA', (-0.8,0.4,0.9), 18, 1.0)
 cam2 = camera(st, (0,-0.38,0.62), (0,0,0.0), 40)
 setup_render(st, 900, 640)
 st.render.filepath = OUT + "/tank.webp"
-export(st, cam2, OUT + "/tank.json")
+
+# ======================= RADIATOR AND COOLING FAN (seen from the engine side) =======================
+sr = bpy.data.scenes.new("RadiatorFan"); B.col = sr.collection
+fins = mat("radfins", (0.12,0.12,0.13), 0.9, 0.55, bump=0.8, scale=900)
+box("r_floor", (0,0,-0.5), (3,3,0.02), floor, bevel=0)
+box("r_core", (0,0.03,0), (1.0,0.03,0.42), fins, bevel=0.004)
+for s_ in (-1,1):
+    box("r_tank_%d"%s_, (s_*0.53,0.03,0), (0.07,0.07,0.46), blackp, bevel=0.012)
+cyl("r_cap", (0.53,0.03,0.25), 0.03, 0.035, steel)
+tube("r_upper_hose", [(0.53,-0.02,0.15),(0.45,-0.25,0.2),(0.35,-0.45,0.25)], 0.025, rubber)
+tube("r_lower_hose", [(-0.53,-0.02,-0.15),(-0.45,-0.25,-0.2),(-0.35,-0.45,-0.25)], 0.025, rubber)
+box("r_shroud", (0.0,-0.005,0.0), (0.82,0.03,0.40), blackp, bevel=0.02)
+cyl("r_ring", (0.0,-0.03,0.0), 0.185, 0.03, rubber, axis='Y', segs=64)
+cyl("r_ring_in", (0.0,-0.032,0.0), 0.172, 0.034, floor, axis='Y', segs=64)
+for i in range(4):
+    a = i*math.pi/2+math.pi/4
+    box("r_strut_%d"%i, (0.10*math.cos(a),-0.06,0.10*math.sin(a)), (0.2,0.012,0.014), blackp, bevel=0.003, rot=(0,-a,0))
+cyl("r_motor", (0,-0.08,0), 0.05, 0.07, darkalu, axis='Y', comp="fan")
+box("r_conn", (0.0,-0.125,0.065), (0.05,0.03,0.03), grey, comp="fan", bevel=0.004)
+box("r_tab", (0.0,-0.125,0.085), (0.018,0.01,0.008), green, comp="fan", bevel=0.002)
+tube("r_loom", [(0.0,-0.14,0.065),(0.12,-0.2,0.18),(0.3,-0.3,0.3)], 0.008, rubber)
+FAN_ROT = bpy.data.objects.new("fan_rot", None); B.col.objects.link(FAN_ROT); FAN_ROT.location = (0,-0.05,0)
+FAN_ROT.rotation_mode = 'XYZ'
+hub = cyl("r_hub", (0,0,0), 0.04, 0.03, blackp, axis='Y'); hub.parent = FAN_ROT; hub.location = (0,0,0)
+for i in range(7):
+    a = i*2*math.pi/7
+    bl = box("r_blade_%d"%i, (0.1*math.cos(a), 0, 0.1*math.sin(a)), (0.13,0.006,0.055), blackp, bevel=0.004, rot=(0.0,-a,0.0))
+    bl.rotation_mode = 'YXZ'; bl.rotation_euler = (0.45,-a,0.0)
+    bl.parent = FAN_ROT
+light("RKey", 'AREA', (0.3,-1.2,0.9), 45, 1.6, target=(0,0,0))
+light("RFill", 'AREA', (-0.9,-0.7,0.4), 10, 1.0, target=(0,0,0))
+cam3 = camera(sr, (0.0,-1.05,0.38), (0,0,0.0), 40)
+setup_render(sr, 900, 640)
+sr.render.filepath = OUT + "/radiator.webp"
+
+def holdout_all(scene, keep):
+    for o in scene.objects:
+        if o.type in ('MESH','CURVE'): o.is_holdout = not keep(o)
+def crop_box(scene, cam, objs, LW, LH):
+    fix_matrices(scene)
+    xs=[];ys=[]
+    for o in objs:
+        for v in o.data.vertices:
+            q = world_to_camera_view(scene, cam, o.matrix_world @ v.co); xs.append(q.x); ys.append(q.y)
+    m=0.01; x0,x1,y0,y1 = max(0,min(xs)-m),min(1,max(xs)+m),max(0,min(ys)-m),min(1,max(ys)+m)
+    r = scene.render; r.use_border = True; r.use_crop_to_border = True
+    r.border_min_x, r.border_max_x, r.border_min_y, r.border_max_y = x0,x1,y0,y1
+    return [round(x0*LW),round((1-y1)*LH),round(x1*LW),round((1-y0)*LH)]
+def reset(scene):
+    for o in scene.objects:
+        if o.type in ('MESH','CURVE'): o.is_holdout = False
+    scene.render.film_transparent = False; scene.render.image_settings.color_mode = 'RGB'; scene.render.use_border = False
+
+for vname, suf, loc, tgt, lens in VIEWS:
+    if ONLY and vname not in ONLY.split(","): continue
+    cam = cams[vname]; sc.camera = cam
+    jpath = OUT + "/bay%s.json" % suf
+    export(sc, cam, jpath, 2000, 1334)
+    if SAMPLES <= 0: continue
+    reset(sc); sc.render.filepath = OUT + "/bay%s.webp" % suf
+    if "main" in PASSES: bpy.ops.render.render(write_still=True, scene=sc.name)
+    # engine-only layer
+    holdout_all(sc, is_engine); sc.render.film_transparent = True; sc.render.image_settings.color_mode = 'RGBA'
+    sc.render.filepath = OUT + "/bay-engine%s.webp" % suf
+    if "engine" in PASSES: bpy.ops.render.render(write_still=True, scene=sc.name)
+    # paint mask (alpha = painted body panels), so each car can be a different colour
+    holdout_all(sc, is_paint); sc.render.filepath = OUT + "/paint%s.webp" % suf
+    if "paint" in PASSES:
+        smp = sc.cycles.samples; sc.cycles.samples = 8
+        bpy.ops.render.render(write_still=True, scene=sc.name); sc.cycles.samples = smp
+    # spinning alternator sprite
+    ACC = ("alternator","alt_pulley","altfin_","altpul_")
+    holdout_all(sc, lambda o: o.name.startswith(ACC))
+    box_ = crop_box(sc, cam, [o for o in sc.objects if o.type=='MESH' and o.name.startswith(ACC)], 2000, 1334)
+    with open(jpath) as f: J=json.load(f)
+    J["acc"]={"box":box_,"frames":6}
+    with open(jpath,"w") as f: json.dump(J,f)
+    for i in range(6 if "alt" in PASSES else 0):
+        ALT_ROT.rotation_euler = (i*(2*math.pi/10)/6,0,0)
+        sc.render.filepath = OUT + "/alt%s_%d.webp" % (suf, i)
+        bpy.ops.render.render(write_still=True, scene=sc.name)
+    ALT_ROT.rotation_euler = (0,0,0); reset(sc)
+
+if not ONLY or "tank" in ONLY.split(","):
+    export(st, cam2, OUT + "/tank.json")
+    if SAMPLES > 0: bpy.ops.render.render(write_still=True, scene=st.name)
+if not ONLY or "radiator" in ONLY.split(","):
+    export(sr, cam3, OUT + "/radiator.json")
+    if SAMPLES > 0:
+        reset(sr); bpy.ops.render.render(write_still=True, scene=sr.name)
+        blades = [o for o in sr.objects if o.name.startswith(("r_blade_","r_hub"))]
+        holdout_all(sr, lambda o: o.name.startswith(("r_blade_","r_hub")))
+        sr.render.film_transparent = True; sr.render.image_settings.color_mode = 'RGBA'
+        fb = crop_box(sr, cam3, blades, 900, 640)
+        with open(OUT + "/radiator.json") as f: J=json.load(f)
+        J["fan"]={"box":fb,"frames":6}
+        with open(OUT + "/radiator.json","w") as f: json.dump(J,f)
+        for i in range(6):
+            FAN_ROT.rotation_euler = (0, i*(2*math.pi/7)/6, 0)
+            sr.render.filepath = OUT + "/fan_%d.webp" % i
+            bpy.ops.render.render(write_still=True, scene=sr.name)
+        FAN_ROT.rotation_euler = (0,0,0); reset(sr)
 
 bpy.ops.wm.save_as_mainfile(filepath=HERE + "/engine-bay.blend")
-if SAMPLES > 0:
-    for s in (sc, st):
-        bpy.ops.render.render(write_still=True, scene=s.name)
-    # engine-only layer: same lighting and shadows, everything else hidden from camera, transparent background
-    for o in sc.objects:
-        if o.type in ('MESH','CURVE') and not is_engine(o): o.is_holdout = True
-    sc.render.film_transparent = True
-    sc.render.image_settings.color_mode = 'RGBA'
-    sc.render.filepath = OUT + "/bay-engine.webp"
-    bpy.ops.render.render(write_still=True, scene=sc.name)
-    # spinning alternator sprite: only the alternator, cropped, 6 frames through one slot pitch
-    ACC = ("alternator","alt_pulley","altfin_","altpul_")
-    for o in sc.objects:
-        if o.type in ('MESH','CURVE'): o.is_holdout = not o.name.startswith(ACC)
-    xs=[];ys=[]
-    for o in sc.objects:
-        if o.type=='MESH' and o.name.startswith(ACC):
-            for v in o.data.vertices:
-                q = world_to_camera_view(sc, cam, o.matrix_world @ v.co); xs.append(q.x); ys.append(q.y)
-    m=0.01; x0,x1,y0,y1 = max(0,min(xs)-m),min(1,max(xs)+m),max(0,min(ys)-m),min(1,max(ys)+m)
-    r = sc.render; r.use_border = True; r.use_crop_to_border = True
-    r.border_min_x, r.border_max_x, r.border_min_y, r.border_max_y = x0,x1,y0,y1
-    with open(OUT+"/bay.json") as f: J=json.load(f)
-    J["acc"]={"box":[round(x0*2000),round((1-y1)*1334),round(x1*2000),round((1-y0)*1334)],"frames":6}
-    with open(OUT+"/bay.json","w") as f: json.dump(J,f)
-    for i in range(6):
-        ALT_ROT.rotation_euler = (i*(2*math.pi/10)/6,0,0)
-        r.filepath = OUT + "/alt_%d.webp" % i
-        bpy.ops.render.render(write_still=True, scene=sc.name)
-    ALT_ROT.rotation_euler = (0,0,0); r.use_border = False
 print("DONE")

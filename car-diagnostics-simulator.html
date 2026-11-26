@@ -53,9 +53,17 @@ button{font:inherit;color:inherit;cursor:pointer}
 .shake{position:relative;width:2000px;height:1334px}
 .shake img{display:block;width:2000px;height:1334px;user-select:none;-webkit-user-drag:none;pointer-events:none}
 .shake svg{position:absolute;inset:0;width:2000px;height:1334px}
+#paintC,#paintL{position:absolute;left:0;top:0;width:2000px;height:1334px;pointer-events:none;-webkit-mask-size:100% 100%;mask-size:100% 100%;-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat}
+#paintC{mix-blend-mode:color}#paintL{background:#fff;mix-blend-mode:soft-light}
+.world{transition:opacity .18s ease}
+.views{position:absolute;left:12px;top:12px;display:flex;gap:2px;background:#000b;border:1px solid var(--line2);border-radius:10px;padding:3px;z-index:4}
+.views button{background:none;border:0;border-radius:7px;padding:6px 10px;font-size:13px;color:#d6d3cc}
+.views button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);font-weight:600}
+.views .va{padding:6px 8px;font-size:16px;line-height:1}
 #engLayer{position:absolute;inset:0;will-change:transform;pointer-events:none}
 #engImg{position:absolute;left:0;top:0}
-#altSpin{position:absolute}#altSpin img{position:absolute;inset:0;width:100%!important;height:100%!important;visibility:hidden}#altSpin img.on{visibility:visible}
+#altSpin{position:absolute}#fanSpin img{position:absolute;inset:0;width:100%;height:100%;visibility:hidden}#fanSpin img.on{visibility:visible}
+#fanHs:hover,#pumpHs:hover{border-color:var(--accent)!important}#altSpin img{position:absolute;inset:0;width:100%!important;height:100%!important;visibility:hidden}#altSpin img.on{visibility:visible}
 .hs{fill:rgba(245,180,15,0);stroke:rgba(245,180,15,0);stroke-width:4;cursor:pointer;transition:fill .15s,stroke .15s}
 .hs:hover,.hs:focus{fill:rgba(245,180,15,.12);stroke:rgba(245,180,15,.9);outline:none}
 .hs.sel{fill:rgba(245,180,15,.16);stroke:var(--accent)}
@@ -136,6 +144,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .ftbl .vrow td{border-top:0;padding:0 0 6px;font-size:12.5px;color:#cfccc5;text-align:left}
 .ftbl.parts{margin-top:10px}.ftbl.parts td:nth-child(2){text-align:right;padding-right:6px}
 .dimv{color:var(--dim)}
+.lid text{font-family:system-ui}.lid .lh{font:700 13px system-ui;fill:#1d1f22;letter-spacing:.06em}.lid .ln{font:700 12px system-ui;fill:#1d1f22}.lid .lb{font:700 12px system-ui;fill:#1d1f22}.lid .lc{font:12px system-ui;fill:#33363a}
 .found{margin-top:10px;background:#2a2410;border:1px solid #5c4a12;color:#f2dc9a;border-radius:8px;padding:8px 10px}
 .small{font-size:12.5px;color:var(--dim)}
 
@@ -257,6 +266,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 @media (max-width:1100px){.msg{min-width:220px}}
 @media (max-width:820px){
+  .views{top:auto;bottom:58px;left:8px}.views button{padding:5px 7px;font-size:12px}
   .top{flex-wrap:wrap;gap:6px;padding:6px 8px}
   .jobcard{order:5;flex-basis:100%}
   .top .hide-s{display:none}
@@ -306,12 +316,14 @@ button{font:inherit;color:inherit;cursor:pointer}
   <main class="mid">
     <div class="stage" id="stage" aria-label="Engine bay. Drag to move, scroll or pinch to zoom, click a part to work on it.">
       <div class="world" id="world"><div class="shake" id="shake">
-        <img id="bayImg" src="/assets/car-sim/bay.webp?v=34876ea3" alt="Open engine bay of a small four-cylinder petrol car, viewed from the front" width="2000" height="1334">
-        <div id="engLayer"><img id="engImg" src="/assets/car-sim/bay-engine.webp?v=34876ea3" alt="" aria-hidden="true" width="2000" height="1334"><div id="altSpin" aria-hidden="true"></div></div>
+        <img id="bayImg" src="/assets/car-sim/bay.webp?v=d98cdbf8" alt="Open engine bay of a small four-cylinder petrol car, viewed from the front" width="2000" height="1334">
+        <div class="paintc" id="paintC" hidden></div><div class="paintl" id="paintL" hidden></div>
+        <div id="engLayer"><img id="engImg" src="/assets/car-sim/bay-engine.webp?v=d98cdbf8" alt="" aria-hidden="true" width="2000" height="1334"><div id="altSpin" aria-hidden="true"></div></div>
         <svg id="hotspots" viewBox="0 0 2000 1334"></svg>
       </div></div>
       <div class="tip" id="tip"></div>
       <div class="hint" id="hint">Turn the key to <b>ON</b> and listen. Click any part to open it, then tap a pin to put the red probe on it.<button type="button" id="hintX">Got it</button></div>
+      <div class="views" id="views" role="group" aria-label="Camera view"><button type="button" class="va" data-vstep="-1" aria-label="Previous view">‹</button><button type="button" data-view="front">Front</button><button type="button" data-view="top">Bird’s-eye</button><button type="button" data-view="side">Side</button><button type="button" class="va" data-vstep="1" aria-label="Next view">›</button></div>
       <div class="tray" id="tray" hidden></div>
       <div class="zoomctl"><button type="button" id="zIn" aria-label="Zoom in">+</button><button type="button" id="zOut" aria-label="Zoom out">−</button><button type="button" class="wide" id="zFit">Fit</button><button type="button" class="wide" id="zShow" aria-pressed="false">Show parts</button></div>
     </div>
@@ -322,6 +334,7 @@ button{font:inherit;color:inherit;cursor:pointer}
       <button type="button" data-open="w-diag"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="8" height="22" rx="1"/><rect x="21" y="5" width="8" height="8" rx="1"/><rect x="21" y="19" width="8" height="8" rx="1"/><path d="M11 9h10M11 23h10M11 15h5v-6"/></svg>Wiring diagram</button>
       <div class="sep"></div>
       <button type="button" data-open="w-fuel"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="16" cy="17" r="11"/><path d="M16 17l6-5"/><path d="M9 22h14"/></svg>Fuel pressure</button>
+      <button type="button" data-open="w-rad"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="16" cy="16" r="12"/><circle cx="16" cy="16" r="2.5"/><path d="M16 13.5c0-5 2-8 5-8M18.5 16c5 0 8 2 8 5M16 18.5c0 5-2 8-5 8M13.5 16c-5 0-8-2-8-5"/></svg>Radiator</button>
       <button type="button" data-open="w-tank"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 28V6a2 2 0 012-2h10a2 2 0 012 2v22z"/><path d="M10 8h8v6h-8zM21 12l4 3v9a2 2 0 01-4 0"/></svg>Fuel tank</button>
       <button type="button" data-open="w-drive"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="16" cy="16" r="12"/><circle cx="16" cy="16" r="3"/><path d="M4.5 13.5h23M16 19v9M13.5 17.5 6 25M18.5 17.5 26 25"/></svg>Road test</button>
       <button type="button" id="jumpBtn" aria-pressed="false"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="5" y="9" width="22" height="17" rx="2"/><path d="M10 9V6M22 9V6M17 12l-4 7h5l-3 6"/></svg>Jump pack</button>
@@ -464,12 +477,25 @@ button{font:inherit;color:inherit;cursor:pointer}
   </div>
 </section>
 
+<!-- radiator and fan -->
+<section class="win" id="w-rad" hidden style="left:28%;top:110px;width:470px">
+  <header class="wbar"><h2>Radiator and cooling fan</h2><button class="x" type="button" data-close aria-label="Close">×</button></header>
+  <div class="wbody">
+    <div style="position:relative" id="radBox">
+      <img id="radImg" src="/assets/car-sim/radiator.webp?v=d98cdbf8" alt="Radiator and electric cooling fan, seen from the engine side" style="display:block;width:100%;height:auto;border-radius:8px" width="900" height="640">
+      <div id="fanSpin" aria-hidden="true" style="position:absolute"></div>
+      <button type="button" id="fanHs" aria-label="Cooling fan motor and connector" style="position:absolute;border-radius:12px;background:transparent;border:2px dashed transparent"></button>
+    </div>
+    <p class="small" style="margin-top:8px" id="fanState">The fan is still.</p>
+  </div>
+</section>
+
 <!-- fuel tank -->
 <section class="win" id="w-tank" hidden style="left:30%;top:120px;width:470px">
   <header class="wbar"><h2>Fuel tank, under the rear seat</h2><button class="x" type="button" data-close aria-label="Close">×</button></header>
   <div class="wbody">
     <div style="position:relative">
-      <img src="/assets/car-sim/tank.webp?v=34876ea3" alt="Fuel pump module on top of the fuel tank" style="display:block;width:100%;border-radius:8px" width="900" height="640">
+      <img src="/assets/car-sim/tank.webp?v=d98cdbf8" alt="Fuel pump module on top of the fuel tank" style="display:block;width:100%;height:auto;border-radius:8px" width="900" height="640">
       <button type="button" id="pumpHs" aria-label="Fuel pump" style="position:absolute;left:30%;top:30%;width:44%;height:52%;border-radius:50%;background:transparent;border:2px dashed transparent"></button>
     </div>
     <p class="small" style="margin-top:8px">Click the pump module to work on it.</p>
@@ -492,12 +518,12 @@ const INF=Infinity;
 /* ================= vehicle model ================= */
 const C={
   bat:{name:'Battery',desc:'12 V lead-acid battery. Its negative terminal is the ground reference for most measurements.',price:189,mins:15,pins:{pos:'+ terminal',neg:'− terminal'},noPlug:true},
-  fuse:{name:'Fuse and relay box',desc:'Battery feed comes in, then the EFI fuse powers the engine control module. The main relay feeds the injectors and coils, and the fuel pump relay feeds the pump.',
-        pins:{in:'EFI fuse, battery side',efi:'EFI fuse, output side',main:'Main relay output',fp:'Fuel pump relay output'},noPlug:true,
-        parts:{efi:['EFI fuse (15 A)',3,5],main:['Main relay',38,10],fp:['Fuel pump relay',32,10]}},
+  fuse:{name:'Fuse and relay box',desc:'Battery feed comes in, then the EFI fuse powers the engine control module. The main relay feeds the injectors and coils, the fuel pump relay feeds the pump, and the fan relay runs the cooling fan.',
+        pins:{in:'EFI fuse, battery side',efi:'EFI fuse, output side',main:'Main relay output',fp:'Fuel pump relay output',fan:'Cooling fan relay output'},noPlug:true,
+        parts:{efi:['EFI fuse (15 A)',3,5],main:['Main relay',38,10],fp:['Fuel pump relay',32,10],fanr:['Cooling fan relay',30,10]}},
   ecu:{name:'Engine control module (ECM)',desc:'Reads the sensors and switches the injectors, coils and relays to ground. Unplug it to measure wiring resistance from this end.',price:950,mins:45,
        pins:{E1:'E1 power in',E2:'E2 ground',E10:'E10 crank sensor +',E11:'E11 crank sensor −',E20:'E20 coolant temp signal',E21:'E21 sensor ground',E22:'E22 5 V reference',E23:'E23 MAP signal',E24:'E24 throttle signal',
-             E31:'E31 injector 1',E32:'E32 injector 2',E33:'E33 injector 3',E34:'E34 injector 4',E41:'E41 coil 1',E42:'E42 coil 2',E43:'E43 coil 3',E44:'E44 coil 4',E50:'E50 pump relay control',E51:'E51 main relay control'}},
+             E31:'E31 injector 1',E32:'E32 injector 2',E33:'E33 injector 3',E34:'E34 injector 4',E41:'E41 coil 1',E42:'E42 coil 2',E43:'E43 coil 3',E44:'E44 coil 4',E50:'E50 pump relay control',E51:'E51 main relay control',E52:'E52 fan relay control'}},
   ckp:{name:'Crankshaft position sensor',desc:'Inductive sensor reading a 60-2 tooth wheel. It makes its own AC voltage while the engine turns. No signal, no start.',price:64,mins:30,pins:{a:'1 signal +',b:'2 signal −'},ohms:820},
   ect:{name:'Coolant temperature sensor',desc:'NTC thermistor: resistance falls as the engine warms up. The ECM feeds it 5 V through a resistor and reads the voltage.',price:38,mins:20,pins:{sig:'1 signal',gnd:'2 sensor ground'}},
   map:{name:'MAP sensor',desc:'Measures intake manifold pressure. About 4 V with the engine off, about 1.5 V at idle.',price:92,mins:10,pins:{ref:'1 5 V reference',sig:'2 signal',gnd:'3 sensor ground'}},
@@ -505,6 +531,7 @@ const C={
   pump:{name:'Fuel pump',desc:'Fed by the fuel pump relay. Runs for 2 seconds at key on, then only while cranking or running. You can hear it prime. The fuel filter sits on the line next to it.',price:265,mins:60,pins:{pos:'1 supply',neg:'2 ground'},ohms:1.8},
   alt:{name:'Alternator',desc:'Belt-driven generator that charges the battery while the engine runs. With the engine running, its output terminal should read 13.8 to 14.8 V.',price:420,mins:50,pins:{out:'B+ output terminal'},noPlug:true},
   tstat:{name:'Thermostat housing',desc:'The thermostat stays shut until the coolant reaches about 85 °C, so the engine warms up quickly. Stuck open, the engine runs cold.',price:45,mins:40,pins:{},noPlug:true},
+  fan:{name:'Radiator and cooling fan',desc:'The electric fan pulls air through the radiator when the car is standing still. The engine computer switches it on through the fan relay at about 94 °C and off again at about 90 °C. At speed, air rushing through does the job instead.',price:180,mins:40,pins:{pos:'1 supply (fan relay)',neg:'2 ground'},ohms:0.5},
   hose:{name:'Intake air duct and hoses',desc:'Carries filtered air to the throttle body. A split or loose clamp after the airflow measurement lets in air the engine computer does not know about, so it runs lean.',price:60,mins:15,pins:{},noPlug:true}
 };
 for(let n=1;n<=4;n++){
@@ -518,7 +545,8 @@ W.push({id:'w_ckpa',a:'ecu.E10',b:'ckp.a',c:'#16a34a',n:'GN'},{id:'w_ckpb',a:'ec
   {id:'w_ects',a:'ecu.E20',b:'ect.sig',c:'#ca8a04',n:'YE'},{id:'w_ectg',a:'ecu.E21',b:'ect.gnd',c:'#6b4b2e',n:'BN'},
   {id:'w_mapr',a:'ecu.E22',b:'map.ref',c:'#db2777',n:'PK'},{id:'w_maps',a:'ecu.E23',b:'map.sig',c:'#0d9488',n:'TQ'},{id:'w_mapg',a:'ecu.E21',b:'map.gnd',c:'#6b4b2e',n:'BN'},
   {id:'w_tpsr',a:'ecu.E22',b:'tps.ref',c:'#db2777',n:'PK'},{id:'w_tpss',a:'ecu.E24',b:'tps.sig',c:'#0891b2',n:'LB'},{id:'w_tpsg',a:'ecu.E21',b:'tps.gnd',c:'#6b4b2e',n:'BN'},
-  {id:'w_fp',a:'fuse.fp',b:'pump.pos',c:'#d42a22',n:'RD/BK'},{id:'w_fpg',a:'pump.neg',b:'bat.neg',c:'#6b4b2e',n:'BN'});
+  {id:'w_fp',a:'fuse.fp',b:'pump.pos',c:'#d42a22',n:'RD/BK'},{id:'w_fpg',a:'pump.neg',b:'bat.neg',c:'#6b4b2e',n:'BN'},
+  {id:'w_fan',a:'fuse.fan',b:'fan.pos',c:'#16a34a',n:'GN/RD'},{id:'w_fang',a:'fan.neg',b:'bat.neg',c:'#6b4b2e',n:'BN'});
 const isPart=p=>p.endsWith('~p'), base=p=>p.replace('~p','');
 const pinName=p=>{const [c,k]=base(p).split('.');const nm=c==='fuse'?'Fuse box:':c==='bat'?'Battery':C[c].name.replace(' (ECM)','');return nm+(c==='ecu'||C[c].noPlug?' ':' pin ')+C[c].pins[k]+(isPart(p)?' (part side)':'')};
 const wireColor=p=>{p=base(p);const w=W.find(x=>x.a===p||x.b===p);return w?w.c:'#888'};
@@ -538,15 +566,17 @@ const FAULTS=[
   {id:'filter',title:'Clogged fuel filter',fix:'Replace the fuel filter (fuel tank window).',text:'Fine around town, but it stutters and bogs down when I floor it or go up hills.',set:s=>s.cf.filter='clogged'},
   {id:'alt',title:'Alternator is not charging',fix:'Replace the alternator.',text:'The battery light stays on while I drive, and it’s getting harder to start.',set:s=>s.cf.alt='dead'},
   {id:'gnd',title:'Corroded engine computer ground wire (about 4 Ω)',fix:'Repair the ECM ground wire (power and ground circuit).',text:'Idles fast and a bit rough even when it’s warm. No engine light.',set:s=>s.wf.w_gnd=4},
+  {id:'fan',title:'Cooling fan motor has an open winding',fix:'Replace the cooling fan motor.',text:'Fine on the motorway, but it overheats in traffic. The temperature gauge climbs when I’m sitting still.',set:s=>s.cf.fan='open'},
+  {id:'fanr',title:'Cooling fan relay has failed (contacts do not close)',fix:'Replace the cooling fan relay.',text:'It overheats when I’m stuck in traffic. I never hear the fan come on.',set:s=>s.pf.fanr='dead'},
   {id:'tstat',title:'Thermostat stuck open',fix:'Replace the thermostat.',text:'The heater blows cold on the motorway and the temperature gauge sits really low. Engine light came on.',set:s=>s.cf.tstat='open'}
 ];
-const FSYS={ckp:'start',efi:'start',fp:'start',bat:'start',coil2:'ign',plug4:'ign',inj3:'fuel',inj1w:'fuel',filter:'fuel',ect:'sensor',mapref:'sensor',gnd:'sensor',tstat:'cool',vac:'air',alt:'charge'};
+const FSYS={fan:'cool',fanr:'cool',ckp:'start',efi:'start',fp:'start',bat:'start',coil2:'ign',plug4:'ign',inj3:'fuel',inj1w:'fuel',filter:'fuel',ect:'sensor',mapref:'sensor',gnd:'sensor',tstat:'cool',vac:'air',alt:'charge'};
 const NOSTART=['ckp','efi','fp','bat'];
-const EASY=['efi','fp','bat','coil2','inj3','alt','tstat'];
+const EASY=['efi','fp','bat','coil2','inj3','alt','tstat','fan'];
 const DTC={P0107:'MAP sensor circuit low',P0117:'Coolant temp sensor circuit low',P0118:'Coolant temp sensor circuit high',P0122:'Throttle sensor circuit low',P0123:'Throttle sensor circuit high',
   P0201:'Injector 1 circuit open',P0202:'Injector 2 circuit open',P0203:'Injector 3 circuit open',P0204:'Injector 4 circuit open',P0300:'Random or multiple misfire',
   P0301:'Misfire, cylinder 1',P0302:'Misfire, cylinder 2',P0303:'Misfire, cylinder 3',P0304:'Misfire, cylinder 4',P0335:'Crankshaft sensor circuit',
-  P0351:'Coil 1 primary circuit',P0352:'Coil 2 primary circuit',P0353:'Coil 3 primary circuit',P0354:'Coil 4 primary circuit',P0562:'System voltage low',P0171:'System too lean',P0128:'Coolant temperature below thermostat temperature'};
+  P0351:'Coil 1 primary circuit',P0352:'Coil 2 primary circuit',P0353:'Coil 3 primary circuit',P0354:'Coil 4 primary circuit',P0562:'System voltage low',P0171:'System too lean',P0128:'Coolant temperature below thermostat temperature',P0217:'Engine coolant over temperature'};
 
 let S;
 function fresh(mode){
@@ -566,6 +596,9 @@ const ecuOn=()=>S.key!=='off'&&!S.unplug.ecu&&wireOk('w_efi')&&wireOk('w_gnd')&&
 const mainOut=()=>ecuOn()&&!S.pf.main?vbat()-0.1:0;
 const pumpCmd=()=>ecuOn()&&(running()||cranking()||Date.now()<S.primeUntil);
 const fpOut=()=>pumpCmd()&&!S.pf.fp?vbat()-0.1:0;
+const fanCmd=()=>ecuOn()&&(S.fanCmd||Date.now()<(S.fanTest||0));
+const fanOut=()=>fanCmd()&&!S.pf.fanr?vbat()-0.1:0;
+const fanSpinning=()=>fanOut()>8&&wireOk('w_fan')&&wireOk('w_fang')&&!S.unplug.fan&&!S.cf.fan;
 const pumping=()=>fpOut()>8&&wireOk('w_fp')&&wireOk('w_fpg')&&!S.unplug.pump&&!S.cf.pump;
 const injDuty=()=>running()?0.035+S.thr*0.0012:cranking()?0.05:0;
 const coilDuty=()=>running()?0.08+S.rpm/6000*0.2:cranking()?0.05:0;
@@ -593,13 +626,14 @@ function pinV(p){
   if(isPart(p))return 0;
   const [c,k]=p.split('.');let m;
   if(p==='bat.pos')return vbat(); if(p==='bat.neg')return 0;
-  if(p==='fuse.in')return vbat(); if(p==='fuse.efi')return efiOut(); if(p==='fuse.main')return mainOut(); if(p==='fuse.fp')return fpOut();
+  if(p==='fuse.in')return vbat(); if(p==='fuse.efi')return efiOut(); if(p==='fuse.main')return mainOut(); if(p==='fuse.fp')return fpOut(); if(p==='fuse.fan')return fanOut();
   if(c==='ecu'){
     if(k==='E1')return wireOk('w_efi')?efiOut():0; if(k==='E2'||k==='E21')return S.key==='off'?0:gndDrop();
     if(k==='E22')return ecuOn()?5:0; if(k==='E20')return ectEcuV(); if(k==='E23')return mapEcuV(); if(k==='E24')return tpsEcuV();
     if(k==='E10'||k==='E11')return 0;
     if(k==='E50')return S.key==='off'?0:pumpCmd()?0.3:vbat();
     if(k==='E51')return S.key==='off'?0:ecuOn()?0.3:vbat();
+    if(k==='E52')return S.key==='off'?0:fanCmd()?0.3:vbat();
     if((m=k.match(/^E3(\d)$/)))return ctlV('inj',+m[1],'ecu');
     if((m=k.match(/^E4(\d)$/)))return ctlV('coil',+m[1],'ecu');
   }
@@ -609,6 +643,7 @@ function pinV(p){
   if(c==='map')return k==='ref'?refV('w_mapr'):k==='sig'?(S.unplug.map?mapEcuV():mapSensorV()):0.02;
   if(c==='tps')return k==='ref'?refV('w_tpsr'):k==='sig'?(S.unplug.tps?tpsEcuV():tpsSensorV()):0.02;
   if(c==='pump')return k==='pos'?(wireOk('w_fp')?fpOut():0):0;
+  if(c==='fan')return k==='pos'?(wireOk('w_fan')?fanOut():0):0;
   return 0;
 }
 function pinAC(p){
@@ -624,6 +659,7 @@ function partOhms(c,ka,kb){
   if(/^(inj|coil)\d$/.test(c))return S.cf[c]?INF:C[c].ohms*rnd(0.98,1.03);
   if(c==='ckp')return S.cf.ckp?INF:820*rnd(0.98,1.02);
   if(c==='pump')return 1.8;
+  if(c==='fan')return S.cf.fan?INF:0.5*rnd(0.95,1.05);
   if(c==='ect')return S.cf.ect?INF:ectR();
   const pr=[ka,kb].sort().join();
   if(c==='map')return pr==='gnd,ref'?6500:pr==='gnd,sig'?4100:3300;
@@ -686,7 +722,7 @@ function tick(){
   }
   if(pumping())S.pres+=(3.0-(S.cf.filter?0.35+S.thr/100*1.5:0)+rnd(-0.03,0.03)-S.pres)*Math.min(1,dt*4);else S.pres=Math.max(0,S.pres-(running()?dt*1.2:dt*0.01));
   if(running()){
-    let fire=0;for(let n=1;n<=4;n++){const p=cylFires(n);fire+=p;S.misNow[n-1]=Math.random()>p?1:0;if(S.misNow[n-1])S.mis[n-1]+=1}
+    let fire=0;S.misR=S.misR||[0,0,0,0];for(let n=1;n<=4;n++){const p=cylFires(n);fire+=p;S.misNow[n-1]=Math.random()>p?1:0;S.misR[n-1]*=Math.exp(-dt/20);if(S.misNow[n-1]){S.mis[n-1]+=1;S.misR[n-1]+=1}}
     if(fire<1.6||!ecuOn()||ckpAtEcu()<0.3){S.key='on';S.rpm=0;say('The engine stalled.');sfx('stall')}
     else{
       const mapBad=mapEcuV()<0.25,fast=Math.max(0,Math.min(1,(70-ecuEctC())/50));
@@ -697,7 +733,13 @@ function tick(){
       target-=misN*90;
       if(S.drive)target=driveTarget(target,dt,misN);
       S.rpm+=(target-S.rpm)*Math.min(1,dt*(S.drive?5:3))+rnd(-15,15)*(1+misN*3);
-      const tmax=S.cf.tstat?57:90;S.temp=S.temp<tmax?Math.min(tmax,S.temp+dt*(S.temp<60?1.1:0.6)):S.temp-dt*0.3;
+      const tmax=S.cf.tstat?57:90,air=Math.min(1,S.speed/50),cool=(fanSpinning()?1:0)+air*2;
+      if(S.temp<tmax)S.temp=Math.min(tmax,S.temp+dt*(S.temp<60?1.1:0.6));
+      else if(S.cf.tstat)S.temp-=dt*0.3;
+      else S.temp=Math.max(tmax,Math.min(121,S.temp+dt*(0.35+S.thr*0.004-cool*0.55)));
+      const ect=ecuEctC(),ev=ectEcuV();if(ev>4.9||ev<0.1)S.fanCmd=true;else if(ect>=94)S.fanCmd=true;else if(ect<=90)S.fanCmd=false;
+      if(S.temp>114)S.codes.add('P0217');
+      if(S.temp>115&&!S.hotMsg){S.hotMsg=true;say('The temperature gauge is in the red and steam is coming from the front of the car.')}
       if(S.cf.alt)S.drain=Math.min(1.7,S.drain+dt*0.012);else S.drain=Math.max(0,S.drain-dt*0.02);
       if(trim()>15)S.leanT+=dt;if(S.leanT>8)S.codes.add('P0171');
       if(S.temp<65)S.coldT+=dt;if(S.coldT>45&&S.cf.tstat)S.codes.add('P0128');
@@ -705,8 +747,9 @@ function tick(){
       if(ecuEctC()<-30&&S.temp>50&&!S.smoke){S.smoke=true;say('It runs, but black smoke is coming out of the exhaust.')}
     }
   }
-  if(S.drive&&!running()){S.speed=Math.max(0,S.speed-dt*(DRV.brake?30:6))}
-  if(!running()){S.rpm=cranking()?rnd(190,230)*(vbat()<9?0.45:1):Math.max(0,S.rpm-dt*2500);S.misNow=[0,0,0,0];if(S.temp>22)S.temp-=dt*0.02}
+  if(S.drive&&!running()){S.speed=Math.max(0,S.speed-dt*(DRV.brake||DRV.pulling?30:6))}
+  checkPulled();
+  if(!running()){S.rpm=cranking()?rnd(190,230)*(vbat()<9?0.45:1):Math.max(0,S.rpm-dt*2500);S.misNow=[0,0,0,0];if(S.temp>22)S.temp-=dt*(S.temp>95?0.08:0.02);if(S.key!=='off'&&!running())S.fanCmd=ecuEctC()>=94||(S.fanCmd&&ecuEctC()>90)}
   detectCodes(cranking()?dt:0);
   render();
 }
@@ -717,7 +760,7 @@ function detectCodes(crankDt){
   const t=tpsEcuV();if(t<0.25)S.codes.add('P0122');if(t>4.8)S.codes.add('P0123');
   for(let n=1;n<=4;n++){if(ctlV('inj',n,'ecu')<1)S.codes.add('P020'+n);if(ctlV('coil',n,'ecu')<1)S.codes.add('P035'+n)}
   if(crankDt&&ckpAtEcu()<0.3){S.crankNoSig+=crankDt;if(S.crankNoSig>1)S.codes.add('P0335')}
-  if(running()){let many=0;for(let n=0;n<4;n++)if(S.mis[n]>25){S.codes.add('P030'+(n+1));many++}if(many>1)S.codes.add('P0300')}
+  if(running()){let many=0;for(let n=0;n<4;n++)if((S.misR||[])[n]>25){S.codes.add('P030'+(n+1));many++}if(many>1)S.codes.add('P0300')}
 }
 
 /* ================= sound (Web Audio, generated live) ================= */
@@ -788,7 +831,7 @@ function audioLoop(){
   // pump
   A.pumpG.gain.setTargetAtTime(pumping()?(run?0.012:0.05):0,now,0.05);
   A.hiss.g.gain.setTargetAtTime(run&&S.cf.hose?0.035*(1-S.thr/100)+0.01:0,now,0.1);
-  const fanOn=S.key!=='off'&&S.temp>=86&&!S.cf.tstat;A.fan.g.gain.setTargetAtTime(fanOn?0.05:0,now,fanOn?0.6:0.4);
+  const fanOn=fanSpinning();A.fan.g.gain.setTargetAtTime(fanOn?0.05:0,now,fanOn?0.6:0.4);
   A.road.g.gain.setTargetAtTime(S.drive?Math.min(0.25,S.speed/400):0,now,0.2);A.road.fl.frequency.setTargetAtTime(250+S.speed*6,now,0.2);
   // combustion events
   if(A.next<now)A.next=now;
@@ -820,7 +863,7 @@ function zoomAt(f,cx,cy){const r=stage.getBoundingClientRect();const fitS=Math.m
   const px=cx-r.left,py=cy-r.top;V.x=px-(px-V.x)*ns/V.s;V.y=py-(py-V.y)*ns/V.s;V.s=ns;clampV();applyV()}
 stage.addEventListener('wheel',e=>{e.preventDefault();zoomAt(Math.exp(-e.deltaY*0.0015),e.clientX,e.clientY)},{passive:false});
 const ptrs=new Map();let panStart=null,moved=0,pinch=null;
-stage.addEventListener('pointerdown',e=>{if(e.target.closest('.zoomctl,.hint,.tray'))return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});stage.setPointerCapture(e.pointerId);moved=0;
+stage.addEventListener('pointerdown',e=>{if(e.target.closest('.zoomctl,.hint,.tray,.views'))return;ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});stage.setPointerCapture(e.pointerId);moved=0;
   if(ptrs.size===1)panStart={x:e.clientX,y:e.clientY,vx:V.x,vy:V.y,target:e.target};
   if(ptrs.size===2){const [a,b]=[...ptrs.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y),s:V.s}}});
 stage.addEventListener('pointermove',e=>{
@@ -831,6 +874,7 @@ stage.addEventListener('pointermove',e=>{
   if(panStart){const dx=e.clientX-panStart.x,dy=e.clientY-panStart.y;moved=Math.max(moved,Math.hypot(dx,dy));if(moved>5){stage.classList.add('panning');V.x=panStart.vx+dx;V.y=panStart.vy+dy;clampV();applyV()}}
 });
 function endPtr(e){if(!ptrs.has(e.pointerId))return;ptrs.delete(e.pointerId);if(ptrs.size<2)pinch=null;
+  if(ptrs.size===0&&panStart&&moved>5&&!pinch){const dx=e.clientX-panStart.x,dy=e.clientY-panStart.y;if(Math.abs(dx)>90&&Math.abs(dx)>2*Math.abs(dy)&&Math.abs(V.x-panStart.vx)<Math.abs(dx)*0.35)stepView(dx<0?1:-1)}
   if(ptrs.size===0){stage.classList.remove('panning');
     if(panStart&&moved<=5){const el=document.elementFromPoint(e.clientX,e.clientY);const pp=el&&el.closest('[data-pp]');const hs=el&&el.closest('[data-comp]');
       if(pp){if(lpT==='fired')lpT=null;else pinTap(pp.dataset.pp,e.clientX,e.clientY,pp)}else if(hs)openComp(hs.dataset.comp)}
@@ -918,15 +962,28 @@ function fuseSVG(){
   let s='<svg width="392" height="204" viewBox="0 0 392 204" role="group" aria-label="Fuse and relay box, lid off">';
   s+='<rect x="3" y="3" width="386" height="198" rx="16" fill="#141518" stroke="#000" stroke-width="2"/><rect x="12" y="12" width="368" height="180" rx="10" fill="#1d1f23"/>';
   // decorative fuses, dimmed
-  [['#c9372c','10','Horn'],['#d9b21a','20','Fan'],['#8a5a2b','7.5','Lights']].forEach((f,i)=>{const x=26+i*40;s+='<g opacity=".38"><rect x="'+x+'" y="132" width="28" height="40" rx="4" fill="'+f[0]+'"/>'+lab(x+14,157,f[1],'#fff')+lab(x+14,190,f[2],'#9aa1a9')+'</g>'});
+  [['#c9372c','10','Horn'],['#d9b21a','20','Wipers'],['#8a5a2b','7.5','Lights']].forEach((f,i)=>{const x=26+i*40;s+='<g opacity=".38"><rect x="'+x+'" y="132" width="28" height="40" rx="4" fill="'+f[0]+'"/>'+lab(x+14,157,f[1],'#fff')+lab(x+14,190,f[2],'#9aa1a9')+'</g>'});
   // EFI fuse, big
   s+='<rect x="34" y="28" width="62" height="82" rx="7" fill="#2f6fd6" stroke="#174a9b" stroke-width="2"/>'+lab(65,78,'15 A','#fff');
   if(blown)s+='<path d="M50 88 l8 -6 l6 8 l8 -6 l6 6" stroke="#0b1d3d" stroke-width="3" fill="none"/>';
   s+=tpPin('fuse.in',48,42,5)+tpPin('fuse.efi',82,42,5)+lab(48,22,'in')+lab(82,22,'out')+lab(65,126,'EFI fuse','#fff');
   // relays
-  const relay=(x,title,sub,pin)=>{let r='<rect x="'+x+'" y="28" width="96" height="96" rx="8" fill="#26292e" stroke="#000" stroke-width="1.5"/><rect x="'+(x+8)+'" y="36" width="80" height="22" rx="3" fill="#33373d"/>'+lab(x+48,51,title,'#fff')+lab(x+48,74,sub,'#9aa1a9');
-    r+=tpPin(pin,x+48,100,5)+lab(x+48,142,'output','#d9d6cf');return r};
-  s+=relay(146,'MAIN','relay','fuse.main')+relay(262,'FUEL PUMP','relay','fuse.fp');
+  const relay=(x,title,sub,pin)=>{let r='<rect x="'+x+'" y="28" width="74" height="96" rx="8" fill="#26292e" stroke="#000" stroke-width="1.5"/><rect x="'+(x+6)+'" y="36" width="62" height="22" rx="3" fill="#33373d"/>'+lab(x+37,51,title,'#fff')+lab(x+37,74,sub,'#9aa1a9');
+    r+=tpPin(pin,x+37,100,5)+lab(x+37,142,'output','#d9d6cf');return r};
+  s+=relay(130,'MAIN','R1','fuse.main')+relay(212,'PUMP','R2','fuse.fp')+relay(294,'FAN','R3','fuse.fan');
+  return s+'</svg>';
+}
+// the diagram printed inside the lid, like a real fuse box
+function fuseLidSVG(){
+  const t=(x,y,str,o)=>'<text x="'+x+'" y="'+y+'" '+(o||'')+'>'+str+'</text>';
+  const slot=(x,y,w,h,num,fill)=>'<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="3" fill="'+(fill||'#fff')+'" stroke="#1d1f22" stroke-width="1.4"/>'+t(x+w/2,y+h/2+4,num,'text-anchor="middle" class="ln"');
+  let s='<svg width="392" height="300" viewBox="0 0 392 300" role="img" aria-label="Fuse box lid diagram" class="lid"><rect x="2" y="2" width="388" height="296" rx="14" fill="#e9e6de" stroke="#1d1f22" stroke-width="2"/>';
+  s+=t(196,26,'ENGINE BAY FUSE / RELAY BOX','text-anchor="middle" class="lh"');
+  s+=slot(22,40,34,50,'1','#cfe0ff')+slot(62,40,22,32,'2')+slot(90,40,22,32,'3')+slot(118,40,22,32,'4');
+  s+=slot(160,40,58,58,'R1')+slot(226,40,58,58,'R2')+slot(292,40,58,58,'R3');
+  const rows=[['1','15 A','EFI','Engine computer (ECM) power'],['2','10 A','HORN','Horn'],['3','20 A','WIPER','Wipers'],['4','7.5 A','LAMP','Lights'],
+    ['R1','relay','MAIN','Injectors and ignition coils'],['R2','relay','FUEL PUMP','Fuel pump (ECM pin E50)'],['R3','relay','FAN','Cooling fan (ECM pin E52)']];
+  rows.forEach((r,i)=>{const y=126+i*22;s+=t(22,y,r[0],'class="lb"')+t(52,y,r[1],'class="lc"')+t(104,y,r[2],'class="lb"')+t(180,y,r[3],'class="lc"')});
   return s+'</svg>';
 }
 function batSVG(){
@@ -955,6 +1012,7 @@ function logFuse(){
   if(k==='fp'&&pumpCmd()){if(v>11)e.on=true;else e.dead=true}
   if(k==='main'&&S.key!=='off'){if(v>11)e.on=true;else e.zero=true}
   if((k==='in'||k==='efi')&&S.key!=='off'){e.measured=true}
+  if(k==='fan'&&fanCmd()){if(v>11)e.on=true;else e.dead=true}
 }
 function fuseGuide(){
   const L=S.flog,f=v=>v===undefined?'<span class="dimv">not measured</span>':'<b>'+v.toFixed(1)+' V</b>';
@@ -967,12 +1025,13 @@ function fuseGuide(){
   else if(i!==undefined||o!==undefined)ev='Now probe the other side of the fuse to compare.';
   let mv='';if(L.main){mv=L.main.on?'<span class="good">12 V with the key on: the main relay works.</span>':L.main.zero?'<span class="warn">0 V with the key on. The ECM switches this relay, so check the EFI fuse first.</span>':'Turn the key ON while probing it.'}
   let pv='';if(L.fp){pv=L.fp.on?'<span class="good">12 V while the pump should run: the relay works.</span>':L.fp.dead?'<span class="bad">The pump should be running but there’s no output: the relay has failed.</span>':'Only on for 2 s after key ON, or while cranking. Leave the probe on and turn the key OFF then ON.'}
-  if(!HINTS){ev=mv=pv=''}
+  let fv='';if(L.fan){fv=L.fan.on?'<span class="good">12 V while the fan should run: the relay works.</span>':L.fan.dead?'<span class="bad">The fan should be running but there’s no output: the relay has failed.</span>':'Only on when the engine is hot (about 94 °C), or with the scan tool’s fan test.'}
+  if(!HINTS){ev=mv=pv=fv=''}
   const P_=S.pf,btn=(k)=>'<button class="btn small" type="button" data-act="inspect" data-part="'+k+'">Pull</button> <button class="btn small" type="button" data-act="replacepart" data-part="'+k+'">Replace</button>';
   const row=(name,cells,verdict,k)=>'<tr><td>'+name+'</td><td>'+cells+'</td><td>'+btn(k)+'</td></tr>'+(verdict?'<tr class="vrow"><td colspan="3">'+verdict+'</td></tr>':'');
   h+='<table class="ftbl"><tr><th>Part</th><th>Reading</th><th></th></tr>'+
     row('EFI fuse','in '+f(L.in&&L.in.v)+'<br>out '+f(L.efi&&L.efi.v),ev,'efi')+
-    row('Main relay','out '+f(L.main&&L.main.v),mv,'main')+row('Pump relay','out '+f(L.fp&&L.fp.v),pv,'fp')+'</table>';
+    row('Main relay','out '+f(L.main&&L.main.v),mv,'main')+row('Pump relay','out '+f(L.fp&&L.fp.v),pv,'fp')+row('Fan relay','out '+f(L.fan&&L.fan.v),fv,'fanr')+'</table>';
   return h+'</div>';
 }
 function drawGuide(){const g=$('compGuide');if(!g)return;if(S.sel==='fuse')logFuse();const h=S.sel==='bat'?batGuide():S.sel==='fuse'?fuseGuide():'';if(g.dataset.h!==h){g.innerHTML=h;g.dataset.h=h}}
@@ -981,7 +1040,7 @@ function drawComp(){
   const id=S.sel;if(!id)return;const c=C[id];$('compTitle').textContent=c.name;
   let h='<p>'+esc(c.desc)+'</p>';
   if(id==='bat')h+='<div class="conns"><div class="conn">'+batSVG()+'</div></div><div id="compGuide"></div>';
-  else if(id==='fuse')h+='<div class="conns"><div class="conn">'+fuseSVG()+'</div></div><div id="compGuide"></div>';
+  else if(id==='fuse')h+='<div class="conns"><div class="conn">'+(S.lid?fuseLidSVG():fuseSVG())+'</div></div><div class="acts" style="justify-content:center;margin-top:6px"><button class="btn small" type="button" data-act="lid" aria-pressed="'+!!S.lid+'">'+(S.lid?'Back to the fuse box':'Show the lid diagram')+'</button></div><div id="compGuide"></div>';
   else if(id==='alt')h+='<div class="conns"><div class="conn"><svg width="240" height="120" viewBox="0 0 240 120" role="group" aria-label="Alternator, back view"><circle cx="120" cy="60" r="54" fill="#8c9197" stroke="#2b2e33" stroke-width="3"/>'+[0,1,2,3,4,5,6,7].map(i=>{const a=i*Math.PI/4;return '<rect x="'+(116+Math.cos(a)*30)+'" y="'+(56+Math.sin(a)*30)+'" width="8" height="8" rx="2" fill="#4a4f55" transform="rotate('+(i*45)+' '+(120+Math.cos(a)*30)+' '+(60+Math.sin(a)*30)+')"/>'}).join('')+'<rect x="150" y="22" width="44" height="26" rx="5" fill="#1c1d20"/>'+tpPin('alt.out',172,35,7)+'<text x="172" y="66" text-anchor="middle" style="font:700 13px system-ui;fill:#fff">B+</text></svg><div class="cap">Black on battery −, red on B+. Compare engine off and engine running.</div></div></div>';
   else if(id==='tstat'||id==='hose'){}
   else if(id==='ecu')h+='<div class="conns"><div class="conn">'+ecuSVG()+'<div class="cap">'+(S.unplug.ecu?'Harness connector, unplugged from the ECM':'Plugged in. Probe from the back of the connector.')+'</div></div></div>';
@@ -997,12 +1056,17 @@ function drawComp(){
   if(id==='tstat')h+='<button class="btn" type="button" data-act="feelhose">Feel the top radiator hose</button>';
   if(id==='hose')h+='<button class="btn" type="button" data-act="spray">Spray around the duct while it idles</button>';
   if(id==='pump')h+='<button class="btn" type="button" data-act="filter">Replace fuel filter</button>';
+  if(id==='fan')h+='<button class="btn" type="button" data-act="watchfan">Look at the fan</button>';
   if(/^coil\d$/.test(id)){const n=id.slice(4);h+='</div><div class="acts"><button class="btn small" type="button" data-act="inspectplug" data-n="'+n+'">Remove and check spark plug '+n+'</button><button class="btn small" type="button" data-act="replaceplug" data-n="'+n+'">Fit a new spark plug</button>'}
   h+='</div>';
   if(S.found[id])h+='<div class="found">'+esc(S.found[id])+'</div>';
   $('compBody').innerHTML=h;drawGuide();
 }
 $('pumpHs').onclick=()=>openComp('pump');
+$('fanHs').onclick=()=>openComp('fan');
+fetch('/assets/car-sim/radiator.json'+new URL($('radImg').src).search).then(r=>r.json()).then(j=>{const pc=(b,el)=>{el.style.left=b[0]/9+'%';el.style.top=b[1]/6.4+'%';el.style.width=(b[2]-b[0])/9+'%';el.style.height=(b[3]-b[1])/6.4+'%'};
+  if(j.fan){pc(j.fan.box,$('fanSpin'));$('fanSpin').innerHTML=[...Array(j.fan.frames)].map((_,i)=>'<img src="/assets/car-sim/fan_'+i+'.webp'+new URL($('radImg').src).search+'" alt=""'+(i?'':' class="on"')+'>').join('')}
+  if(j.comps&&j.comps.fan){const b=j.comps.fan.box;pc([b[0]-20,b[1]-20,b[2]+20,b[3]+20],$('fanHs'))}}).catch(()=>{});
 
 /* ================= probes and leads ================= */
 const P={red:{x:0,y:0,parked:true},black:{x:0,y:0,parked:true}};let dragP=null;
@@ -1228,9 +1292,9 @@ function drawScope(){
 /* ================= scan tool ================= */
 const SCAN={scr:'off',sel:0};
 const MENU=[['codes','Read fault codes'],['clear','Clear fault codes'],['live','Live data'],['act','Actuator tests']];
-const ACTS=[['pump','Run fuel pump (5 s)'],['inj1','Click injector 1'],['inj2','Click injector 2'],['inj3','Click injector 3'],['inj4','Click injector 4']];
+const ACTS=[['pump','Run fuel pump (5 s)'],['fan','Run cooling fan (5 s)'],['inj1','Click injector 1'],['inj2','Click injector 2'],['inj3','Click injector 3'],['inj4','Click injector 4']];
 function liveRows(){return [['Engine speed',Math.round(S.rpm)+' rpm'],['Coolant temp',ecuEctC()+' °C'],['MAP',mapEcuV()<0.25?'60 kPa*':Math.round((mapEcuV()-0.4)/0.036)+' kPa'],['Throttle',Math.max(0,Math.round((tpsEcuV()-0.55)/0.039))+' %'],
-  ['Inj. time',running()?(2.6+S.thr*0.09+(ecuEctC()<20?2.2:0)).toFixed(1)+' ms':'0.0 ms'],['Battery',vbat().toFixed(1)+' V'],['Fuel trim',(trim()>=0?'+':'')+trim().toFixed(0)+' %'],['Fuel pump',pumpCmd()?'ON':'OFF'],['Misfires 1-4',S.mis.map(v=>Math.min(999,v)).join('/')]]}
+  ['Inj. time',running()?(2.6+S.thr*0.09+(ecuEctC()<20?2.2:0)).toFixed(1)+' ms':'0.0 ms'],['Cooling fan',fanCmd()?'ON':'OFF'],['Battery',vbat().toFixed(1)+' V'],['Fuel trim',(trim()>=0?'+':'')+trim().toFixed(0)+' %'],['Fuel pump',pumpCmd()?'ON':'OFF'],['Misfires 1-4',S.mis.map(v=>Math.min(999,v)).join('/')]]}
 function drawScan(){
   const L=$('slcd');let h='';
   if(SCAN.scr!=='off'&&(S.key==='off'||!ecuOn()))SCAN.scr=S.key==='off'?'nokey':'nocomm';
@@ -1253,17 +1317,18 @@ function scanKey(k){
   const list=SCAN.scr==='menu'?MENU:SCAN.scr==='act'?ACTS:null;
   if(list&&(k==='up'||k==='down')){SCAN.sel=(SCAN.sel+(k==='up'?-1:1)+list.length)%list.length;drawScan();return}
   if(k==='ok'){
-    if(SCAN.scr==='menu'){const m=MENU[SCAN.sel][0];if(m==='clear'){S.codes.clear();S.mis=[0,0,0,0];SCAN.scr='cleared'}else{SCAN.scr=m;SCAN.sel=0}}
+    if(SCAN.scr==='menu'){const m=MENU[SCAN.sel][0];if(m==='clear'){S.codes.clear();S.mis=[0,0,0,0];S.misR=[0,0,0,0];SCAN.scr='cleared'}else{SCAN.scr=m;SCAN.sel=0}}
     else if(SCAN.scr==='act'&&!running())runAct(ACTS[SCAN.sel]);
   }
   drawScan();
 }
 function runAct([id,label]){
-  if(!ecuOn())return;S.act={id,label,until:Date.now()+(id==='pump'?5000:2500)};
+  if(!ecuOn())return;S.act={id,label,until:Date.now()+(id==='pump'||id==='fan'?5000:2500)};
   if(id==='pump'){S.primeUntil=Date.now()+5000;sfx('relay')}
+  else if(id==='fan'){S.fanTest=Date.now()+5000;sfx('relay')}
   else{const n=+id.slice(3);const ok=!S.cf[id]&&!S.unplug[id]&&supV('inj',n)>8&&wireOk('w_ci'+n);
     if(ok&&A.ctx){const t=A.ctx.currentTime;for(let i=0;i<20;i++)click(t+i*0.12,0.5,4200,0.006)}}
-  setTimeout(()=>{S.act=null;if(!$('w-scan').hidden)drawScan()},id==='pump'?5000:2500);
+  setTimeout(()=>{S.act=null;if(!$('w-scan').hidden)drawScan()},id==='pump'||id==='fan'?5000:2500);
 }
 document.querySelectorAll('[data-sk]').forEach(b=>b.onclick=()=>scanKey(b.dataset.sk));
 $('slcd').addEventListener('click',e=>{const it=e.target.closest('[data-si]');if(!it)return;SCAN.sel=+it.dataset.si;scanKey('ok')});
@@ -1271,6 +1336,7 @@ $('slcd').addEventListener('click',e=>{const it=e.target.closest('[data-si]');if
 /* ================= wiring diagram (one circuit at a time) ================= */
 const CIRCUITS={
   power:{name:'Power and ground',src:[['bat',['pos','neg']],['fuse',['in','efi']]],dst:[['ecu',['E1','E2']]],wires:['w_bat','w_efi','w_gnd']},
+  fan:{name:'Cooling fan',src:[['fuse',['fan']],['ecu',['E52']],['bat',['neg']]],dst:[['fan',['pos','neg']]],wires:['w_fan','w_fang'],note:'E52 switches the cooling fan relay coil to ground at about 94 °C.'},
   pump:{name:'Fuel pump',src:[['fuse',['fp']],['ecu',['E50']],['bat',['neg']]],dst:[['pump',['pos','neg']]],wires:['w_fp','w_fpg'],note:'E50 switches the fuel pump relay coil to ground.'},
   inj:{name:'Injectors',src:[['fuse',['main']],['ecu',['E31','E32','E33','E34']]],dst:[['inj1',['sup','ctl']],['inj2',['sup','ctl']],['inj3',['sup','ctl']],['inj4',['sup','ctl']]],wires:['w_si1','w_si2','w_si3','w_si4','w_ci1','w_ci2','w_ci3','w_ci4']},
   ign:{name:'Ignition coils',src:[['fuse',['main']],['ecu',['E41','E42','E43','E44']]],dst:[['coil1',['sup','ctl']],['coil2',['sup','ctl']],['coil3',['sup','ctl']],['coil4',['sup','ctl']]],wires:['w_sc1','w_sc2','w_sc3','w_sc4','w_cc1','w_cc2','w_cc3','w_cc4']},
@@ -1314,11 +1380,12 @@ function drawDiag(){
 $('paper').addEventListener('click',e=>{const w=e.target.closest('[data-wire]');if(w){S.selWire=w.dataset.wire;drawDiag()}});
 
 /* ================= road test ================= */
-const RATIO=[0,118,68,47,36,29],DRV={brake:false,off:0,lastMsg:0};
+const RATIO=[0,118,68,47,36,29],DRV={brake:false,pulling:false,off:0,lastMsg:0};
 function driveTarget(idleTarget,dt,misN){
   const fire=(4-misN)/4,lowPres=S.pres<2.3?0.55:1;
   const P=(S.thr/100)*fire*lowPres*(S.rpm>1300?1:0.7);
-  const acc=P*15*[0,1.7,1.2,0.9,0.68,0.52][S.gear]-0.00032*S.speed*S.speed-0.35-(DRV.brake?28:0);
+  if(DRV.pulling){S.thr=0;$('pedal').value=0;$('pedalV').textContent='0%'}
+  const acc=(DRV.pulling?0:P*15*[0,1.7,1.2,0.9,0.68,0.52][S.gear])-0.00032*S.speed*S.speed-0.35-(DRV.brake||DRV.pulling?22:0);
   S.speed=Math.max(0,Math.min(190,S.speed+acc*dt));
   let t=Math.max(S.speed*RATIO[S.gear],idleTarget+(S.speed<12?S.thr*28:0));
   const up=S.thr>60?5200:2700;
@@ -1328,8 +1395,9 @@ function driveTarget(idleTarget,dt,misN){
   else if(S.thr>35&&S.pres<2.3&&now-DRV.lastMsg>2500){DRV.lastMsg=now;$('driveMsg').textContent='It bogs down and won’t pull properly.'}
   return t;
 }
-function endDrive(){S.drive=false;S.speed=0;S.gear=1;if($('driveBtn'))$('driveBtn').textContent='Drive off'}
-$('driveBtn').onclick=()=>{audioInit();if(S.drive){if(S.speed>5){$('driveMsg').textContent='Slow down to a stop first (hold the brake).';return}endDrive();$('driveMsg').textContent='Parked. Road test finished.';return}
+function endDrive(){S.drive=false;S.speed=0;S.gear=1;DRV.pulling=false;if($('driveBtn'))$('driveBtn').textContent='Drive off'}
+function checkPulled(){if(S.drive&&DRV.pulling&&S.speed<0.8){endDrive();$('driveMsg').textContent='Parked at the kerb. Road test finished.'}}
+$('driveBtn').onclick=()=>{audioInit();if(S.drive){if(DRV.pulling)return;DRV.pulling=true;$('driveBtn').textContent='Pulling over…';$('driveMsg').textContent='Indicating and braking to a stop…';checkPulled();return}
   if(!running()){$('driveMsg').textContent='Start the engine first.';return}S.drive=true;S.gear=1;$('driveBtn').textContent='Pull over';$('driveMsg').textContent='Driving. Push the throttle slider up to accelerate.'};
 const bk=$('brakeBtn');bk.addEventListener('pointerdown',e=>{e.preventDefault();DRV.brake=true});addEventListener('pointerup',()=>DRV.brake=false);addEventListener('pointercancel',()=>DRV.brake=false);
 const PUFFS=[];
@@ -1372,6 +1440,8 @@ const BENCH={inj:['The coil reads O.L (spec about 13 Ω). This one was faulty.',
   efi:['The element is melted through. Blown.','The element is intact. This one was fine.'],
   main:['It doesn’t switch when powered on the bench. Faulty.','Clicks and switches on the bench. This one was fine.'],
   fp:['It doesn’t switch when powered on the bench. Faulty.','Clicks and switches on the bench. This one was fine.'],
+  fanr:['It doesn’t switch when powered on the bench. Faulty.','Clicks and switches on the bench. This one was fine.'],
+  fan:['The motor winding reads O.L and it won’t spin on 12 V. Faulty.','It spins up straight away on 12 V. This one was fine.'],
   alt:['Spun up on the bench, it puts out nothing. Faulty.','Charges at 14.1 V on the bench. This one was fine.'],
   tstat:['In hot water it stays wide open. Faulty.','Opens at 85 °C in hot water. This one was fine.'],
   hose:['There’s a split along the underside. That was the leak.','No splits or cracks. This one was fine.'],
@@ -1385,7 +1455,7 @@ $('tray').addEventListener('click',e=>{const b=e.target.closest('[data-tray]');i
 function replaceComp(id){
   const c=C[id];
   if(!c.noPlug&&!S.unplug[id])return say('Unplug the '+c.name.toLowerCase()+' before removing it.');
-  if(['ecu','bat','alt','tstat','hose'].includes(id)&&S.key!=='off')return say('Turn the key off first.');
+  if(['ecu','bat','alt','tstat','hose','fan'].includes(id)&&S.key!=='off')return say('Turn the key off first.');
   const bad=!!S.cf[id];delete S.cf[id];S.newParts.add(id);addWork('Replace '+c.name.toLowerCase(),c.mins,c.name,c.price);
   toTray(id.replace(/\d$/,''),c.name,bad);
   if(id==='bat'){S.jump=false;S.drain=0;syncJump()}
@@ -1395,6 +1465,8 @@ function act(a,el){
   audioInit();const id=S.sel;
   if(a==='autoprobe'){S.mm='vdc';$('knob').style.transform='rotate(0deg)';const inWin=pp=>$('compBody').querySelector('[data-pp="'+pp+'"]');if(el.dataset.black){S.probe.black=el.dataset.black;P.black.el=inWin(el.dataset.black)}if(el.dataset.red){S.probe.red=el.dataset.red;P.red.el=inWin(el.dataset.red)}if($('w-meter').hidden)openWin('w-meter');S.leads='meter';sfx('probe');render(true);drawGuide();return}
   if(a==='jump'){$('jumpBtn').click();drawComp();return}
+  if(a==='lid'){S.lid=!S.lid;sfx('unplug');drawComp();return}
+  if(a==='watchfan'){openWin('w-rad');return}
   if(a==='plug'){S.unplug[id]=!S.unplug[id];if(!S.unplug[id])for(const w of ['red','black'])if(S.probe[w]&&isPart(S.probe[w])&&S.probe[w].startsWith(id+'.'))S.probe[w]=null;sfx(S.unplug[id]?'unplug':'plug');say(C[id].name+(S.unplug[id]?' unplugged.':' plugged back in.'))}
   if(a==='replace')replaceComp(id);
   if(a==='replacepart'){const k=el.dataset.part,p=C.fuse.parts[k];if(S.key!=='off')return say('Turn the key off before swapping fuses or relays.');const bad=!!S.pf[k];delete S.pf[k];S.flog={};addWork('Replace '+p[0],p[2],p[0],p[1]);toTray(k,p[0],bad);say(p[0]+' replaced.');S.found.fuse=null;sfx('plug')}
@@ -1429,7 +1501,7 @@ function jobCard(){
   if(S.mode==='sandbox')return sandboxPicker();
   const fs=S.faults.map(id=>FAULTS.find(x=>x.id===id));
   modal('<h2>Job card '+'#'+S.woNo+(S.level?' · '+LEVELS[S.level][0]:'')+'</h2>'+(S.mode==='practice'?'<p>Practice bay. This car has no faults. Measure everything and learn what good readings look like. Try Sandbox to switch faults on yourself, or Challenge for a real job.</p>':
-    '<p class="small">Small 4-cylinder petrol, port injection. Customer says:</p>'+fs.map(f=>'<div class="q">“'+esc(f.text)+'”</div>').join('')+'<p class="small">Find '+(fs.length>1?'both faults':'the fault')+' and fix '+(fs.length>1?'them':'it')+' with as few parts as possible. A road test helps with faults that only show under load. Clear the codes, plug everything back in, key off, then hand the car back.</p>')+
+    '<p class="small">'+(PAINTS[S.paint||0][0])+' hatchback, 1.6 4-cylinder petrol, port injection. Customer says:</p>'+fs.map(f=>'<div class="q">“'+esc(f.text)+'”</div>').join('')+'<p class="small">Find '+(fs.length>1?'both faults':'the fault')+' and fix '+(fs.length>1?'them':'it')+' with as few parts as possible. A road test helps with faults that only show under load. Clear the codes, plug everything back in, key off, then hand the car back.</p>')+
     '<div class="acts"><button class="btn primary" type="button" data-closemodal>Start work</button>'+(S.mode==='challenge'?'<button class="btn" type="button" data-answer>Show the answer</button>':'')+'</div><div id="ans"></div><p class="small" style="margin-top:12px">Made-up car for learning. Not repair advice for a real vehicle.</p>');
 }
 $('jobBtn').onclick=jobCard;
@@ -1459,9 +1531,11 @@ function pickFaults(level){
   return [any().id];
 }
 let hintsBefore=null;
+let lastPaint=0;
 function newJob(mode,level){hidePop();
   if(S&&S.drive)endDrive();
   S=fresh(mode);S.level=mode==='challenge'?(level||2):0;
+  if(typeof setPaint==='function'){let pi=0;if(newJob.started){do{pi=Math.floor(Math.random()*PAINTS.length)}while(pi===lastPaint)}lastPaint=pi;setPaint(pi)}newJob.started=true;
   if(mode==='challenge'){S.faults=pickFaults(S.level);for(const id of S.faults)FAULTS.find(f=>f.id===id).set(S);S.fault=S.faults[0]}
   // hints by level
   const hb=$('hintBtn');if(hintsBefore!==null&&!(mode==='challenge'&&S.level!==2)){setHints(hintsBefore);hintsBefore=null}
@@ -1499,7 +1573,7 @@ $('soundBtn').onclick=()=>{audioInit();setSound(!A.on)};
 $('hintBtn').onclick=()=>setHints(!HINTS);
 function hideHint(){$('hint').hidden=true;try{localStorage.setItem('cds-hint','1')}catch(e){}}
 $('hintX').onclick=hideHint;
-$('helpBtn').onclick=()=>modal('<h2>How it works</h2><ol><li><b>Practice</b> is a healthy car. <b>Sandbox</b> lets you switch any faults on and watch what changes. <b>Challenge</b> has three levels, from one easy fault with hints to two faults with hints off.</li><li>Read the job card at the top. Turn the key to ON and listen, then hold START to crank.</li><li>Use the scan tool for fault codes, live data and fuel trim. The road test shows faults that only appear under load.</li><li>Click a part in the engine bay to open it. Tap a pin to put the red probe on it (tapping battery − moves the black one). Right-click or long-press a pin to choose which probe, or drag either probe tip.</li><li>Volts: black on battery −. Resistance: unplug first and measure the part side, or unplug both ends to test a wire.</li><li>Replaced parts go in the Old parts tray. Click one to bench-test it and see if it really was faulty.</li><li>Fix it, clear the codes, plug everything back in, key off, then hand the car back.</li></ol><p class="small">Drag to move around the bay, scroll or pinch to zoom. The – button on a window minimises it.</p><p class="small">A simplified simulator. The car, readings and faults are made up and don’t match any specific vehicle. On a real car, follow the manufacturer’s repair information and safety rules. MyToolPad accepts no responsibility for work done on a vehicle.</p><div class="acts"><button class="btn primary" type="button" data-closemodal>OK</button></div>');
+$('helpBtn').onclick=()=>modal('<h2>How it works</h2><ol><li><b>Practice</b> is a healthy car. <b>Sandbox</b> lets you switch any faults on and watch what changes. <b>Challenge</b> has three levels, from one easy fault with hints to two faults with hints off.</li><li>Read the job card at the top. Turn the key to ON and listen, then hold START to crank.</li><li>Use the scan tool for fault codes, live data and fuel trim. The road test shows faults that only appear under load.</li><li>Click a part in the engine bay to open it. Tap a pin to put the red probe on it (tapping battery − moves the black one). Right-click or long-press a pin to choose which probe, or drag either probe tip.</li><li>Volts: black on battery −. Resistance: unplug first and measure the part side, or unplug both ends to test a wire.</li><li>Replaced parts go in the Old parts tray. Click one to bench-test it and see if it really was faulty.</li><li>Fix it, clear the codes, plug everything back in, key off, then hand the car back.</li></ol><p class="small">Drag to move around the bay, scroll or pinch to zoom. Switch between Front, Bird’s-eye and Side views at the top left, or swipe sideways. The – button on a window minimises it.</p><p class="small">A simplified simulator. The car, readings and faults are made up and don’t match any specific vehicle. On a real car, follow the manufacturer’s repair information and safety rules. MyToolPad accepts no responsibility for work done on a vehicle.</p><div class="acts"><button class="btn primary" type="button" data-closemodal>OK</button></div>');
 
 /* ================= render loop ================= */
 const TC={x:60,y:54,R:44};
@@ -1516,7 +1590,7 @@ function render(force){
   document.querySelectorAll('[data-key]').forEach(b=>b.setAttribute('aria-pressed',S.key===b.dataset.key||(b.dataset.key==='on'&&(S.key==='run'))));
   $('startBtn').setAttribute('aria-pressed',cranking());
   $('keyRot').style.transform='rotate('+(S.key==='off'?-40:cranking()?70:30)+'deg)';$('keyRot').style.transformOrigin='35px 35px';
-  $('tempTxt').textContent=S.key==='off'?'--':(ecuOn()?ecuEctC()+' °C':'--');$('voltTxt').textContent=S.key==='off'?'--':vbat().toFixed(1)+' V';
+  $('tempTxt').textContent=S.key==='off'?'--':(ecuOn()?ecuEctC()+' °C':'--');$('tempTxt').style.color=S.key!=='off'&&ecuOn()&&ecuEctC()>108?'#ff6b5e':'';$('voltTxt').textContent=S.key==='off'?'--':vbat().toFixed(1)+' V';
   const milOn=S.key!=='off'&&ecuOn()&&(!running()||S.codes.size>0);$('mil').classList.toggle('on',milOn);
   $('mil').classList.toggle('blink',running()&&S.misNow.some(Boolean)&&S.codes.size>0);
   $('batl').classList.toggle('on',S.key!=='off'&&(!running()||!!S.cf.alt));
@@ -1556,6 +1630,10 @@ function frame(t){
   }else{SH.ex=SH.ey=0}
   const eng=$('engLayer');if(eng)eng.style.transform='translate('+(SH.ex/V.s).toFixed(2)+'px,'+(SH.ey/V.s).toFixed(2)+'px) rotate('+(SH.ey*0.05).toFixed(3)+'deg)';
   $('shake').style.transform='translate('+(bx/V.s).toFixed(2)+'px,'+(by/V.s).toFixed(2)+'px)';
+  // cooling fan: spins up and down smoothly
+  {const on=fanSpinning();SH.fanSpd=(SH.fanSpd||0)+((on?1:0)-(SH.fanSpd||0))*Math.min(1,(dt||0.016)*(on?1.5:0.5));const imgs=$('fanSpin').children;
+   if(imgs.length&&SH.fanSpd>0.02&&!REDUCED){SH.fan=(SH.fan||0)+(dt||0.016)*36*SH.fanSpd;const k=Math.floor(SH.fan)%imgs.length;if(k!==SH.fanK){if(imgs[SH.fanK])imgs[SH.fanK].classList.remove('on');imgs[k].classList.add('on');SH.fanK=k}}
+   if(!$('w-rad').hidden){const t=SH.fanSpd>0.5?'The fan is running.':SH.fanSpd>0.02?(on?'The fan is spinning up.':'The fan is slowing down.'):S.key==='off'?'The fan is still. Key is off.':'The fan is still.';if($('fanState').textContent!==t)$('fanState').textContent=t}}
   // spinning alternator: frame rate follows engine speed
   {const imgs=$('altSpin').children;if(imgs.length&&(running()||cranking())&&!REDUCED){SH.alt=(SH.alt||0)+(dt||0.016)*Math.min(42,8+S.rpm/60);const k=Math.floor(SH.alt)%imgs.length;if(k!==SH.altK){if(imgs[SH.altK])imgs[SH.altK].classList.remove('on');imgs[k].classList.add('on');SH.altK=k}}}
   if(!$('w-scope').hidden&&!document.hidden)drawScope();
@@ -1570,9 +1648,37 @@ try{if(localStorage.getItem('cds-sound')==='0')A.on=false;if(localStorage.getIte
 setSound(A.on);
 S=fresh('practice');
 try{setHints(localStorage.getItem('cds-hints')!=='0')}catch(e){setHints(true)}
-fetch('/assets/car-sim/bay.json?v=34876ea3').then(r=>r.json()).then(j=>{BAY=j;if(j.acc){const b=j.acc.box,a=$('altSpin');a.style.left=b[0]+'px';a.style.top=b[1]+'px';a.style.width=(b[2]-b[0])+'px';a.style.height=(b[3]-b[1])+'px';a.innerHTML=[...Array(j.acc.frames)].map((_,i)=>'<img src="/assets/car-sim/alt_'+i+'.webp'+new URL($('bayImg').src).search+'" alt=""'+(i?'':' class="on"')+'>').join('')}
-  if(j.engine){const e=j.engine;$('engLayer').style.transformOrigin=((e[0]+e[2])/2)+'px '+(e[1]+(e[3]-e[1])*0.72)+'px'}drawHotspots()}).catch(()=>say('Could not load the engine bay map. Open this page through a web server.'));
-$('bayImg').addEventListener('load',fit);if($('bayImg').complete)fit();
+const VIEWS=[['front','','Front'],['top','-top','Bird’s-eye'],['side','-side','Side']],VQ=new URL($('bayImg').src).search,VCACHE={};let VIEW=null,viewBusy=false;
+const vURL=(base,suf,ext)=>'/assets/car-sim/'+base+suf+ext+VQ;
+function loadImg(src){return new Promise(r=>{const i=new Image();i.onload=i.onerror=()=>r(i);i.src=src})}
+async function setView(name,instant){
+  if(viewBusy||name===VIEW)return;viewBusy=true;hidePop();
+  const v=VIEWS.find(x=>x[0]===name)||VIEWS[0],suf=v[1];
+  try{
+    const j=VCACHE[name]||(VCACHE[name]=await fetch(vURL('bay',suf,'.json')).then(r=>r.json()));
+    await Promise.all([loadImg(vURL('bay',suf,'.webp')),loadImg(vURL('bay-engine',suf,'.webp'))]);
+    if(!instant){world.style.opacity=0;await new Promise(r=>setTimeout(r,180))}
+    $('bayImg').src=vURL('bay',suf,'.webp');$('engImg').src=vURL('bay-engine',suf,'.webp');
+    const mask='url('+vURL('paint',suf,'.webp')+')';for(const el of [$('paintC'),$('paintL')]){el.style.webkitMaskImage=el.style.maskImage=mask}
+    BAY=j;VIEW=name;
+    const as=$('altSpin');if(j.acc){const b=j.acc.box;as.style.left=b[0]+'px';as.style.top=b[1]+'px';as.style.width=(b[2]-b[0])+'px';as.style.height=(b[3]-b[1])+'px';as.innerHTML=[...Array(j.acc.frames)].map((_,i)=>'<img src="'+vURL('alt',suf,'_'+i+'.webp')+'" alt=""'+(i?'':' class="on"')+'>').join('');SH.altK=0}else as.innerHTML='';
+    if(j.engine){const e=j.engine;$('engLayer').style.transformOrigin=((e[0]+e[2])/2)+'px '+(e[1]+(e[3]-e[1])*0.72)+'px'}
+    for(const w of ['red','black'])if(P[w].el&&P[w].el.closest('#hotspots'))P[w].el=null;
+    drawHotspots();fit();
+    document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.view===name));
+    try{localStorage.setItem('cds-view',name)}catch(e){}
+    world.style.opacity=1;if(!instant)sfx('knob');
+  }catch(e){say('Could not load the engine bay picture. Check your connection and refresh.')}
+  viewBusy=false;
+}
+function stepView(d){const i=VIEWS.findIndex(x=>x[0]===VIEW);setView(VIEWS[(i+d+VIEWS.length)%VIEWS.length][0])}
+document.querySelectorAll('[data-view]').forEach(b=>b.onclick=()=>setView(b.dataset.view));
+document.querySelectorAll('[data-vstep]').forEach(b=>b.onclick=()=>stepView(+b.dataset.vstep));
+addEventListener('keydown',e=>{if(e.target.closest('input,textarea,select,[contenteditable]')||e.metaKey||e.ctrlKey||e.altKey)return;if(e.key==='['||e.key==='ArrowLeft'&&e.target===document.body)stepView(-1);if(e.key===']'||e.key==='ArrowRight'&&e.target===document.body)stepView(1)});
+// paint: each new car comes in a different colour (recolours only the painted panels)
+const PAINTS=[['Blue',null,0],['Red','#c42a20',0.1],['Green','#1f7d47',0.1],['Silver','#b9bfc5',0.9],['Orange','#da761c',0.3],['Purple','#6c33a8',0.05],['Yellow','#dcb81a',0.5],['Graphite','#5b6066',0.15]];
+function setPaint(i){const p=PAINTS[i];S.paint=i;const c=$('paintC'),l=$('paintL');c.hidden=l.hidden=!p[1];if(p[1]){c.style.background=p[1];l.style.opacity=p[2]}}
+let startView='front';try{startView=localStorage.getItem('cds-view')||'front'}catch(e){}setView(VIEWS.some(v=>v[0]===startView)?startView:'front',true);
 setBars();newJob('practice');openWin('w-meter');drawScopeCtl();
 setInterval(tick,100);requestAnimationFrame(frame);
 </script>
